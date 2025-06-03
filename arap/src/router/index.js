@@ -14,6 +14,12 @@ const routes = [
             import ('../pages/Register'),
     },
     {
+        path: "/Help",
+        name: "Help",
+        component: () =>
+            import ('../pages/Help'),
+    },
+    {
         path: "/Home",
         name: "Home",
         component: () =>
