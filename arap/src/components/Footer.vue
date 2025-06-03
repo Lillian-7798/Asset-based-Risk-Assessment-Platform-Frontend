@@ -1,16 +1,9 @@
 <template>
-  <div class="footer">
-    <n-space justify="center">
-      <n-text depth="3">© 2023 我的公司 版权所有</n-text>
-    </n-space>
-  </div>
-</template>
+<div class="bg_footer">
+      <p>© 2025 Powered by msp24114 | English | Privacy and Terms | Security | Contect Us </p>
+</div>
+</template>   
 
 <script>
-import { NText, NSpace } from 'naive-ui'
-
-export default {
-  name:'AppFooter',
-  components: { NText, NSpace }
-}
+export default {};
 </script>

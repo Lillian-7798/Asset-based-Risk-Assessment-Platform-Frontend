@@ -68,13 +68,11 @@ npm run serve
 > git push: 上传本地仓库的版本代码到远程仓库
 
 ## Dependence:
-使用了naive-ui组件库方便开发，参考 https://www.naiveui.com/zh-CN/light/components/button
+使用了element-plus组件库方便开发，参考 https://element-plus.org/zh-CN/component/overview.html
 
 ## How to write
-访问网址的路由在arap/src/router/index.js中，默认/会跳转到/Login页面
+访问网址的路由在arap/src/router/index.js中，默认访问/会跳转到/Login页面
 
 网站的所有页面在arap/src/pages中，每个页面新建一个folder, 新建页面需要将其添加在router/index.js中，渲染页面=渲染该页面文件夹下的index.vue。可以通过修改index.vue文件达到修改页面的目的。
 
 arap/src/components下有网站的Footer和Header。
-
-当前所有的页面都是本人随便建的，可有可无，仅仅提供一个简要的代码模板，不做最后成果。

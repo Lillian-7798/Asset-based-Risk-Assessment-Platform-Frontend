@@ -18,4 +18,8 @@ export default {
   color: #2c3e50;
   margin-top: 60px;
 }
+body, html {
+  margin: 0;
+  padding: 0;
+}
 </style>

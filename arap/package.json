@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.8.3",
+    "element-plus": "^2.9.11",
     "vue": "^3.2.13"
   },
   "devDependencies": {
@@ -19,7 +20,6 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "naive-ui": "^2.41.0",
     "vue-router": "^4.0.3"
   },
   "eslintConfig": {
@@ -34,7 +34,9 @@
     "parserOptions": {
       "parser": "@babel/eslint-parser"
     },
-    "rules": {}
+    "rules": {
+      "vue/multi-word-component-names": "off"
+    }
   },
   "browserslist": [
     "> 1%",

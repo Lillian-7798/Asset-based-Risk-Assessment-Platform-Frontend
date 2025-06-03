@@ -6,26 +6,39 @@ const routes = [
     name: 'Login',
     component: () =>
         import ('../pages/Login'),
-
-    // children: [{
-    //     path: "Login",
-    //     name: "Login",
-    //     component: () =>
-    //         import ('../views/Login'),
-    // },
-    //     // {
-    //     //     path: "Register",
-    //     //     name: "Register",
-    //     //     component: () =>
-    //     //         import ('../views/Register'),
-    //     // }
-    // ]
     },
     {
         path: "/Register",
         name: "Register",
         component: () =>
             import ('../pages/Register'),
+    },
+    {
+        path: "/Home",
+        name: "Home",
+        component: () =>
+            import('../pages/Home'),
+        children: [
+            { 
+                path: 'asset-inventory', 
+                name:"AssetInventory",
+                component: ()=>
+                    import('../pages/Home/AssetInventory.vue')
+            }, 
+            { 
+                path: 'risk-assessment', 
+                name:"RiskAssessment",
+                component: ()=>
+                    import('../pages/Home/RiskAssessment.vue')
+            },
+            { 
+                path: 'risk-management', 
+                name:"RiskManagement",
+                component: ()=>
+                    import('../pages/Home/RiskManagement.vue')
+            },
+            { path: '', redirect: '/home/asset-inventory' } // 默认重定向
+        ]
     },
     {
         path: '/',
