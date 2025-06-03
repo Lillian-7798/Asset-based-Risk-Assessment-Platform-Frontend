@@ -2,10 +2,7 @@
     <div>
     <Header />
     <div class="content">
-        Here is Account Detail!
-        <br />
-        TO DO:这个页面主要展示一些头像/用户名/等用户信息，有退出登录功能
-        可选择：修改密码/修改信息
+        TODO：对于资产进行风险调查问卷，主要难点在于根据用户不同的选择加载接下来不同的问卷内容。
     </div>
     <div class="footer">
       <Footer />

@@ -20,6 +20,24 @@ const routes = [
             import ('../pages/Help'),
     },
     {
+        path: "/Account",
+        name: "Account",
+        component: () =>
+            import ('../pages/Account'),
+    },
+    {
+        path: "/NewAsset",
+        name: "NewAsset",
+        component: () =>
+            import ('../pages/NewAsset'),
+    },
+    {
+        path: "/RiskQuestionare",
+        name: "RiskQuestionare",
+        component: () =>
+            import ('../pages/RiskQuestionare'),
+    },
+    {
         path: "/Home",
         name: "Home",
         component: () =>

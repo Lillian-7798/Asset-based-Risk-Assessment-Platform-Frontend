@@ -54,7 +54,7 @@
     <div class="container">
         <el-row>
             <el-col :span="12" style="display: flex; align-items: center; justify-content: left;">
-                <el-button type="primary" round>
+                <el-button type="primary" round @click="newAsset">
                     <el-icon>
                         <Plus />
                     </el-icon> New</el-button>
@@ -211,6 +211,11 @@ export default {
         }
     },
     methods: {
+        newAsset() {
+            this.$router.push({
+                path: '/NewAsset'
+            })
+        },
         getStatusTagType(status) {
             switch (status) {
                 case 'Active':
