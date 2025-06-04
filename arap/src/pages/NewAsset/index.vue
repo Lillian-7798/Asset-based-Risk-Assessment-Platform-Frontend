@@ -2,13 +2,31 @@
   <div>
     <Header />
     <div class="content">
+      <!-- Confirm Dialog -->
+       <!-- 添加确认对话框 -->
+      <el-dialog
+        v-model="showConfirmDialog"
+        title="Warning"
+        width="30%"
+        :before-close="handleBeforeClose"
+      >
+        <span>The inventory will not be saved, are you sure you want to exit?</span>
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="showConfirmDialog = false">No</el-button>
+            <el-button type="primary" @click="confirmLeave">Yes</el-button>
+          </span>
+        </template>
+      </el-dialog>
+
+       <!-- Content -->
       <div class="page-header">
         <div class="header-content">
           <el-text style="font-size: 20px;font-weight: bold;">
             Add a New Inventory
           </el-text>
           <el-button type="primary" circle size="small">
-            <el-icon size="20px">
+            <el-icon size="20px" @click="handleClose">
               <Close />
             </el-icon>
           </el-button>
@@ -161,9 +179,23 @@ export default {
       this.watchAssetType(newVal)
     }
   },
+  beforeRouteLeave(to, from, next) {
+    if (this.leaveConfirmed) {
+      next();
+    } else {
+      this.targetRoute = to.fullPath;
+      this.showConfirmDialog = true;
+      next(false);
+    }
+  },
   data() {
     return {
       Close,
+      // 添加对话框状态
+      showConfirmDialog: false,
+      // 添加离开确认相关数据
+      leaveConfirmed: false,
+      targetRoute: null,
       AssetType: "",
       Statu: "",
       Importance:"",
@@ -214,6 +246,28 @@ export default {
         },
       ],
     }
+  },
+  methods:{
+    handleClose() {
+      this.showConfirmDialog = true
+    },
+    
+    // 对话框关闭前的处理
+    handleBeforeClose(done) {
+      this.showConfirmDialog = false
+      done()
+    },
+    
+    // 确认离开
+    confirmLeave() {
+      this.leaveConfirmed = true
+      this.showConfirmDialog = false
+      if (this.targetRoute) {
+        this.$router.push(this.targetRoute)
+      } else {
+        this.$router.go(-1) // 返回上一页
+      }
+    },
   }
 }
 </script>
