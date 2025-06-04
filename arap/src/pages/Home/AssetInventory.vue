@@ -1,12 +1,12 @@
 <template>
     <!-- 过滤条件弹出框 -->
-    <el-dialog v-model="dialogVisible" title="Filter" width="50%" :before-close="handleClose" :center="false">
+    <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
         <el-row>
             <el-col :span="3" class="center-align">
                 <el-text>Asset Type</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="value" placeholder="Default" style="width: 95%;justify-content: left;">
+                <el-select v-model="AssetType" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
                     <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
@@ -15,7 +15,7 @@
                 <el-text>Any Empty Fields?</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="value" placeholder="Default" style="width: 95%;justify-content: left; ">
+                <el-select v-model="EmptyField" placeholder="Default" style="width: 95%;justify-content: left; " clearable>
                     <el-option v-for="item in EmptyFields" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
@@ -26,8 +26,8 @@
                 <el-text>Importance</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="value" placeholder="Default" style="width: 95%;justify-content: left;">
-                    <el-option v-for="item in Importance" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="Importance" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
+                    <el-option v-for="item in Importances" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
             <el-col :span="1"></el-col>
@@ -35,7 +35,7 @@
                 <el-text>Status</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="value" placeholder="Default" style="width: 95%;justify-content: left; ">
+                <el-select v-model="Statu" placeholder="Default" style="width: 95%;justify-content: left; " clearable>
                     <el-option v-for="item in Status" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
@@ -114,6 +114,10 @@ export default {
             searchInput: "",
             Search,
             dialogVisible: false,
+            AssetType:"",
+            EmptyField:"",
+            Importance:"",
+            Statu:"",
             AssetTypes: [
                 {
                     value: 'Software',
@@ -142,7 +146,7 @@ export default {
                     label: 'No',
                 },
             ],
-            Importance: [
+            Importances: [
                 {
                     value: 'Extremely High',
                     label: 'Extremely High',

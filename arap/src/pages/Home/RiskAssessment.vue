@@ -1,19 +1,240 @@
 <template>
-    RiskAssessment
-    TODO：具体参考Requirements Document文档页面
+    <!-- 过滤条件弹出框 -->
+    <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
+        <el-row>
+            <el-col :span="3" class="center-align">
+                <el-text>Asset Type</el-text>
+            </el-col>
+            <el-col :span="8">
+                <el-select v-model="AssetType" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
+                    <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+            </el-col>
+            <el-col :span="1"></el-col>
+            <el-col :span="4" class="center-align">
+                <el-text>Asset Status</el-text>
+            </el-col>
+            <el-col :span="8">
+                <el-select v-model="AssetStatu" placeholder="Default" style="width: 95%;justify-content: left; " clearable>
+                    <el-option v-for="item in AssetStatus" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+            </el-col>
+        </el-row>
+        <br />
+        <el-row>
+            <el-col :span="3" class="center-align">
+                <el-text>Questionare Status</el-text>
+            </el-col>
+            <el-col :span="8">
+                <el-select v-model="QuestionareStatu" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
+                    <el-option v-for="item in QuestionareStatus" :key="item.value" :label="item.label" :value="item.value" />
+                </el-select>
+            </el-col>
+            <el-col :span="13"></el-col>
+        </el-row>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="dialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="dialogVisible = false">
+                    Confirm
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
+
+    <!-- 正常页面 -->
+    <div class="container">
+        <el-row>
+            <el-col :span="12" style="display: flex; align-items: center; justify-content: left;">
+                <el-text style="font-size: 20px;font-weight: bold;">Risk Assessment Questionares</el-text>
+            </el-col>
+            <el-col :span="6" style="display: flex; align-items: center; justify-content: right;">
+                <el-icon style="margin-right: 10px;" @click="dialogVisible = true">
+                    <Filter />
+                </el-icon>
+            </el-col>
+            <el-col :span="6" style="display: flex; align-items: center; justify-content: right;">
+                <el-input v-model="input2" style="width: 100%;margin-right: 10px;" placeholder="Please Input"
+                    :prefix-icon="Search" />
+            </el-col>
+        </el-row>
+        <div class="table-container">
+            <div class="table">
+                <el-table :data="tableData" border style="width: 100%">
+                    <el-table-column prop="date" label="Date" width="100" />
+                    <el-table-column prop="name" label="Name" width="180" />
+                    <el-table-column prop="type" label="Type" width="100" />
+                    <el-table-column prop="owner" label="Owner" width="200" />
+                    <!-- AssetStatus 列 - 使用自定义模板 -->
+                    <el-table-column prop="AssetStatus" label="Asset Status">
+                        <template #default="{ row }">
+                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark">
+                                {{ row.AssetStatus }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+
+                    <!-- Importance 列 - 使用自定义模板 -->
+                    <el-table-column prop="QuestionareStatus" label="Questionare Status">
+                        <template #default="{ row }">
+                            <el-tag :type="getQSTagType(row.QuestionareStatus)"
+                                effect="dark">
+                                {{ row.QuestionareStatus }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+            <div class="pagination">
+                <el-pagination background layout="prev, pager, next" :total="100" />
+            </div>
+        </div>
+    </div>
+
+
 </template>
 
 <script>
+import { Search } from '@element-plus/icons-vue'
 export default {
     data() {
         return {
+            searchInput: "",
+            Search,
+            dialogVisible: false,
+            AssetType:"",
+            QuestionareStatu:"",
+            AssetStatu:"",
+            AssetTypes: [
+                {
+                    value: 'Software',
+                    label: 'Software',
+                },
+                {
+                    value: 'Physical',
+                    label: 'Physical',
+                },
+                {
+                    value: 'Information',
+                    label: 'Information',
+                },
+                {
+                    value: 'People',
+                    label: 'People',
+                },
+            ],
+            QuestionareStatus: [
+                {
+                    value: 'Finished',
+                    label: 'Finished',
+                },
+                {
+                    value: 'In-progress',
+                    label: 'In-progress',
+                },
+            ],
+            AssetStatus: [
+                {
+                    value: 'Active',
+                    label: 'Active',
+                },
+                {
+                    value: 'Decommissioned',
+                    label: 'Decommissioned',
+                },
+            ],
+            tableData: [
+                {
+                    date: '01-02-2024',
+                    name: 'Outlook',
+                    type: 'Software',
+                    owner: 'Jimmy Li 3534267',
+                    AssetStatus: 'Active',
+                    QuestionareStatus: 'Finished'
+                },
+                {
+                    date: '01-02-2024',
+                    name: 'Samsung Laser Printer',
+                    type: 'Physical',
+                    owner: 'Chen 4333232',
+                    AssetStatus: 'Active',
+                    QuestionareStatus: 'In-progress'
+                },
+                {
+                    date: '01-02-2024',
+                    name: 'Employee Data',
+                    type: 'Information',
+                    owner: 'Karen Feng 5473625',
+                    AssetStatus: 'Active',
+                    QuestionareStatus: 'Finished'
+                },
+            ]
         }
     },
-    methods:{
-
+    methods: {
+        newAsset() {
+            this.$router.push({
+                path: '/NewAsset'
+            })
+        },
+        getStatusTagType(status) {
+            switch (status) {
+                case 'Active':
+                    return 'success'
+                case 'Decommissioned':
+                    return 'info'
+            }
+        },
+        getQSTagType(importance) {
+            switch (importance) {
+                case 'Finished':
+                    return 'success'
+                case 'In-progress':
+                    return 'warning'
+            }
+        }
     }
 }
 </script>
 
 <style scoped>
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    /* 或者使用 min-height: 100vh; 根据你的需求 */
+}
+
+.table-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+.table {
+    flex: 1;
+    overflow: auto;
+}
+
+.pagination {
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    /* background: white;
+    border-top: 1px solid #eee;
+    可选：添加顶部边框分隔 */
+}
+
+.center-align {
+    display: flex;
+    align-items: center;
+    justify-content: left;
+}
+
+.dialog-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 </style>
