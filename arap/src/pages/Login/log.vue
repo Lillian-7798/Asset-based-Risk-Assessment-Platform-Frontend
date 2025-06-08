@@ -1,42 +1,110 @@
 <template>
-    <div class="bg_intro">
-      <div class="intro">
-        <ul class="info" >
-            <img src="../../assets/logo.png" style="height: 90px;"/>
-          <li>
-            <input type="text" id="name" v-model="usname" placeholder="User Name" @blur="checkusernull"/>
-          </li>
-          <li>
-            <input type="password" id="password" placeholder="Password" @blur="checkpasswordnull"/>
-          </li>
-          <li>
-          <button id="btn" @click="login()" style="margin: 0 auto;width: 20vw ">Login</button>
-          </li>
-          <br />
-          <router-link :to="{ name: 'Register' }" style="margin: auto">
-            <h style="text-align: center;">No account? Click here to Register</h>
-          </router-link>
-          <br />
-        </ul>
-      </div>  
+  <div class="bg_intro">
+    <div class="intro">
+      <ul class="info">
+        <img src="../../assets/logo.png" style="height: 90px;" />
+        <li>
+          <input type="text" id="username" v-model="loginForm.username" placeholder="username" @blur="validateUsername"/>
+        </li>
+        <li>
+          <input type="password" id="password" v-model="loginForm.password" placeholder="password" @blur="validatePassword"/>
+        </li>
+        <li>
+          <button id="btn" @click="handleLogin" :disabled="isLoading" style="margin: 0 auto; width: 20vw">{{ isLoading ? 'Logging in...' : 'Login' }}</button>
+        </li>
+        <br />
+        <router-link :to="{ name: 'Register' }" style="margin: auto">
+          <h style="text-align: center;">No account? Click here to Register</h>
+        </router-link>
+        <br />
+      </ul>
     </div>
+  </div>
 </template>
 
 <script>
-// import useWebSocket from '../../webSocket/websocket';
-// import { useRouter } from 'vue-router';
-// import {instance} from "@/axios/axios";
+import axios from "axios";
+
 export default {
-  data(){
+  data() {
     return {
-      // usshow: false,
-      // passshow: false,
-      // passwrong:false,
-      input:"",
-    //   usname:this.$route.query.username,
-    }
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      isLoading: false
+    };
   },
-  methods:{
+  methods: {
+
+    validateUsername() {
+      if (!this.loginForm.username.trim()) {
+        this.$message.error('用户名不能为空');
+        return false;
+      }
+      return true;
+    },
+    validatePassword() {
+      if (!this.loginForm.password.trim()) {
+        this.$message.error('密码不能为空');
+        return false;
+      }
+      return true;
+    },
+
+    async handleLogin() {
+      if (!this.validateUsername() || !this.validatePassword()) {
+        return;
+      }
+      this.isLoading = true;
+      //this.$router.push({ name: 'AssetInventory' });
+      try {
+        const response = await axios.post(
+            'http://localhost:9090/api/login',
+            {
+              assetUserName: this.loginForm.username,
+              assetUserPwd: this.loginForm.password
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+
+            }
+        );
+        if (response.data.success) {
+          this.$message.success('login success');
+
+          const userData = {
+            username: response.data.user.username,
+            userId: response.data.user.userId,
+            useremail: response.data.user.useremail
+          };
+          localStorage.setItem('user', JSON.stringify(userData));
+
+          // 注册成功后跳转到登录页面
+          this.$router.push({ name: 'AssetInventory' });
+        } else {
+          throw new Error(response.data.message || 'fail login');
+        }
+
+      } catch (error) {
+
+        const errorMessage = error.response?.data?.message ||
+            error.message ||
+            '无法连接到服务器，请检查后端服务是否运行';
+        this.$message.error(errorMessage);
+        console.error('完整错误:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
+  }
+};
+</script>
+
+
 //     login() {
 //       // let usname = document.getElementById('name').value;
 //       let password = document.getElementById('password').value;
@@ -128,7 +196,6 @@ export default {
 //   //   }
   }
 };
-</script>
 
 <style scoped>
 * {
