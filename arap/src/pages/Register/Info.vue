@@ -3,19 +3,25 @@
         <div class="intro">
             <ul class='info'>
                 <li style="margin-top: 0;">
-                    <input type="text" id='name' placeholder="用户名" @blur="usenameDuplicate">
+                    <input type="text" id='name' v-model="registerForm.username" placeholder="Usename" @blur="usenameDuplicate">
                 </li>
                 <li>
-                    <input type="email" id='email' placeholder="电子邮件">
+                    <input type="email" id='email' v-model="registerForm.email" placeholder="email">
                 </li>
                 <li>
-                    <input type="password" id='password' placeholder="密码">
+                    <input type="password" id='password' v-model="registerForm.password" placeholder="password" @input="checkPasswordStrength"
+                    >
+                    <div
+                        :style="`font-size: 12px; color: ${passwordStrength.color}; margin-top: 1px;`"
+                    >
+                        {{ passwordStrength.message }}
+                    </div>
                 </li>
                 <li>
-                    <input type="password" id='SecPass' placeholder="再次确认密码" @blur="secpass">
+                    <input type="password" id='SecPass' v-model="registerForm.secPwd" placeholder="enter pwd again" @blur="secpass">
                 </li>
                 <li>
-                    <button id='btn' style="margin: auto" @click="register">创建账户</button>
+                    <button id='btn' style="margin: 0 auto; width: 20vw" @click="handleregister" :disabled="isLoading">{{ isLoading ? 'Creating...' : 'confirm' }}</button>
                 </li>
                 <router-link :to="{ name: 'Login' }"  style="margin: auto">
                     <h style="text-align: center;">Already have an account? Click here to Log In</h>
@@ -27,97 +33,129 @@
 </template>
 
 <script>
-// import {instance} from "@/axios/axios";
+import axios from "axios";
+
 export default {
-  data(){
-    return{
-      // useshow:false,
-      // passshow:false,
-      // successShow:false,
-      // failShow:false,
-    }
+  data() {
+    return {
+      registerForm: {
+        username: '',
+        email: '',
+        password: '',
+        secPwd: ''
+      },
+      isLoading: false,
+      passwordStrength: {
+        message: '',
+        color: 'gray'
+      }
+    };
   },
-  methods:{
-    // usenameDuplicate (){
-    //   let usename=document.getElementById('name').value;
-    //   instance.get('/checkDup',{
-    //     params:{
-    //       name:usename
-    //     }
-    //   }).then(res=>{
-    //     if(res.data)
-    //       this.$message.error('该用户名已被使用');
-    //     // this.useshow=!res.data;
-    //   }).catch(err=>{
-    //     console.log(err);
-    //   })
-    // },
-    // secpass(){
-    //   let oldpass=document.getElementById('password').value;
-    //   let newpass=document.getElementById('SecPass').value;
-    //   // this.passshow=!(newpass==oldpass);
-    //   if(newpass!=oldpass)
-    //     this.$message.error('两次密码不同');
-    // },
-    // register(){
-    //   var usn=document.getElementById('name').value;
-    //   var em=document.getElementById('email').value;
-    //   var opass=document.getElementById('password').value;
-    //   var npass=document.getElementById('SecPass').value;
-    //   if(opass==npass){
-    //     instance.post('/addAccount',null,{
-    //       params:{
-    //         name:usn,
-    //         email:em,
-    //         password:opass,
-    //       }
-    //     }).then(res=>{
-    //       if(res.data){
-    //         // this.useshow=false;
-    //         // this.passshow=false;
-    //         // this.failShow=false;
-    //         // this.successShow=true;
-    //         this.$message({
-    //           message: '注册成功!',
-    //           type: 'success'
-    //         });
-    //         this.$router.push({
-    //           path:'/Login',
-    //           query: {
-    //             username:usn,
-    //           }
-    //         })
-    //       }
-    //       else{
-    //         // this.successShow=false;
-    //         // this.failShow=true;
-    //         this.$message.error('注册失败!');
-    //       }
-    //       // console.log(res.data);
-    //     }).catch(err=>{
-    //       console.log(err);
-    //     })
-    //   }
-    //   else
-    //     // this.passshow=true;
-    //     this.$message.error('两次密码不同');
-    // }
-    // register(){
-    //   var usn=document.getElementById('name').value;
-    //   this.$message({
-    //               message: '注册成功!',
-    //               type: 'success'
-    //             });
-    //   this.$router.push({
-    //     path:'/Login',
-    //     query: {
-    //       username:usn,
-    //     }
-    //   })
-    // }
+  methods: {
+    checkPasswordStrength() {
+      const { password } = this.registerForm;
+
+      if (password.length === 0) {
+        this.passwordStrength = { message: '', color: 'gray' };
+        return;
+      }
+
+      const weakRegex = /^[a-zA-Z0-9]{1,5}$/; // 弱：仅字母或数字，长度小于6
+      const mediumRegex = /^[a-zA-Z0-9]{6,}$/; // 中：字母+数字，长度大于等于6
+      const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; // 强：大小写字母+数字+特殊字符，长度大于等于8
+
+      if (weakRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度弱请加强，可添加大小写字母或字符', color: 'red' };
+      } else if (mediumRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度中', color: 'orange' };
+      } else if (strongRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度强', color: 'green' };
+      } else {
+        this.passwordStrength = { message: '密码强度中', color: 'orange' }; // 默认为中等
+      }
+    },
+
+    // 验证两次密码是否一致
+    validatePassword() {
+      if (!this.registerForm.password.trim() || !this.registerForm.secPwd.trim() ) {
+        this.$message.error('密码不能为空');
+        return false;
+      }
+      if (this.registerForm.password !== this.registerForm.secPwd) {
+        this.$message.error('两次输入的密码不一致');
+        return false;
+      }
+      return true;
+    },
+
+    // 验证用户名是否为空
+    validateUsername() {
+      if (!this.registerForm.username.trim()) {
+        this.$message.error('用户名不能为空');
+        return false;
+      }
+      return true;
+    },
+
+    // 验证邮箱格式
+    validateEmail() {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(this.registerForm.email)) {
+        this.$message.error('请输入有效的邮箱地址');
+        return false;
+      }
+      return true;
+    },
+
+    // 注册方法
+    async handleregister() {
+      // 验证所有字段
+      if (!this.validateUsername() || !this.validateEmail()) {
+        return;
+      }
+      if (!this.validatePassword()) {
+        return;
+      }
+
+      this.isLoading = true;
+
+      try {
+        const response = await axios.post(
+            'http://localhost:9090/api/register', // 替换为你的注册API地址
+            {
+              assetUserName: this.registerForm.username,
+              assetUserEmail: this.registerForm.email,
+              assetUserPwd: this.registerForm.password
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+        );
+
+        if (response.data.success) {
+          this.$message.success('注册成功');
+          // 注册成功后跳转到登录页面
+          this.$router.push({ name: 'Login' });
+        } else {
+          throw new Error(response.data.message || '注册失败');
+        }
+      } catch (error) {
+        const errorMessage = error.response?.data?.message ||
+            error.message ||
+            '注册失败，请稍后重试';
+        this.$message.error(errorMessage);
+        console.error('注册错误:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
   }
-}
+};
 </script>
+
 
 <style scoped>
 *{
