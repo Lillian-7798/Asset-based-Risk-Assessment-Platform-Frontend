@@ -38,17 +38,39 @@ export default {
         password: '',
         secPwd: ''
       },
-      isLoading: false
+      isLoading: false,
+      passwordStrength: {
+        message: '',
+        color: 'gray'
+      }
     };
   },
   methods: {
+    checkPasswordStrength() {
+      const { password } = this.registerForm;
+
+      if (password.length === 0) {
+        this.passwordStrength = { message: '', color: 'gray' };
+        return;
+      }
+
+      const weakRegex = /^[a-zA-Z0-9]{1,5}$/; // 弱：仅字母或数字，长度小于6
+      const mediumRegex = /^[a-zA-Z0-9]{6,}$/; // 中：字母+数字，长度大于等于6
+      const strongRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/; // 强：大小写字母+数字+特殊字符，长度大于等于8
+
+      if (weakRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度弱请加强，可添加大小写字母或字符', color: 'red' };
+      } else if (mediumRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度中', color: 'orange' };
+      } else if (strongRegex.test(password)) {
+        this.passwordStrength = { message: '密码强度强', color: 'green' };
+      } else {
+        this.passwordStrength = { message: '密码强度中', color: 'orange' }; // 默认为中等
+      }
+    },
+
     // 验证两次密码是否一致
     validatePassword() {
-      const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/;
-      if (!pwdRegex.test(this.registerForm.password)) {
-        this.$message.error('密码长度需大于等于6，且包含大小写字母和符号');
-        return false;
-      }
       if (!this.registerForm.password.trim() || !this.registerForm.secPwd.trim() ) {
         this.$message.error('密码不能为空');
         return false;

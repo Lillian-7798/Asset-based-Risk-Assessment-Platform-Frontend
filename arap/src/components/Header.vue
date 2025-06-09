@@ -61,8 +61,9 @@ export default {
           }
 
           } catch (e) {
-          console.error('Error parsing user data:', e);
-          this.isLoggedIn = false;
+          this.username = userData.username || '';
+          this.aId = userData.userId || '';
+          this.isLoggedIn = true;
         }
       } else if (this.$route.query.username) {
         this.username = this.$route.query.username;
