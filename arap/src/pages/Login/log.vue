@@ -1,131 +1,132 @@
 <template>
-    <div class="bg_intro">
-      <div class="intro">
-        <ul class="info" >
-            <img src="../../assets/logo.png" style="height: 90px;"/>
-          <li>
-            <input type="text" id="name" v-model="usname" placeholder="User Name" @blur="checkusernull"/>
-          </li>
-          <li>
-            <input type="password" id="password" placeholder="Password" @blur="checkpasswordnull"/>
-          </li>
-          <li>
-          <button id="btn" @click="login()" style="margin: 0 auto;width: 20vw ">Login</button>
-          </li>
-          <br />
-          <router-link :to="{ name: 'Register' }" style="margin: auto">
-            <h style="text-align: center;">No account? Click here to Register</h>
-          </router-link>
-          <br />
-        </ul>
-      </div>  
+  <div class="bg_intro">
+    <div class="intro">
+      <ul class="info">
+        <img src="../../assets/logo.png" style="height: 90px;" />
+        <li>
+          <input type="text" id="username" v-model="loginForm.username" placeholder="username" @blur="validateUserName"/>
+        </li>
+        <li>
+          <input type="password" id="password" v-model="loginForm.password" placeholder="password" @blur="validatePassword"/>
+        </li>
+        <li>
+          <button id="btn" @click="handleLogin" :disabled="isLoading" style="margin: 0 auto; width: 20vw">{{ isLoading ? 'Logging in...' : 'Login' }}</button>
+        </li>
+        <br />
+        <router-link :to="{ name: 'Register' }" style="margin: auto">
+          <h style="text-align: center;">No account? Click here to Register</h>
+        </router-link>
+        <br />
+      </ul>
     </div>
+  </div>
 </template>
 
 <script>
-// import useWebSocket from '../../webSocket/websocket';
-// import { useRouter } from 'vue-router';
-// import {instance} from "@/axios/axios";
+
+import axios from "axios";
+
 export default {
-  data(){
+  data() {
     return {
-      // usshow: false,
-      // passshow: false,
-      // passwrong:false,
-      input:"",
-    //   usname:this.$route.query.username,
-    }
+      loginForm: {
+        username: '',
+        password: ''
+      },
+      isLoading: false
+    };
   },
-  methods:{
-//     login() {
-//       // let usname = document.getElementById('name').value;
-//       let password = document.getElementById('password').value;
-//       // this.usshow = (usname == "");
-//       // this.passshow = (password == "");
-//       if(this.usname=="") this.checkusernull();
-//       if(password=="") {
-//         setTimeout(()=>{
-//           this.checkpasswordnull();
-//         },1);
-//       }
-//       if (this.usname != "" || password != "") {
-//         instance.get('/checkAccount', {
-//           params: {
-//             name: this.usname,
-//             password: password,
-//           }
-//         }).then(res => {
-//           if (res.data == "") {
-//             setTimeout(()=>{
-//               this.$message({
-//                 showClose: true,
-//                 message: '用户名或密码错误',
-//                 type: 'error'
-//               });
-//             },1);
-//           }
-//           else {
-//             localStorage.setItem('user', JSON.stringify(res.data));
-//             this.$router.push({
-//               path:'/Home',
-//               query: {
-//                 accountid: res.data.accountId,
-//                 usename: res.data.name,
-//                 // projects:res.data.projects
-//               }
-//             })
-//           }
-//         }).catch(err => {
-//           console.log(err);
-//         })
-//         //     this.$router.push({
-//         //       //name: 'home',
-//         //       path:'/',
-//         //       query: {
-//         //         accountid:1,
-//         //         usename:"papa",
-//         //       }
-//         //     })
-//       }
-//     },
-//     checkusernull(){
-//       // let usname = document.getElementById('name').value;
-//       if(this.usname==""){
-//         this.$message({
-//           showClose: true,
-//           message: '用户名不能为空',
-//           type: 'error'
-//         });
-//       }
-//     },
-//     checkpasswordnull(){
-//       let password = document.getElementById('password').value;
-//       if(password==""){
-//         this.$message({
-//           showClose: true,
-//           message: '密码不能为空',
-//           type: 'error'
-//         });
-//       }
-//     }
-//   }
-//   // setup () {
-//   //   const ws = useWebSocket(handleMessage);
-//   //   const router = useRouter();
-//   //   const login = () => {
-//   //     let uname = document.getElementById("name");
-//   //     let pw = document.getElementById("password");
-//   //     ws.send(JSON.stringify({
-//   //       usename: uname,
-//   //       password: pw
-//   //     }));
-//   //   }
-//   //   function handleMessage(e) {
-//   //     router.push('/');
-//   //   }
-//   //   return{
-//   //     login
-//   //   }
+  methods: {
+
+    validateUserName() {
+      if (!this.loginForm.username.trim()) {
+        this.$message.error('用户名不能为空');
+        return false;
+      }
+      return true;
+    },
+    validatePassword() {
+      if (!this.loginForm.password.trim()) {
+        this.$message.error('密码不能为空');
+        return false;
+      }
+      return true;
+    },
+
+    async handleLogin() {
+      if (!this.validateUserName() || !this.validatePassword()) {
+        return;
+      }
+      this.isLoading = true;
+      //this.$router.push({ name: 'AssetInventory' });
+      try {
+        console.log('请求参数:', {
+          assetUserName: this.loginForm.username,
+          assetUserPwd: this.loginForm.password
+        });
+
+        const response = await axios.post(
+            'http://localhost:9090/api/login',
+            {
+              assetUserName: this.loginForm.username,
+              assetUserPwd: this.loginForm.password
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              },
+
+            }
+        );
+        if (response.data.success) {
+          this.$message.success('login success');
+
+          const userData = {
+            username: response.data.username || 'guest',
+            userId: response.data.userId || '',
+            useremail: response.data.useremail || ''
+          };
+          console.log('准备存储的用户数据:', userData);
+
+          try {
+            if (!userData.username || !userData.userId) {
+              console.error('用户数据不完整，无法存储:', userData);
+              this.$message.error('用户信息不完整，请联系管理员');
+              return;
+            }
+
+            try {
+              localStorage.setItem('userData', JSON.stringify(userData));
+            } catch (storageError) {
+              console.error('存储用户数据时发生错误:', storageError);
+              this.$message.error('无法保存用户信息，请稍后重试');
+            }
+
+            localStorage.setItem('userData', JSON.stringify(userData));
+          } catch (storageError) {
+            console.error('存储用户数据时发生错误:', storageError);
+            this.$message.error('无法保存用户信息，请稍后重试');
+          }
+
+
+          // 注册成功后跳转到登录页面
+          this.$router.push({ name: 'AssetInventory' });
+        } else {
+          throw new Error(response.data.message || 'fail login');
+        }
+
+      } catch (error) {
+
+        const errorMessage = error.response?.data?.message ||
+            error.message ||
+            '无法连接到服务器，请检查后端服务是否运行';
+        this.$message.error(errorMessage);
+        console.error('完整错误:', error);
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
   }
 };
 </script>
