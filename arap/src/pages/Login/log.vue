@@ -25,6 +25,7 @@
 <script>
 
 import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 
 export default {
   data() {
@@ -66,7 +67,7 @@ export default {
         });
 
         const response = await axios.post(
-            'http://localhost:9090/api/login',
+            API_BASE_URL+'/api/login',
             {
               assetUserName: this.loginForm.username,
               assetUserPwd: this.loginForm.password

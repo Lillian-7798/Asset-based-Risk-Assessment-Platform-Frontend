@@ -1,7 +1,7 @@
 <template>
   <el-row class="myheader">
     <el-col :span="8" class="logo-col">
-      <el-button class="logo" @click="isLoggedIn ? toHome() : null">
+      <el-button class="logo" @click="isLoggedIn ? toHome() : toLogin()">
         <img src="../assets/logo.png" class="logo-image"/>
       </el-button>
       <el-text class="ABRSP">Asset-based Risk Assessment Platform </el-text>
@@ -68,6 +68,11 @@ export default {
         path: '/Home'
       });
     },
+    toLogin() {
+      this.$router.push({
+        path: '/Login'
+      });
+    },
     toHelp() {
       this.$router.push({
         path: '/Help'
@@ -128,8 +133,8 @@ button {
 }
 
 .logo img {
-  width: 90%;
-  height: 90%;
+  width: 80%;
+  height: 80%;
   margin-top: 0;
 }
 

@@ -34,6 +34,7 @@
 
 <script>
 import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 
 export default {
   data() {
@@ -121,7 +122,7 @@ export default {
 
       try {
         const response = await axios.post(
-            'http://localhost:9090/api/register', // 替换为你的注册API地址
+            API_BASE_URL+'/api/register', // 替换为你的注册API地址
             {
               assetUserName: this.registerForm.username,
               assetUserEmail: this.registerForm.email,
