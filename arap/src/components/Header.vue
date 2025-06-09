@@ -1,16 +1,26 @@
 <template>
   <el-row class="myheader">
     <el-col :span="8" class="logo-col">
-      <span class="logo" @click="toHome">
-        <img src="../assets/logo.png" />
-      </span>
+      <el-button class="logo" @click="isLoggedIn ? toHome() : null">
+        <img src="../assets/logo.png" class="logo-image"/>
+      </el-button>
       <el-text class="ABRSP">Asset-based Risk Assessment Platform </el-text>
     </el-col>
     <el-col :span="11"></el-col>
     <el-col :span="5">
       <el-button type="plain" size="small" round class="mybutton" @click="toHelp">Help</el-button>
       <template v-if="isLoggedIn">
-        <el-text class="welcome-text">Hi, {{ username }}</el-text>
+        <el-dropdown>
+          <span class="el-dropdown-link">
+            <el-text class="welcome-text">Hi, {{ username }}</el-text>
+            <i class="el-icon-arrow-down el-icon--right"></i>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item @click="logout">Log Out</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
       </template>
       <template v-else>
         <router-link to="/Login">
@@ -36,20 +46,27 @@ export default {
   methods: {
     checkLoginStatus() {
       // Check if user data exists in localStorage or route query
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem('userData');
       if (user) {
         try {
           const userData = JSON.parse(user);
-          this.username = userData.name || userData.username || '';
-          this.aId = userData.accountId || '';
-          this.isLoggedIn = true;
-        } catch (e) {
+          // Validate required fields in userData
+          if (userData.username && userData.userId) {
+            this.username = userData.username;
+            this.aId = userData.userId;
+            this.isLoggedIn = true;
+          } else {
+            console.error('Invalid userData structure:', userData);
+            this.isLoggedIn = false;
+          }
+
+          } catch (e) {
           console.error('Error parsing user data:', e);
           this.isLoggedIn = false;
         }
       } else if (this.$route.query.username) {
         this.username = this.$route.query.username;
-        this.aId = this.$route.query.accountid;
+        this.aId = this.$route.query.userId;
         this.isLoggedIn = true;
       }
     },
@@ -62,7 +79,16 @@ export default {
       this.$router.push({
         path: '/Help'
       });
+    },
+    logout() {
+      // Clear user data from localStorage and reset state
+      localStorage.removeItem('user');
+      this.username = '';
+      this.aId = '';
+      this.isLoggedIn = false;
+      this.$router.push('/Login'); // Redirect to login page after logout
     }
+
   },
   watch: {
     '$route'() {
@@ -101,11 +127,16 @@ button {
   float: left;
   overflow: hidden;
   margin-left: 0.5vh;
+  padding: 0;
+  background: none; /* 移除按钮的背景颜色 */
+  border: none; /* 移除按钮的边框 */
+  cursor: pointer;
+
 }
 
 .logo img {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   margin-top: 0;
 }
 
