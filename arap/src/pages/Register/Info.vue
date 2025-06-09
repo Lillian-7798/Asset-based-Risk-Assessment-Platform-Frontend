@@ -3,16 +3,16 @@
         <div class="intro">
             <ul class='info'>
                 <li style="margin-top: 0;">
-                    <input type="text" id='name' v-model="loginForm.username" placeholder="Usename" @blur="usenameDuplicate">
+                    <input type="text" id='name' v-model="registerForm.username" placeholder="Usename" @blur="usenameDuplicate">
                 </li>
                 <li>
-                    <input type="email" id='email' v-model="loginForm.email" placeholder="email">
+                    <input type="email" id='email' v-model="registerForm.email" placeholder="email">
                 </li>
                 <li>
-                    <input type="password" id='password' v-model="loginForm.password" placeholder="password">
+                    <input type="password" id='password' v-model="registerForm.password" placeholder="password">
                 </li>
                 <li>
-                    <input type="password" id='SecPass' v-model="loginForm.secPwd" placeholder="enter pwd again" @blur="secpass">
+                    <input type="password" id='SecPass' v-model="registerForm.secPwd" placeholder="enter pwd again" @blur="secpass">
                 </li>
                 <li>
                     <button id='btn' style="margin: 0 auto; width: 20vw" @click="handleregister" :disabled="isLoading">{{ isLoading ? 'Creating...' : 'confirm' }}</button>
@@ -32,7 +32,7 @@ import axios from "axios";
 export default {
   data() {
     return {
-      loginForm: {
+      registerForm: {
         username: '',
         email: '',
         password: '',
@@ -44,11 +44,16 @@ export default {
   methods: {
     // 验证两次密码是否一致
     validatePassword() {
-      if (!this.loginForm.password.trim() || !this.loginForm.secPwd.trim() ) {
+      const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{6,}$/;
+      if (!pwdRegex.test(this.registerForm.password)) {
+        this.$message.error('密码长度需大于等于6，且包含大小写字母和符号');
+        return false;
+      }
+      if (!this.registerForm.password.trim() || !this.registerForm.secPwd.trim() ) {
         this.$message.error('密码不能为空');
         return false;
       }
-      if (this.loginForm.password !== this.loginForm.secPwd) {
+      if (this.registerForm.password !== this.registerForm.secPwd) {
         this.$message.error('两次输入的密码不一致');
         return false;
       }
@@ -57,7 +62,7 @@ export default {
 
     // 验证用户名是否为空
     validateUsername() {
-      if (!this.loginForm.username.trim()) {
+      if (!this.registerForm.username.trim()) {
         this.$message.error('用户名不能为空');
         return false;
       }
@@ -67,7 +72,7 @@ export default {
     // 验证邮箱格式
     validateEmail() {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(this.loginForm.email)) {
+      if (!emailRegex.test(this.registerForm.email)) {
         this.$message.error('请输入有效的邮箱地址');
         return false;
       }
@@ -90,9 +95,9 @@ export default {
         const response = await axios.post(
             'http://localhost:9090/api/register', // 替换为你的注册API地址
             {
-              assetUserName: this.loginForm.username,
-              assetUserEmail: this.loginForm.email,
-              assetUserPwd: this.loginForm.password
+              assetUserName: this.registerForm.username,
+              assetUserEmail: this.registerForm.email,
+              assetUserPwd: this.registerForm.password
             },
             {
               headers: {
