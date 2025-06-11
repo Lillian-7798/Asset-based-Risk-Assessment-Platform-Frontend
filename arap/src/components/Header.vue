@@ -46,7 +46,8 @@ export default {
   methods: {
     checkLoginStatus() {
       // Check if user data exists in localStorage or route query
-      const user = localStorage.getItem('user');
+      const user = localStorage.getItem('userData');
+      console.log(user);
       if (user) {
         try {
           const userData = JSON.parse(user);
@@ -80,7 +81,7 @@ export default {
     },
     logout() {
       // Clear user data from localStorage and reset state
-      localStorage.removeItem('user');
+      localStorage.removeItem('userData');
       this.username = '';
       this.aId = '';
       this.isLoggedIn = false;
