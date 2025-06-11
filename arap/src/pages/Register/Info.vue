@@ -1,35 +1,35 @@
 <template>
-    <div class="bg_intro">
-        <div class="intro">
-            <ul class='info'>
-                <li style="margin-top: 0;">
-                    <input type="text" id='name' v-model="registerForm.username" placeholder="Usename" @blur="usenameDuplicate">
-                </li>
-                <li>
-                    <input type="email" id='email' v-model="registerForm.email" placeholder="email">
-                </li>
-                <li>
-                    <input type="password" id='password' v-model="registerForm.password" placeholder="password" @input="checkPasswordStrength"
-                    >
-                    <div
-                        :style="`font-size: 12px; color: ${passwordStrength.color}; margin-top: 1px;`"
-                    >
-                        {{ passwordStrength.message }}
-                    </div>
-                </li>
-                <li>
-                    <input type="password" id='SecPass' v-model="registerForm.secPwd" placeholder="enter pwd again" @blur="secpass">
-                </li>
-                <li>
-                    <button id='btn' style="margin: 0 auto; width: 20vw" @click="handleregister" :disabled="isLoading">{{ isLoading ? 'Creating...' : 'confirm' }}</button>
-                </li>
-                <router-link :to="{ name: 'Login' }"  style="margin: auto">
-                    <h style="text-align: center;">Already have an account? Click here to Log In</h>
-                </router-link>
-            </ul>
-        </div>
+  <div class="bg_intro">
+    <div class="intro">
+      <ul class='info'>
+        <li style="margin-top: 0;">
+          <input type="text" id='name' v-model="registerForm.username" placeholder="Usename" @blur="usenameDuplicate">
+        </li>
+        <li>
+          <input type="email" id='email' v-model="registerForm.email" placeholder="email">
+        </li>
+        <li>
+          <input type="password" id='password' v-model="registerForm.password" placeholder="password"
+            @input="checkPasswordStrength">
+          <div :style="`font-size: 12px; color: ${passwordStrength.color}; margin-top: 1px;`">
+            {{ passwordStrength.message }}
+          </div>
+        </li>
+        <li>
+          <input type="password" id='SecPass' v-model="registerForm.secPwd" placeholder="enter pwd again"
+            @blur="secpass">
+        </li>
+        <li>
+          <button id='btn' style="margin: 0 auto; width: 20vw" @click="handleregister" :disabled="isLoading">{{
+            isLoading ? 'Creating...' : 'confirm' }}</button>
+        </li>
+        <router-link :to="{ name: 'Login' }" style="margin: auto">
+          <h style="text-align: center;">Already have an account? Click here to Log In</h>
+        </router-link>
+      </ul>
     </div>
-    <router-view></router-view>
+  </div>
+  <router-view></router-view>
 </template>
 
 <script>
@@ -78,7 +78,7 @@ export default {
 
     // 验证两次密码是否一致
     validatePassword() {
-      if (!this.registerForm.password.trim() || !this.registerForm.secPwd.trim() ) {
+      if (!this.registerForm.password.trim() || !this.registerForm.secPwd.trim()) {
         this.$message.error('密码不能为空');
         return false;
       }
@@ -110,6 +110,7 @@ export default {
 
     // 注册方法
     async handleregister() {
+      console.log("handleregister")
       // 验证所有字段
       if (!this.validateUsername() || !this.validateEmail()) {
         return;
@@ -119,20 +120,21 @@ export default {
       }
 
       this.isLoading = true;
+      console.log(1)
 
       try {
         const response = await axios.post(
-            API_BASE_URL+'/api/register', // 替换为你的注册API地址
-            {
-              assetUserName: this.registerForm.username,
-              assetUserEmail: this.registerForm.email,
-              assetUserPwd: this.registerForm.password
-            },
-            {
-              headers: {
-                'Content-Type': 'application/json'
-              }
+          API_BASE_URL + '/api/register', // 替换为你的注册API地址
+          new URLSearchParams({
+            assetUserName: this.registerForm.username,
+            assetUserEmail: this.registerForm.email,
+            assetUserPwd: this.registerForm.password
+          }),
+          {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
             }
+          }
         );
 
         if (response.data.success) {
@@ -144,8 +146,8 @@ export default {
         }
       } catch (error) {
         const errorMessage = error.response?.data?.message ||
-            error.message ||
-            '注册失败，请稍后重试';
+          error.message ||
+          '注册失败，请稍后重试';
         this.$message.error(errorMessage);
         console.error('注册错误:', error);
       } finally {
@@ -159,62 +161,70 @@ export default {
 
 
 <style scoped>
-*{
-  padding:0;
-  margin:0;
+* {
+  padding: 0;
+  margin: 0;
 }
+
 li {
-    list-style: none;
+  list-style: none;
 }
-.bg_intro{
-   position: fixed;
-    /* background: url("../../img/") no-repeat; */
-    background-size: cover;
-    width: 100%;
-    height: 100%;
+
+.bg_intro {
+  position: fixed;
+  /* background: url("../../img/") no-repeat; */
+  background-size: cover;
+  width: 100%;
+  height: 100%;
 }
-.bg_intro .intro{
+
+.bg_intro .intro {
   position: relative;
   background: #E2E4E44A;
   border-radius: 20px;
-  width:30%;
+  width: 30%;
   height: 65%;
-  margin:0 auto;
-  margin-top:5%;
+  margin: 0 auto;
+  margin-top: 5%;
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center;     /* 垂直居中 */
+  justify-content: center;
+  /* 水平居中 */
+  align-items: center;
+  /* 垂直居中 */
 }
-.bg_intro .intro .info{
+
+.bg_intro .intro .info {
   position: relative;
   width: 100%;
   /* height: 300px; */
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
 }
+
 input[type="text"],
 input[type="password"],
 input[type="email"],
 textarea {
-    display: block;
-    width: 300px;
-    height: 20px;
-    padding: 12px;
-    border-radius: 5px;
-    background: #fff;
-    border: none;
-    outline: none;
-    margin: 30px auto;
-    text-transform: none;
-    color: #383838;
-    font-size: 14px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
-    font-family: 'roboto', sans-serif;
+  display: block;
+  width: 300px;
+  height: 20px;
+  padding: 12px;
+  border-radius: 5px;
+  background: #fff;
+  border: none;
+  outline: none;
+  margin: 30px auto;
+  text-transform: none;
+  color: #383838;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  font-family: 'roboto', sans-serif;
 }
 
 ::placeholder {
-    color: rgba(46, 31, 31, 0.6);
+  color: rgba(46, 31, 31, 0.6);
 }
+
 #btn {
   /* position: relative; */
   width: 65%;
@@ -232,6 +242,7 @@ textarea {
   margin: -10px 45px;
   font-size: 18px;
 }
+
 a {
   /* position: relative; */
   font-size: 15px;

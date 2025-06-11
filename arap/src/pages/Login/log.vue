@@ -68,14 +68,14 @@ export default {
 
         const response = await axios.post(
             API_BASE_URL+'/api/login',
-            {
+            new URLSearchParams({
               assetUserName: this.loginForm.username,
               assetUserPwd: this.loginForm.password
-            },
+            }),
             {
               headers: {
-                'Content-Type': 'application/json'
-              },
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
 
             }
         );
