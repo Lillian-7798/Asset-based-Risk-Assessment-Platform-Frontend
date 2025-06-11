@@ -1094,6 +1094,14 @@ export default {
 </script>
 
 <style scoped>
+.footer {
+  background-color: #92A4BD;
+  position: fixed;
+  bottom: 0px;
+  height: 5vh;
+  width: 100%;
+  margin: 0;
+}
 .el-row {
   margin-bottom: 20px;
 }
