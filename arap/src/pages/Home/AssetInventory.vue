@@ -38,7 +38,7 @@
         <el-text>Status</el-text>
       </el-col>
       <el-col :span="8">
-        <el-select v-model="filterParams.importance" placeholder="Default" style="width: 95%; justify-content: left"
+        <el-select v-model="filterParams.status" placeholder="Default" style="width: 95%; justify-content: left"
           clearable>
           <el-option v-for="item in Status" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
@@ -70,15 +70,22 @@
         </el-icon>
       </el-col>
       <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
-        <el-input v-model="input2" style="width: 100%; margin-right: 10px" placeholder="Please Input"
-          :prefix-icon="Search" />
+        <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
+          :prefix-icon="Search" clearable />
       </el-col>
     </el-row>
     <div class="table-container">
       <div class="table">
         <el-table :data="tableData" border style="width: 100%">
           <el-table-column prop="date" label="Date" width="200" />
-          <el-table-column prop="name" label="Name" width="150" />
+          <el-table-column prop="name" label="Name" width="150">
+            <template #default="{ row }">
+              <router-link :to="{ path: '/NewAsset', query: { id: row.id } }"
+                style="color: #409EFF; text-decoration: none">
+                {{ row.name }}
+              </router-link>
+            </template>
+          </el-table-column>
           <el-table-column prop="type" label="Type" width="100" />
           <el-table-column prop="owner" label="Owner" width="200" />
           <el-table-column prop="emptyFields" label="EmptyFields" />
@@ -121,6 +128,7 @@ import { API_BASE_URL } from "@/components/axios";
 export default {
   data() {
     return {
+      isSearchActive: false,
       searchInput: "",
       Search,
       dialogVisible: false,
@@ -211,7 +219,43 @@ export default {
     this.fetchAssetsCount();
     this.fetchAllAssets();
   },
+  watch: {
+    searchInput(newVal) {
+      if (newVal == '') {
+        this.resetSearch();
+      } else {
+        // You can add debounce here if needed
+        this.applySearch();
+      }
+    }
+  },
   methods: {
+    async applySearch() {
+      if (this.searchInput.trim() === '') {
+        this.resetSearch();
+        return;
+      }
+
+      this.isSearchActive = true;
+      if (this.isFilterActive) {
+        this.isFilterActive = false;
+      } else {
+        this.originalPage = this.currentPage;
+      }
+      this.currentPage = 1;
+      this.fetchSearchCount();
+      this.fetchAllAssets();
+    },
+
+    resetSearch() {
+      if (this.isSearchActive) {
+        this.isSearchActive = false;
+        this.currentPage = this.originalPage;
+        this.searchInput = '';
+        this.fetchAssetsCount();
+        this.fetchAllAssets();
+      }
+    },
     async applyFilters() {
       this.isFilterActive = true;
       this.originalPage = this.currentPage; // 保存当前页码
@@ -220,6 +264,24 @@ export default {
       this.fetchFilterCount();
       this.dialogVisible = false;
     },
+    async fetchSearchCount() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
+          params: {
+            searchTerm: this.searchInput
+          }
+        });
+        if (response.data.success) {
+          this.totalItems = response.data.count;
+        } else {
+          console.error('获取搜索数量失败:', response.data.message);
+        }
+      } catch (error) {
+        console.error('获取搜索数量出错:', error);
+        this.$message.error('获取搜索数量失败，请稍后重试');
+      }
+    },
+
     async fetchFilterCount() {
       console.log("Fileter Count")
       try {
@@ -244,17 +306,13 @@ export default {
     },
     resetFilters() {
       this.isFilterActive = false;
-      this.currentPage = this.originalPage; // 恢复原始页码
+      this.currentPage = this.originalPage;
       this.filterParams = {
         assetType: null,
         emptyField: null,
         importance: null,
         status: null
       };
-      this.AssetType = null;
-      this.EmptyField = null;
-      this.Importance = null;
-      this.Statu = null;
       this.fetchAssetsCount();
       this.fetchAllAssets();
     },
@@ -280,7 +338,8 @@ export default {
           size: this.pageSize
         };
 
-        // 如果是过滤状态，添加过滤参数
+        let endpoint = "/Allassets";
+
         if (this.isFilterActive) {
           Object.assign(params, {
             assetType: this.filterParams.assetType || "",
@@ -288,10 +347,14 @@ export default {
             importance: this.filterParams.importance || "",
             status: this.filterParams.status || ""
           });
+          endpoint = "/filteredAssets";
+        } else if (this.isSearchActive) {
+          Object.assign(params, {
+            searchTerm: this.searchInput
+          });
+          endpoint = "/searchAssets";
         }
 
-        const endpoint = this.isFilterActive ? "/filteredAssets" : "/Allassets";
-        console.log(endpoint)
         const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
         if (response.data.success) {
           this.tableData = response.data.data.map(asset => ({
@@ -306,8 +369,8 @@ export default {
           }));
         }
       } catch (error) {
-        console.log(error)
-        // 错误处理
+        console.error(error);
+        this.$message.error('获取资产数据失败，请稍后重试');
       }
     },
     newAsset() {
