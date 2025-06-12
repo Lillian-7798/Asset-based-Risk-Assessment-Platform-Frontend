@@ -71,7 +71,7 @@
       </el-col>
       <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
         <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
-          :prefix-icon="Search" clearable />
+          :prefix-icon="Search" @change="search" clearable />
       </el-col>
     </el-row>
     <div class="table-container">
@@ -80,7 +80,7 @@
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="150">
             <template #default="{ row }">
-              <router-link :to="{ path: '/NewAsset', query: { id: row.id } }"
+              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type} }"
                 style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>
@@ -219,17 +219,15 @@ export default {
     this.fetchAssetsCount();
     this.fetchAllAssets();
   },
-  watch: {
-    searchInput(newVal) {
-      if (newVal == '') {
+  methods: {
+    search(){
+      if (this.searchInput == '') {
         this.resetSearch();
       } else {
         // You can add debounce here if needed
         this.applySearch();
       }
-    }
-  },
-  methods: {
+    },
     async applySearch() {
       if (this.searchInput.trim() === '') {
         this.resetSearch();
@@ -237,16 +235,15 @@ export default {
       }
 
       this.isSearchActive = true;
-      if (this.isFilterActive) {
-        this.isFilterActive = false;
-      } else {
+      if(!this.isFilterActive){
         this.originalPage = this.currentPage;
+      }else{
+        this.isFilterActive = false;
       }
       this.currentPage = 1;
       this.fetchSearchCount();
       this.fetchAllAssets();
     },
-
     resetSearch() {
       if (this.isSearchActive) {
         this.isSearchActive = false;

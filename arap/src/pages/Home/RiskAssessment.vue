@@ -2,40 +2,45 @@
     <!-- 过滤条件弹出框 -->
     <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
         <el-row>
-            <el-col :span="3" class="center-align">
+            <el-col :span="4" class="center-align">
                 <el-text>Asset Type</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="AssetType" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
+                <el-select v-model="filterParams.assetType" placeholder="Default"
+                    style="width: 95%;justify-content: left;" clearable>
                     <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
             <el-col :span="1"></el-col>
-            <el-col :span="4" class="center-align">
+            <el-col :span="3" class="center-align">
                 <el-text>Asset Status</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="AssetStatu" placeholder="Default" style="width: 95%;justify-content: left; " clearable>
+                <el-select v-model="filterParams.status" placeholder="Default"
+                    style="width: 95%;justify-content: left; " clearable>
                     <el-option v-for="item in AssetStatus" :key="item.value" :label="item.label" :value="item.value" />
                 </el-select>
             </el-col>
         </el-row>
         <br />
         <el-row>
-            <el-col :span="3" class="center-align">
+            <!-- <el-col :span="5"></el-col> -->
+            <el-col :span="4" class="center-align">
                 <el-text>Questionare Status</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="QuestionareStatu" placeholder="Default" style="width: 95%;justify-content: left;" clearable>
-                    <el-option v-for="item in QuestionareStatus" :key="item.value" :label="item.label" :value="item.value" />
+                <el-select v-model="filterParams.qstatus" placeholder="Default"
+                    style="width: 95%;justify-content: left;" clearable>
+                    <el-option v-for="item in QuestionareStatus" :key="item.value" :label="item.label"
+                        :value="item.value" />
                 </el-select>
             </el-col>
-            <el-col :span="13"></el-col>
+            <el-col :span="5"></el-col>
         </el-row>
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="dialogVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="dialogVisible = false">
+                <el-button type="primary" @click="applyFilters">
                     Confirm
                 </el-button>
             </div>
@@ -49,20 +54,27 @@
                 <el-text style="font-size: 20px;font-weight: bold;">Risk Assessment Questionares</el-text>
             </el-col>
             <el-col :span="6" style="display: flex; align-items: center; justify-content: right;">
-                <el-icon style="margin-right: 10px;" @click="dialogVisible = true">
+                <el-icon style="margin-right: 10px" @click="toggleFilter" :color="isFilterActive ? '#409EFF' : ''">
                     <Filter />
                 </el-icon>
             </el-col>
             <el-col :span="6" style="display: flex; align-items: center; justify-content: right;">
-                <el-input v-model="input2" style="width: 100%;margin-right: 10px;" placeholder="Please Input"
-                    :prefix-icon="Search" />
+                <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
+                    :prefix-icon="Search" @change="search" clearable />
             </el-col>
         </el-row>
         <div class="table-container">
             <div class="table">
                 <el-table :data="tableData" border style="width: 100%">
-                    <el-table-column prop="date" label="Date" width="100" />
-                    <el-table-column prop="name" label="Name" width="180" />
+                    <el-table-column prop="date" label="Date" width="200" />
+                    <el-table-column prop="name" label="Name" width="180">
+                        <template #default="{ row }">
+                            <router-link :to="{ path: '/RiskQuestionare', query: { id: row.id } }"
+                                style="color: #409EFF; text-decoration: none">
+                                {{ row.name }}
+                            </router-link>
+                        </template>
+                    </el-table-column>
                     <el-table-column prop="type" label="Type" width="100" />
                     <el-table-column prop="owner" label="Owner" width="200" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
@@ -77,8 +89,7 @@
                     <!-- Importance 列 - 使用自定义模板 -->
                     <el-table-column prop="QuestionareStatus" label="Questionare Status">
                         <template #default="{ row }">
-                            <el-tag :type="getQSTagType(row.QuestionareStatus)"
-                                effect="dark">
+                            <el-tag :type="getQSTagType(row.QuestionareStatus)" effect="dark">
                                 {{ row.QuestionareStatus }}
                             </el-tag>
                         </template>
@@ -86,7 +97,8 @@
                 </el-table>
             </div>
             <div class="pagination">
-                <el-pagination background layout="prev, pager, next" :total="100" />
+                <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize"
+                    :current-page="currentPage" @current-change="handlePageChange" />
             </div>
         </div>
     </div>
@@ -96,15 +108,15 @@
 
 <script>
 import { Search } from '@element-plus/icons-vue'
+import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 export default {
     data() {
         return {
+            isSearchActive: false,
             searchInput: "",
             Search,
             dialogVisible: false,
-            AssetType:"",
-            QuestionareStatu:"",
-            AssetStatu:"",
             AssetTypes: [
                 {
                     value: 'Software',
@@ -143,39 +155,185 @@ export default {
                     label: 'Decommissioned',
                 },
             ],
-            tableData: [
-                {
-                    date: '01-02-2024',
-                    name: 'Outlook',
-                    type: 'Software',
-                    owner: 'Jimmy Li 3534267',
-                    AssetStatus: 'Active',
-                    QuestionareStatus: 'Finished'
-                },
-                {
-                    date: '01-02-2024',
-                    name: 'Samsung Laser Printer',
-                    type: 'Physical',
-                    owner: 'Chen 4333232',
-                    AssetStatus: 'Active',
-                    QuestionareStatus: 'In-progress'
-                },
-                {
-                    date: '01-02-2024',
-                    name: 'Employee Data',
-                    type: 'Information',
-                    owner: 'Karen Feng 5473625',
-                    AssetStatus: 'Active',
-                    QuestionareStatus: 'Finished'
-                },
-            ]
+            tableData: [],
+            currentPage: 1,
+            pageSize: 14,
+            totalItems: 0,
+            isFilterActive: false, // 新增：标记是否处于过滤状态
+            originalPage: 1, // 新增：保存原始分页位置
+            filterParams: { // 新增：存储过滤参数
+                assetType: null,
+                status: null,
+                qstatus: null
+            }
         }
     },
+    mounted() {
+        this.fetchAssetsCount();
+        this.fetchAllAssets();
+    },
     methods: {
-        newAsset() {
-            this.$router.push({
-                path: '/NewAsset'
-            })
+        search() {
+            if (this.searchInput == '') {
+                this.resetSearch();
+            } else {
+                // You can add debounce here if needed
+                this.applySearch();
+            }
+        },
+        async applySearch() {
+            if (this.searchInput.trim() === '') {
+                this.resetSearch();
+                return;
+            }
+
+            this.isSearchActive = true;
+            if (!this.isFilterActive) {
+                this.originalPage = this.currentPage;
+            } else {
+                this.isFilterActive = false;
+            }
+            this.currentPage = 1;
+            this.fetchSearchCount();
+            this.fetchAllAssets();
+        },
+        resetSearch() {
+            if (this.isSearchActive) {
+                this.isSearchActive = false;
+                this.currentPage = this.originalPage;
+                this.searchInput = '';
+                this.fetchAssetsCount();
+                this.fetchAllAssets();
+            }
+        },
+        async applyFilters() {
+            this.isFilterActive = true;
+            this.originalPage = this.currentPage; // 保存当前页码
+            this.currentPage = 1; // 重置为第一页
+            this.fetchAllAssets();
+            this.fetchFilterCount();
+            this.dialogVisible = false;
+        },
+        async fetchSearchCount() {
+            try {
+                const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
+                    params: {
+                        searchTerm: this.searchInput
+                    }
+                });
+                if (response.data.success) {
+                    this.totalItems = response.data.count;
+                } else {
+                    console.error('获取搜索数量失败:', response.data.message);
+                }
+            } catch (error) {
+                console.error('获取搜索数量出错:', error);
+                this.$message.error('获取搜索数量失败，请稍后重试');
+            }
+        },
+        async fetchFilterCount() {
+            console.log("Fileter Count")
+            try {
+                const response = await axios.get(`${API_BASE_URL}/asset/filter_assets_count_2`, {
+                    params: {
+                        assetType: this.filterParams.assetType,
+                        status: this.filterParams.status,
+                        qstatus: this.filterParams.qstatus
+                    }
+                });
+                if (response.data.success) {
+                    // console.log(response.data.count);
+                    this.totalItems = response.data.count;
+                } else {
+                    console.error('获取资产数量失败:', response.data.message);
+                }
+            } catch (error) {
+                console.error('获取资产数量出错:', error);
+                this.$message.error('获取资产数量失败，请稍后重试');
+            }
+        },
+        resetFilters() {
+            this.isFilterActive = false;
+            this.currentPage = this.originalPage;
+            this.filterParams = {
+                assetType: null,
+                qstatus: null,
+                status: null
+            };
+            this.fetchAssetsCount();
+            this.fetchAllAssets();
+        },
+        async fetchAssetsCount() {
+            console.log("Count")
+            try {
+                const response = await axios.get(`${API_BASE_URL}/asset/assets_count`);
+                if (response.data.success) {
+                    console.log(response.data.count);
+                    this.totalItems = response.data.count;
+                } else {
+                    console.error('获取资产数量失败:', response.data.message);
+                }
+            } catch (error) {
+                console.error('获取资产数量出错:', error);
+                this.$message.error('获取资产数量失败，请稍后重试');
+            }
+        },
+        async fetchAllAssets() {
+            try {
+                const params = {
+                    page: this.currentPage - 1,
+                    size: this.pageSize
+                };
+
+                let endpoint = "/Allassets";
+
+                if (this.isFilterActive) {
+                    Object.assign(params, {
+                        assetType: this.filterParams.assetType || "",
+                        status: this.filterParams.status || "",
+                        qstatus: this.filterParams.qstatus || ""
+                    });
+                    endpoint = "/filteredAssets_2";
+                } else if (this.isSearchActive) {
+                    Object.assign(params, {
+                        searchTerm: this.searchInput
+                    });
+                    endpoint = "/searchAssets";
+                }
+
+                const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
+                if (response.data.success) {
+                    this.tableData = response.data.data.map(asset => ({
+                        id: asset.id,
+                        date: asset.dateAdded,
+                        name: asset.name,
+                        type: asset.assetType,
+                        owner: asset.assetOwner,
+                        AssetStatus: asset.status,
+                        QuestionareStatus: asset.qstatus
+                    }));
+                }
+            } catch (error) {
+                console.error(error);
+                this.$message.error('获取资产数据失败，请稍后重试');
+            }
+        },
+        handlePageChange(newPage) {
+            this.currentPage = newPage;
+            this.fetchAssetsCount();
+            this.fetchAllAssets();
+        },
+        toggleFilter() {
+            if (this.isFilterActive) {
+                this.resetFilters();
+            } else {
+                this.dialogVisible = true;
+            }
+        },
+
+        handleClose(done) {
+            this.dialogVisible = false;
+            done();
         },
         getStatusTagType(status) {
             switch (status) {
