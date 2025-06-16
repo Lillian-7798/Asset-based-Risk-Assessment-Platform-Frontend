@@ -710,9 +710,9 @@ export default {
         securityIncidentRecords: this.securityIncidentRecords,
       };
 
-      let storedData = JSON.parse(localStorage.getItem("assets")) || [];
+      let storedData = JSON.parse(sessionStorage.getItem("assets")) || [];
       storedData.push(formData);
-      localStorage.setItem("assets", JSON.stringify(storedData));
+      sessionStorage.setItem("assets", JSON.stringify(storedData));
 
       alert("Data saved successfully!");
     },

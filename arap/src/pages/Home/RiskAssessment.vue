@@ -69,7 +69,7 @@
                     <el-table-column prop="date" label="Date" width="200" />
                     <el-table-column prop="name" label="Name" width="180">
                         <template #default="{ row }">
-                            <router-link :to="{ path: '/RiskQuestionare', query: { id: row.id } }"
+                            <router-link :to="getRiskQuestionnaireLink(row)"
                                 style="color: #409EFF; text-decoration: none">
                                 {{ row.name }}
                             </router-link>
@@ -173,6 +173,38 @@ export default {
         this.fetchAllAssets();
     },
     methods: {
+        getRiskQuestionnaireLink(row) {
+            const typeMap = {
+                Software: '/RiskQuestionare/software',
+                Physical: this.getPhysicalSubpath(row),
+                Information: this.getInformationSubpath(row), // 信息类有多个子路径
+                People: '/RiskQuestionare/people'
+            };
+
+            return {
+                path: typeMap[row.type],
+                query: { id: row.id }
+            };
+        },
+        getPhysicalSubpath(row){
+            if(row.subType==='non'){
+                return '/RiskQuestionare/physicalnon';
+            }else{
+                return '/RiskQuestionare/physical'
+            }
+        },
+        getInformationSubpath(row) {
+            // 根据 row 的其他属性决定具体的信息子路径
+            if (row.subType === 'database') {
+                return '/RiskQuestionare/information_database';
+            } else if (row.subType === 'doc') {
+                return '/RiskQuestionare/information_doc';
+            } else if (row.subType === 'patent') {
+                return '/RiskQuestionare/information_patent';
+            }
+            // 默认情况
+            return '/RiskQuestionare/information_doc';
+        },
         search() {
             if (this.searchInput == '') {
                 this.resetSearch();

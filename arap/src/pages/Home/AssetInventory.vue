@@ -203,10 +203,10 @@ export default {
     };
   },
   mounted() {
-    // 从 localStorage 获取所有的 assets 数据
-    let storedData = JSON.parse(localStorage.getItem("assets")) || [];
+    // 从 sessionStorage 获取所有的 assets 数据
+    let storedData = JSON.parse(sessionStorage.getItem("assets")) || [];
 
-    // 将 localStorage 数据格式化并赋值给 tableData
+    // 将 sessionStorage 数据格式化并赋值给 tableData
     this.tableData = storedData.map((asset) => ({
       date: asset.dateAdded, // 从 assets 中获取 dateAdded 字段
       name: asset.name,
