@@ -20,7 +20,7 @@
             @blur="secpass">
         </li>
         <li>
-          <button id='btn' style="margin: 0 auto; width: 20vw" @click="handleregister" :disabled="isLoading">{{
+          <button id='btn' style="margin: 0 auto; width: 17vw" @click="handleregister" :disabled="isLoading">{{
             isLoading ? 'Creating...' : 'confirm' }}</button>
         </li>
         <router-link :to="{ name: 'Login' }" style="margin: auto">

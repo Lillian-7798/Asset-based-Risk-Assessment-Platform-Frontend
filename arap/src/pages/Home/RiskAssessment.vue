@@ -137,6 +137,8 @@
 
 <script>
 import { Search } from "@element-plus/icons-vue";
+import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 export default {
     data() {
         return {
@@ -362,6 +364,7 @@ export default {
 
                 const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
                 if (response.data.success) {
+                    console.log(response.data.data)
                     this.tableData = response.data.data.map(asset => ({
                         id: asset.id,
                         date: asset.dateAdded,

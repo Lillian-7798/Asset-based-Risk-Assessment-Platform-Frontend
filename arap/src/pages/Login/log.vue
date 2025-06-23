@@ -110,8 +110,8 @@ export default {
           }
 
 
-          // 注册成功后跳转到登录页面
-          this.$router.push({ name: 'AssetInventory' });
+          // 登录成功后跳转到Home页面
+          this.$router.push('/home/asset-inventory');
         } else {
           throw new Error(response.data.message || 'fail login');
         }
