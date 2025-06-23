@@ -97,13 +97,13 @@ export default {
             }
 
             try {
-              localStorage.setItem('userData', JSON.stringify(userData));
+              sessionStorage.setItem('userData', JSON.stringify(userData));
             } catch (storageError) {
               console.error('存储用户数据时发生错误:', storageError);
               this.$message.error('无法保存用户信息，请稍后重试');
             }
 
-            localStorage.setItem('userData', JSON.stringify(userData));
+            sessionStorage.setItem('userData', JSON.stringify(userData));
           } catch (storageError) {
             console.error('存储用户数据时发生错误:', storageError);
             this.$message.error('无法保存用户信息，请稍后重试');

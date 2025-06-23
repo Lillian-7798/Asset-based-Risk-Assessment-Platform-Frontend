@@ -1201,9 +1201,9 @@ export default {
 
       //localhost的，仅做演示用，之后删掉
 
-      let storedData = JSON.parse(localStorage.getItem("assets")) || [];
+      let storedData = JSON.parse(sessionStorage.getItem("assets")) || [];
       storedData.push(formData);
-      localStorage.setItem("assets", JSON.stringify(storedData));
+      sessionStorage.setItem("assets", JSON.stringify(storedData));
 
       // POST 请求到后端
       try {
