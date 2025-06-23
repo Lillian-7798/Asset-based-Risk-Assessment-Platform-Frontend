@@ -1,51 +1,82 @@
+<!-- 数据传输显示以及页面跳转等仅用于update3问卷界面的演示，需要更改 -->
 <template>
-    <!-- 过滤条件弹出框 -->
-    <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
-        <el-row>
-            <el-col :span="4" class="center-align">
-                <el-text>Asset Type</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.assetType" placeholder="Default"
-                    style="width: 95%;justify-content: left;" clearable>
-                    <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-            <el-col :span="1"></el-col>
-            <el-col :span="3" class="center-align">
-                <el-text>Asset Status</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.status" placeholder="Default"
-                    style="width: 95%;justify-content: left; " clearable>
-                    <el-option v-for="item in AssetStatus" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-        </el-row>
-        <br />
-        <el-row>
-            <!-- <el-col :span="5"></el-col> -->
-            <el-col :span="4" class="center-align">
-                <el-text>Questionare Status</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.qstatus" placeholder="Default"
-                    style="width: 95%;justify-content: left;" clearable>
-                    <el-option v-for="item in QuestionareStatus" :key="item.value" :label="item.label"
-                        :value="item.value" />
-                </el-select>
-            </el-col>
-            <el-col :span="5"></el-col>
-        </el-row>
-        <template #footer>
-            <div class="dialog-footer">
-                <el-button @click="dialogVisible = false">Cancel</el-button>
-                <el-button type="primary" @click="applyFilters">
-                    Confirm
-                </el-button>
-            </div>
-        </template>
-    </el-dialog>
+  <!-- 过滤条件弹出框 -->
+  <el-dialog
+    v-model="dialogVisible"
+    title="Filtering"
+    width="50%"
+    :before-close="handleClose"
+    :center="false"
+  >
+    <el-row>
+      <el-col :span="3" class="center-align">
+        <el-text>Asset Type</el-text>
+      </el-col>
+      <el-col :span="8">
+        <el-select
+          v-model="AssetType"
+          placeholder="Default"
+          style="width: 95%; justify-content: left"
+          clearable
+        >
+          <el-option
+            v-for="item in AssetTypes"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-col>
+      <el-col :span="1"></el-col>
+      <el-col :span="4" class="center-align">
+        <el-text>Questionaire Status</el-text>
+      </el-col>
+      <el-col :span="8">
+        <el-select
+          v-model="QStatus"
+          placeholder="Default"
+          style="width: 95%; justify-content: left"
+          clearable
+        >
+          <el-option
+            v-for="item in QStatus"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-col>
+    </el-row>
+    <br />
+    <el-row>
+      <el-col :span="3" class="center-align">
+        <el-text>Asset Status</el-text>
+      </el-col>
+      <el-col :span="8">
+        <el-select
+          v-model="Status"
+          placeholder="Default"
+          style="width: 95%; justify-content: left"
+          clearable
+        >
+          <el-option
+            v-for="item in Status"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-col>
+    </el-row>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="dialogVisible = false">
+          Confirm
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 
     <!-- 正常页面 -->
     <div class="container">
@@ -102,14 +133,10 @@
             </div>
         </div>
     </div>
-
-
 </template>
 
 <script>
-import { Search } from '@element-plus/icons-vue'
-import axios from "axios";
-import { API_BASE_URL } from "@/components/axios";
+import { Search } from "@element-plus/icons-vue";
 export default {
     data() {
         return {

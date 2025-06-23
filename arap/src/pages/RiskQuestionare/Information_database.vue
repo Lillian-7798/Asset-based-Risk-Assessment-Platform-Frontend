@@ -28,7 +28,7 @@
           <el-button
             type="primary"
             round
-            @click="goBack"
+            @click="handleBackClick"
             style="
               background-color: #409eff;
               color: white;
@@ -68,7 +68,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q1Status === 'No'" style="color: red">
-                    Sensitive data is unencrypted, risking exposure to breaches.
+                    WARNING: Sensitive data is unencrypted, risking exposure to
+                    breaches.<br />
+                    RISKS: Data breach, regulatory fines
                   </div>
                 </el-col>
               </el-row>
@@ -89,8 +91,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q2Status === 'No'" style="color: red">
-                    Insufficient log retention hinders forensic investigations
-                    and compliance.
+                    WARNING: Insufficient log retention hinders forensic
+                    investigations and compliance. <br />
+                    RISKS: Unable to trace breaches
                   </div>
                 </el-col>
               </el-row>
@@ -112,8 +115,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q3Status === 'No'" style="color: red">
-                    Admin accounts lack MFA, increasing risk of unauthorized
-                    access.
+                    WARNING: Admin accounts lack MFA, increasing risk of
+                    unauthorized access.<br />
+                    RISKS: Unauthorized privilege escalation
                   </div>
                 </el-col>
               </el-row>
@@ -135,8 +139,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q4Status === 'No'" style="color: red">
-                    Missing SQLi protections leave the database vulnerable to
-                    attacks.
+                    WARNING: Missing SQLi protections leave the database
+                    vulnerable to attacks.<br />RISKS:Data corruption,
+                    exfiltration
                   </div>
                 </el-col>
               </el-row>
@@ -147,6 +152,22 @@
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
                     5.Is database patching automated with SLA?
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="SLA (Service Level Agreement) defines the expected performance and response time for a service, such as fixing critical vulnerabilities within a set timeframe. Here, an SLA of 30 days for critical means critical database patches must be applied within 30 days to meet compliance or security standards."
+                      placement="top"
+                    >
+                      <span
+                        style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                        >❓</span
+                      >
+                    </el-tooltip>
                   </el-text>
                   <el-select
                     v-model="Q5Status"
@@ -158,7 +179,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q5Status === 'No'" style="color: red">
-                    Delayed patching exposes databases to known vulnerabilities.
+                    WARNING: Delayed patching exposes databases to known
+                    vulnerabilities.<br />
+                    RISKS: Exploitable vulnerabilities
                   </div>
                 </el-col>
               </el-row>
@@ -180,8 +203,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q6Status === 'No'" style="color: red">
-                    Untested backups may fail during recovery, risking data
-                    loss.
+                    WARNING: Untested backups may fail during recovery, risking
+                    data loss. <br />
+                    RISKS:Failed disaster recovery
                   </div>
                 </el-col>
               </el-row>
@@ -204,7 +228,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q7Status === 'No'" style="color: red">
-                    PII in test environments violates privacy and compliance.
+                    WARNING: PII in test environments violates privacy and
+                    compliance.<br />
+                    RISKS: GDPR non-compliance
                   </div>
                 </el-col>
               </el-row>
@@ -226,7 +252,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q8Status === 'No'" style="color: red">
-                    Lack of geo-isolation risks data loss in regional outages.
+                    WARNING: Lack of geo-isolation risks data loss in regional
+                    outages.<br />
+                    RISKS: Regional outage impact
                   </div>
                 </el-col>
               </el-row>
@@ -248,8 +276,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q9Status === 'No'" style="color: red">
-                    Unverified cloud vendors may have inadequate security
-                    controls.
+                    WARNING: Unverified cloud vendors may have inadequate
+                    security controls. <br />
+                    RISKS: Third-party breaches
                   </div>
                 </el-col>
               </el-row>
@@ -271,7 +300,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q10Status === 'No'" style="color: red">
-                    Undocumented schemas complicate audits and data governance.
+                    WARNING: Undocumented schemas complicate audits and data
+                    governance.<br />
+                    RISKS: Operational inefficiencies
                   </div>
                 </el-col>
               </el-row>
@@ -293,8 +324,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q11Status === 'No'" style="color: red">
-                    Unmasked sensitive data in test environments increases
-                    exposure risk.
+                    WARNING: Unmasked sensitive data in test environments
+                    increases exposure risk.<br />
+                    RISKS: Test data leakage
                   </div>
                 </el-col>
               </el-row>
@@ -316,8 +348,8 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q12Status === 'No'" style="color: red">
-                    No account lockout allows brute-force attacks on
-                    credentials.
+                    WARNING: No account lockout allows brute-force attacks on
+                    credentials.<br />RISKS: Brute force attacks
                   </div>
                 </el-col>
               </el-row>
@@ -327,7 +359,21 @@
             <el-divider class="divider" />
           </div>
 
-          <el-button type="primary" round @click="handleSave">Save</el-button>
+          <el-row justify="center" align="middle">
+            <!-- Save button -->
+            <el-col :span="2">
+              <el-button type="primary" round @click="handleSave"
+                >Save</el-button
+              >
+            </el-col>
+
+            <!-- Done button -->
+            <el-col :span="2">
+              <el-button type="success" round @click="handleDone"
+                >Done</el-button
+              >
+            </el-col>
+          </el-row>
         </el-scrollbar>
       </div>
     </div>
@@ -367,10 +413,13 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/asset-inventory");
+      this.$router.push("/home/risk-assessment");
     },
     handleClose() {
       this.showConfirmDialog = true;
+    },
+    handleBackClick() {
+      this.showConfirmDialog = true; // 显示确认弹窗
     },
     handleBeforeClose(done) {
       this.showConfirmDialog = false;
@@ -379,11 +428,51 @@ export default {
     confirmLeave() {
       this.leaveConfirmed = true;
       this.showConfirmDialog = false;
-      if (this.targetRoute) {
-        this.$router.push(this.targetRoute);
-      } else {
-        this.$router.go(-1);
+      // 选择返回时执行此方法
+      this.goBack(); // 调用 goBack 方法返回页面
+    },
+    handleDone() {
+      // 数据验证
+      if (
+        !this.Q1Status ||
+        !this.Q2Status ||
+        !this.Q3Status ||
+        !this.Q4Status ||
+        !this.Q5Status ||
+        !this.Q6Status ||
+        !this.Q7Status ||
+        !this.Q8Status ||
+        !this.Q9Status ||
+        !this.Q10Status ||
+        !this.Q11Status ||
+        !this.Q12Status
+      ) {
+        alert("All fields from Q1 to Q12 must be filled!");
+        return;
       }
+
+      // Done action
+      const formData = {
+        Q1Status: this.Q1Status,
+        Q2Status: this.Q2Status,
+        Q3Status: this.Q3Status,
+        Q4Status: this.Q4Status,
+        Q5Status: this.Q5Status,
+        Q6Status: this.Q6Status,
+        Q7Status: this.Q7Status,
+        Q8Status: this.Q8Status,
+        Q9Status: this.Q9Status,
+        Q10Status: this.Q10Status,
+        Q11Status: this.Q11Status,
+        Q12Status: this.Q12Status,
+        Done: "Finished", // 新增字段 Done，存储 "Finished"
+      };
+      let storedData =
+        JSON.parse(localStorage.getItem("Qinformationdata")) || [];
+      storedData.push(formData);
+      localStorage.setItem("Qinformationdata", JSON.stringify(storedData));
+
+      alert("Questionnaire is finished. All data has been successfully saved!");
     },
     handleSave() {
       const formData = {
@@ -399,6 +488,7 @@ export default {
         Q10Status: this.Q10Status,
         Q11Status: this.Q11Status,
         Q12Status: this.Q12Status,
+        Done: "In-progress", // 新增字段 Done
       };
 
       let storedData =
