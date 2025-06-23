@@ -9,9 +9,7 @@
         width="30%"
         :before-close="handleBeforeClose"
       >
-        <span
-          >The inventory will not be saved, are you sure you want to exit?</span
-        >
+        <span>The questionaire will not be saved, are you sure to exit?</span>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="showConfirmDialog = false">No</el-button>
@@ -28,7 +26,7 @@
           <el-button
             type="primary"
             round
-            @click="goBack"
+            @click="handleBackClick"
             style="
               background-color: #409eff;
               color: white;
@@ -58,7 +56,7 @@
                     1. Is the software authorized by the vendor?
                   </el-text>
                   <el-select
-                    v-model="isAuthorized"
+                    v-model="Q1Status"
                     placeholder="Select"
                     style="width: 100%"
                     clearable
@@ -74,7 +72,7 @@
               </el-row>
 
               <!-- Question 1.1 -->
-              <div v-if="isAuthorized === 'No'">
+              <div v-if="Q1Status === 'No'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
@@ -82,7 +80,7 @@
                       inventory?
                     </el-text>
                     <el-select
-                      v-model="statusUpdated"
+                      v-model="Q1_1Status"
                       placeholder="Select"
                       style="width: 100%"
                       clearable
@@ -90,9 +88,12 @@
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
-                    <div v-if="statusUpdated === 'No'" style="color: red">
-                      Software unauthorized and wrong software status in
-                      inventory.
+                    <div v-if="Q1_1Status === 'No'" style="color: red">
+                      WARNING: Software unauthorized and wrong software status
+                      in inventory. <br />RISKS: 1. Unauthorized software may
+                      contain unpatched vulnerabilities or malware 2.Unapproved
+                      software could violate license terms 3. Resource wasted
+                      (budget, IT Team, etc)
                     </div>
                   </el-col>
                 </el-row>
@@ -106,7 +107,7 @@
                     only authorized version allowed to run on endpoints?
                   </el-text>
                   <el-select
-                    v-model="whitelistedStatus"
+                    v-model="Q2Status"
                     placeholder="Select"
                     style="width: 100%"
                     clearable
@@ -122,13 +123,13 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div
-                    v-if="
-                      whitelistedStatus === 'No' ||
-                      whitelistedStatus === 'Licensed'
-                    "
+                    v-if="Q2Status === 'No' || Q2Status === 'Licensed'"
                     style="color: red"
                   >
-                    Software is not whitelisted.
+                    WARNING: Software is not whitelisted.<br />
+                    RISKS: 1. Unauthorized versions of the software may contain
+                    malware. 2. unapproved versions may have unaddressed CVEs 3.
+                    Untested versions can conflict with other apps
                   </div>
                 </el-col>
               </el-row>
@@ -140,9 +141,25 @@
                     3. Is the software automatically scanned for vulnerabilities
                     using an SCAP-compliant tool (e.g., OpenVAS, Nessus,
                     Tenable) at least weekly?
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="An SCAP-compliant tool is a software solution that adheres to the Security Content Automation Protocol (SCAP), a set of open standards for automating vulnerability management, measurement, and policy compliance. These tools (e.g., OpenVAS, Nessus, Tenable) use SCAP-defined formats to consistently identify, assess, and report security vulnerabilities in systems."
+                      placement="top"
+                    >
+                      <span
+                        style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                        >❓</span
+                      >
+                    </el-tooltip>
                   </el-text>
                   <el-select
-                    v-model="VulnerabilitiesStatus"
+                    v-model="Q3Status"
                     placeholder="Select"
                     style="width: 100%"
                     clearable
@@ -158,14 +175,12 @@
                     <el-option label="No regular scans" value="No" />
                   </el-select>
                   <div
-                    v-if="
-                      VulnerabilitiesStatus === 'No' ||
-                      VulnerabilitiesStatus === 'Scanned'
-                    "
+                    v-if="Q3Status === 'No' || Q3Status === 'Scanned'"
                     style="color: red"
                   >
-                    Software is not scanned for vulnerabilities within a
-                    reasonable time period.
+                    WARNING: Software is not scanned for vulnerabilities within
+                    a reasonable time period.<br />
+                    RISKS: 1. Missed zero-day or known CVEs 2. Fails audits
                   </div>
                 </el-col>
               </el-row>
@@ -179,6 +194,22 @@
                     using authenticated methods (e.g., local agents or
                     credentialed remote scans) to detect configuration flaws and
                     missing patches?
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="An authenticated method involves scanning a system with valid credentials (e.g., username/password or agent-based access) to perform deeper checks like configuration flaws, missing patches, and installed software. An unauthenticated method scans without credentials, detecting only surface-level vulnerabilities visible from the network, such as open ports or unpatched services."
+                      placement="top"
+                    >
+                      <span
+                        style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                        >❓</span
+                      >
+                    </el-tooltip>
                   </el-text>
                   <el-select
                     v-model="Q4Status"
@@ -200,7 +231,11 @@
                     v-if="Q4Status === 'No' || Q4Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Authenticated scan is not performed
+                    WARNING: Authenticated scan is not performed<br />
+                    RISKS: 1. Unauthenticated scans miss unpatched software or
+                    misconfigurations 2. Violates mandates requiring
+                    authenticated scans (e.g., PCI DSS 11.2.1, NIST 800-53). 3.
+                    Privilege Escalation Risks
                   </div>
                 </el-col>
               </el-row>
@@ -228,7 +263,11 @@
                     v-if="Q5Status === 'No' || Q5Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Updates are not fully automated.
+                    WARNING: Updates are not fully automated.<br />
+                    RISKS: 1. Manual patching often lags vendor releases by
+                    weeks/months, Extended exposure to exploited CVEs. 2. May
+                    fails regulation requirements like: PCI DSS (patch critical
+                    vulnerabilities within 30 days). HIPAA (security updates).
                   </div>
                 </el-col>
               </el-row>
@@ -265,7 +304,9 @@
                     v-if="Q6Status === 'No' || Q6Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Updates are not fully automated.
+                    WARNING: Updates are not fully automated. <br />
+                    RISKS: 1. May assume vulnerabilities are fixed when they
+                    persist 2.Violates mandates requiring remediation proof
                   </div>
                 </el-col>
               </el-row>
@@ -298,8 +339,13 @@
                     v-if="Q7Status === 'No' || Q7Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Documented security configuration standards not strictly
-                    maintained or enforced.
+                    WARNING: Documented security configuration standards not
+                    strictly maintained or enforced.<br />
+                    RISKS: 1. Systems/software are configured differently across
+                    the organization.Some instances may have critical security
+                    gaps. 2.Compliance Violations 3. Increased Attack Surface 4.
+                    Operational Inefficiency such as longer troubleshooting
+                    process
                   </div>
                 </el-col>
               </el-row>
@@ -329,8 +375,13 @@
                     v-if="Q8Status === 'No' || Q8Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Documented security configuration standards not strictly
-                    maintained or enforced.
+                    WARNING: Documented security configuration standards not
+                    strictly maintained or enforced.<br />
+                    RISKS: 1. Inconsistent Security Posture. Manual deployments
+                    lead to configuration drift. 2. Compliance Violations 3.
+                    Slower Incident Response. Compromised systems rebuilt
+                    manually vs. automated reimaging. 4. Higher Operational
+                    Costs. Manual deployments require 3–5x more effort
                   </div>
                 </el-col>
               </el-row>
@@ -367,7 +418,9 @@
                     v-if="Q9Status === 'No' || Q9Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Security images are not fully secured.
+                    WARNING: Security images are not fully secured. <br />
+                    RISKS: 1. Unauthorized changes and compromised security
+                    Images
                   </div>
                 </el-col>
               </el-row>
@@ -401,7 +454,11 @@
                     v-if="Q10Status === 'No' || Q10Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Configuration Enforcement are not fully automatic
+                    WARNING: Configuration Enforcement are not fully
+                    automatic<br />
+                    RISKS: 1. Configuration Drift. Systems gradually deviate
+                    from baselines 2. Delayed Response to Threats. Manual
+                    updates lag critical vulnerabilities 3. Compliance Failures
                   </div>
                 </el-col>
               </el-row>
@@ -416,6 +473,22 @@
                     security configuration elements, catalog approved
                     exceptions, and alert when unauthorized changes occur for
                     the software?
+                    <el-tooltip
+                      class="item"
+                      effect="dark"
+                      content="An SCAP-compliant tool is a software solution that adheres to the Security Content Automation Protocol (SCAP), a set of open standards for automating vulnerability management, measurement, and policy compliance. These tools (e.g., OpenVAS, Nessus, Tenable) use SCAP-defined formats to consistently identify, assess, and report security vulnerabilities in systems."
+                      placement="top"
+                    >
+                      <span
+                        style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                        >❓</span
+                      >
+                    </el-tooltip>
                   </el-text>
                   <el-select
                     v-model="Q11Status"
@@ -440,7 +513,9 @@
                     v-if="Q11Status === 'No' || Q11Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Not Using SCAP-Compliant Monitoring
+                    WARNING: Not Using SCAP-Compliant Monitoring<br />
+                    RISKS:1. Undetected Misconfigurations 2. Unauthorized
+                    Changes 3. Compliance Failures 4. Lack of Audit Trails
                   </div>
                 </el-col>
               </el-row>
@@ -501,7 +576,8 @@
                       v-if="Q12_1Status === 'No' || Q12_1Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Unauthorized Plugins/Add-Ons may exist.
+                      WARNING: Unauthorized Plugins/Add-Ons may exist.<br />
+                      RISKS: 1. Malware & Data Theft. Malicious plugins
                     </div>
                   </el-col>
                 </el-row>
@@ -534,7 +610,10 @@
                       v-if="Q12_2Status === 'No' || Q12_2Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Uncontrolled Script Execution may exist.
+                      WARNING: Uncontrolled Script Execution may exist.<br />
+                      RISKS:1. Malware & Exploits. Malicious scripts. 2.
+                      Phishing & Credential Theft. Fake login pages (e.g.,
+                      JavaScript-based "Office 365" phishing steal credentials).
                     </div>
                   </el-col>
                 </el-row>
@@ -593,7 +672,10 @@
                       v-if="Q13_1Status === 'No' || Q13_1Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Insecure Coding Practices
+                      WARNING: Insecure Coding Practices <br />
+                      RISKS: 1. Vulnerable Applications. Common flaws like SQLi,
+                      XSS, or buffer overflows lead to breaches. 2. Compliance
+                      Failures 3. Increased Remediation Costs
                     </div>
                   </el-col>
                 </el-row>
@@ -629,7 +711,11 @@
                       v-if="Q13_2Status === 'No' || Q13_2Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Poor Input Validation
+                      WARNING: Poor Input Validation<br />
+                      RISKS: 1. Injection Attacks 2. Buffer Overflows. Unbounded
+                      input crashes systems or executes arbitrary code. 3. Data
+                      Corruption. Invalid data types/ranges cause processing
+                      errors 4. Compliance Failures
                     </div>
                   </el-col>
                 </el-row>
@@ -664,7 +750,9 @@
                       v-if="Q13_3Status === 'No' || Q13_3Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Untrusted/Outdated Components may be used.
+                      WARNING: Untrusted/Outdated Components may be used.<br />
+                      RISKS: 1. Supply Chain Attacks. Malicious packages 2.
+                      License & Compliance Violations
                     </div>
                   </el-col>
                 </el-row>
@@ -694,7 +782,9 @@
                       v-if="Q13_4Status === 'No' || Q13_4Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Non-Standard/Deprecated Encryption used.
+                      WARNING: Non-Standard/Deprecated Encryption used.<br />
+                      RISKS: 1. Cryptographic Breakage 2. Compliance Violations
+                      3. Data Exposure 4. Interoperability Failures
                     </div>
                   </el-col>
                 </el-row>
@@ -734,7 +824,10 @@
                       v-if="Q13_5Status === 'No' || Q13_5Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Insufficient Secure Coding Training
+                      WARNING: Insufficient Secure Coding Training<br />
+                      RISKS:1. Proliferation of Common
+                      Vulnerabilities.Developers reintroduce SQLi, XSS, or
+                      insecure API flaws 2. Compliance Failures
                     </div>
                   </el-col>
                 </el-row>
@@ -748,6 +841,22 @@
                     <el-text class="q-text">
                       13.6 Are static (SAST) and dynamic (DAST) analysis tools
                       used to enforce secure coding practices for the software?
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="SAST (Static Application Security Testing) analyzes source code for vulnerabilities without executing the program, identifying issues like insecure coding practices early in development. DAST (Dynamic Application Security Testing) tests running applications (often in staging/production) to detect runtime vulnerabilities like injection flaws or misconfigurations by simulating attacks."
+                        placement="top"
+                      >
+                        <span
+                          style="
+                            cursor: pointer;
+                            color: blue;
+                            font-size: 16px;
+                            margin-left: 5px;
+                          "
+                          >❓</span
+                        >
+                      </el-tooltip>
                     </el-text>
                     <el-select
                       v-model="Q13_6Status"
@@ -766,10 +875,13 @@
                       <el-option label="No SAST/DAST tools in use" value="No" />
                     </el-select>
                     <div
-                      v-if="Q13_5Status === 'No' || Q13_5Status === 'AVERAGE'"
+                      v-if="Q13_6Status === 'No' || Q13_6Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Not or partially Using SAST/DAST
+                      WARNING: Not or partially Using SAST/DAST <br />RISKS: 1.
+                      Undetected Vulnerabilities in Production 2. Compliance
+                      Violations 3. Delayed Remediation Costs 4. Developer
+                      Inefficiency
                     </div>
                   </el-col>
                 </el-row>
@@ -805,10 +917,14 @@
                       />
                     </el-select>
                     <div
-                      v-if="Q13_5Status === 'No' || Q13_5Status === 'AVERAGE'"
+                      v-if="Q13_7Status === 'No' || Q13_7Status === 'AVERAGE'"
                       style="color: red"
                     >
-                      Poor Environment Segregation
+                      WARNING: Poor Environment Segregation <br />RISKS: 1.
+                      Accidental Production Disruptions 2. Malicious Insider
+                      Threats 3. Compliance Violations 4. Data
+                      Corruption/Leaks.Test scripts using real customer data
+                      (e.g., GDPR breach).
                     </div>
                   </el-col>
                 </el-row>
@@ -843,7 +959,11 @@
                     v-if="Q14Status === 'No' || Q14Status === 'AVERAGE'"
                     style="color: red"
                   >
-                    Unsupported/Unhardened Software
+                    WARNING: Unsupported/Unhardened Software <br />
+                    RISKS: 1. Unpatched Vulnerabilities 2. Increased Attack
+                    Surface. Unsupported software lacks security fixes 3.
+                    Operational Failures. Compatibility issues or crashes due to
+                    outdated dependencies.
                   </div>
                 </el-col>
               </el-row>
@@ -867,7 +987,9 @@
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q15Status === 'No'" style="color: red">
-                    No deployment of Application Firewalls
+                    WARNING: No deployment of Application Firewalls<br />
+                    RISKS: 1. Unauthorized Access 2. Increased Attack Surface 3.
+                    Malware Infections 4. Compliance Violations
                   </div>
                 </el-col>
               </el-row>
@@ -877,7 +999,21 @@
             <el-divider class="divider" />
           </div>
 
-          <el-button type="primary" round @click="handleSave">Save</el-button>
+          <el-row justify="center" align="middle">
+            <!-- Save button -->
+            <el-col :span="2">
+              <el-button type="primary" round @click="handleSave"
+                >Save</el-button
+              >
+            </el-col>
+
+            <!-- Done button -->
+            <el-col :span="2">
+              <el-button type="success" round @click="handleDone"
+                >Done</el-button
+              >
+            </el-col>
+          </el-row>
         </el-scrollbar>
       </div>
     </div>
@@ -901,10 +1037,10 @@ export default {
       showConfirmDialog: false,
       leaveConfirmed: false,
       targetRoute: null,
-      isAuthorized: "",
-      statusUpdated: "",
-      whitelistedStatus: "",
-      VulnerabilitiesStatus: "",
+      Q1Status: "",
+      Q1_1Status: "",
+      Q2Status: "",
+      Q3Status: "",
       Q4Status: "",
       Q5Status: "",
       Q6Status: "",
@@ -930,10 +1066,13 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/asset-inventory");
+      this.$router.push("/home/risk-assessment");
     },
     handleClose() {
       this.showConfirmDialog = true;
+    },
+    handleBackClick() {
+      this.showConfirmDialog = true; // 显示确认弹窗
     },
     handleBeforeClose(done) {
       this.showConfirmDialog = false;
@@ -942,18 +1081,62 @@ export default {
     confirmLeave() {
       this.leaveConfirmed = true;
       this.showConfirmDialog = false;
-      if (this.targetRoute) {
-        this.$router.push(this.targetRoute);
-      } else {
-        this.$router.go(-1);
-      }
+      // 选择返回时执行此方法
+      this.goBack(); // 调用 goBack 方法返回页面
     },
-    handleSave() {
+    handleDone() {
+      // 数据验证
+      if (
+        !this.Q1Status ||
+        !this.Q2Status ||
+        !this.Q3Status ||
+        !this.Q4Status ||
+        !this.Q5Status ||
+        !this.Q6Status ||
+        !this.Q7Status ||
+        !this.Q8Status ||
+        !this.Q9Status ||
+        !this.Q10Status ||
+        !this.Q11Status ||
+        !this.Q12Status ||
+        !this.Q13Status ||
+        !this.Q14Status ||
+        !this.Q15Status
+      ) {
+        alert("All fields from Q1 to Q15 must be filled!");
+        return;
+      }
+
+      // Q1Status is "No", then Q1_1Status cannot be empty
+      if (this.Q1Status === "No" && !this.Q1_1Status) {
+        alert("Q1.1s cannot be empty when Q1 is 'No'");
+        return;
+      }
+
+      // If Q12Status is "Yes", Q12_1Status and Q12_2Status cannot be empty
+      if (
+        this.Q12Status === "Yes" &&
+        (!this.Q12_1Status || !this.Q12_2Status)
+      ) {
+        alert("Q12.1 and Q12.2 cannot be empty when Q12 is 'Yes'");
+        return;
+      }
+
+      // If Q13Status is "Yes", Q12_1 to Q12_7Status cannot be empty
+      if (this.Q13Status === "Yes") {
+        for (let i = 1; i <= 7; i++) {
+          if (!this[`Q13_${i}Status`]) {
+            alert(`Q13_${i}Status cannot be empty when Q13 is 'Yes'`);
+            return;
+          }
+        }
+      }
+      // Done action
       const formData = {
-        isAuthorized: this.isAuthorized,
-        statusUpdated: this.statusUpdated,
-        whitelistedStatus: this.whitelistedStatus,
-        VulnerabilitiesStatus: this.VulnerabilitiesStatus,
+        Q1Status: this.Q1Status,
+        Q1_1Status: this.Q1_1Status,
+        Q2Status: this.Q2Status,
+        Q3Status: this.Q3Status,
         Q4Status: this.Q4Status,
         Q5Status: this.Q5Status,
         Q6Status: this.Q6Status,
@@ -975,6 +1158,42 @@ export default {
         Q13_7Status: this.Q13_7Status,
         Q14Status: this.Q14Status,
         Q15Status: this.Q15Status,
+        Done: "Finished", // 新增字段 Done，存储 "Finished"
+      };
+      let storedData = JSON.parse(localStorage.getItem("Qsoftware")) || [];
+      storedData.push(formData);
+      localStorage.setItem("Qsoftware", JSON.stringify(storedData));
+
+      alert("Questionnaire is finished. All data has been successfully saved!");
+    },
+    handleSave() {
+      const formData = {
+        Q1Status: this.Q1Status,
+        Q1_1Status: this.Q1_1Status,
+        Q2Status: this.Q2Status,
+        Q3Status: this.Q3Status,
+        Q4Status: this.Q4Status,
+        Q5Status: this.Q5Status,
+        Q6Status: this.Q6Status,
+        Q7Status: this.Q7Status,
+        Q8Status: this.Q8Status,
+        Q9Status: this.Q9Status,
+        Q10Status: this.Q10Status,
+        Q11Status: this.Q11Status,
+        Q12Status: this.Q12Status,
+        Q12_1Status: this.Q12_1Status,
+        Q12_2Status: this.Q12_2Status,
+        Q13Status: this.Q13Status,
+        Q13_1Status: this.Q13_1Status,
+        Q13_2Status: this.Q13_2Status,
+        Q13_3Status: this.Q13_3Status,
+        Q13_4Status: this.Q13_4Status,
+        Q13_5Status: this.Q13_5Status,
+        Q13_6Status: this.Q13_6Status,
+        Q13_7Status: this.Q13_7Status,
+        Q14Status: this.Q14Status,
+        Q15Status: this.Q15Status,
+        Done: "In-progress", // 新增字段 Done
       };
 
       let storedData = JSON.parse(localStorage.getItem("Qsoftware")) || [];
