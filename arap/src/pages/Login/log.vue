@@ -67,7 +67,7 @@ export default {
         });
 
         const response = await axios.post(
-            API_BASE_URL+'/api/login',
+            API_BASE_URL+'/user/login',
             new URLSearchParams({
               assetUserName: this.loginForm.username,
               assetUserPwd: this.loginForm.password

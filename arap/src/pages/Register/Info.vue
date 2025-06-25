@@ -124,7 +124,7 @@ export default {
 
       try {
         const response = await axios.post(
-          API_BASE_URL + '/api/register', // 替换为你的注册API地址
+          API_BASE_URL + '/user/register', // 替换为你的注册API地址
           new URLSearchParams({
             assetUserName: this.registerForm.username,
             assetUserEmail: this.registerForm.email,

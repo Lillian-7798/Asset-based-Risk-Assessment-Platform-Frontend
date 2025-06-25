@@ -3,15 +3,8 @@
     <Header />
     <div class="content">
       <!-- Confirm Dialog -->
-      <el-dialog
-        v-model="showConfirmDialog"
-        title="Warning"
-        width="30%"
-        :before-close="handleBeforeClose"
-      >
-        <span
-          >The inventory will not be saved, are you sure you want to exit?</span
-        >
+      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
+        <span>The inventory will not be saved, are you sure you want to exit?</span>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="showConfirmDialog = false">No</el-button>
@@ -26,16 +19,11 @@
 
         <div class="header-content" style="display: flex; align-items: center">
           <!-- 返回按钮 -->
-          <el-button
-            type="primary"
-            round
-            @click="handleBackClick"
-            style="
+          <el-button type="primary" round @click="handleBackClick" style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            "
-          >
+            ">
             <el-icon>
               <ArrowLeft />
             </el-icon>
@@ -55,83 +43,41 @@
             <div class="basicInfo-first">
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Name<span class="required-asterisk">*</span>:</el-text
-                  >
-                  <el-input
-                    style="width: 100%"
-                    v-model="name"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-text class="q-text">Name<span class="required-asterisk">*</span>:</el-text>
+                  <el-input style="width: 100%" v-model="name" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Asset ID:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="swid"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="swid" placeholder="Please input" clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Asset Type<span class="required-asterisk">*</span
-                    >:</el-text
-                  >
-                  <el-select
-                    v-model="AssetType"
-                    placeholder="Default"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in AssetTypes"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
+                  <el-text class="q-text">Asset Type<span class="required-asterisk">*</span>:</el-text>
+                  <el-select v-model="AssetType" placeholder="Default" style="width: 100%" clearable>
+                    <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
                   </el-select>
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text"
-                    >Asset Owner<span class="required-asterisk">*</span
-                    >:</el-text
-                  >
-                  <el-input
-                    style="width: 100%"
-                    v-model="assetOwner"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-text class="q-text">Asset Owner<span class="required-asterisk">*</span>:</el-text>
+                  <el-autocomplete style="width: 100%" v-model="assetOwner" :fetch-suggestions="querySearch"
+                    placeholder="Please input" @select="handleSelect" :trigger-on-focus="false"></el-autocomplete>
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Contact:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="contact"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="contact" placeholder="Please input" clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Description:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="description"
-                    :autosize="{ minRows: 3, maxRows: 8 }"
-                    type="textarea"
-                    placeholder="Please input"
-                  />
+                  <el-input style="width: 100%" v-model="description" :autosize="{ minRows: 3, maxRows: 8 }"
+                    type="textarea" placeholder="Please input" />
                 </el-col>
               </el-row>
 
@@ -143,60 +89,29 @@
               <!-- Software-specific fields -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Version<span class="required-asterisk">*</span>:</el-text
-                  >
-                  <el-input
-                    style="width: 100%"
-                    v-model="version"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-text class="q-text">Version<span class="required-asterisk">*</span>:</el-text>
+                  <el-input style="width: 100%" v-model="version" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text"
-                    >Install Date<span class="required-asterisk">*</span
-                    >:</el-text
-                  >
-                  <el-date-picker
-                    v-model="installDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    style="width: 100%"
-                    clearable
-                  />
+                  <el-text class="q-text">Install Date<span class="required-asterisk">*</span>:</el-text>
+                  <el-date-picker v-model="installDate" type="date" placeholder="Pick a day" style="width: 100%"
+                    clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Authorized Operating Systems<span class="required-asterisk"
-                      >*</span
-                    >:</el-text
-                  >
-                  <el-input
-                    style="width: 100%"
-                    v-model="authorizedOperatingSystems"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-text class="q-text">Authorized Operating Systems<span
+                      class="required-asterisk">*</span>:</el-text>
+                  <el-input style="width: 100%" v-model="authorizedOperatingSystems" placeholder="Please input"
+                    clearable />
                 </el-col>
 
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">External Supplied:</el-text>
-                  <el-select
-                    v-model="externalSupplied"
-                    placeholder="Default"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in externalSuppliedOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
+                  <el-text class="q-text">External Supplied Service<span class="required-asterisk">*</span>:</el-text>
+                  <el-select v-model="externalSupplied" placeholder="Default" style="width: 100%" clearable>
+                    <el-option v-for="item in externalSuppliedOptions" :key="item.value" :label="item.label"
+                      :value="item.value" />
                   </el-select>
                 </el-col>
               </el-row>
@@ -205,21 +120,11 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Manufacture:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="Manufacture"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="Manufacture" placeholder="Please input" clearable />
                   </el-col>
                   <el-col :span="10">
                     <el-text class="q-text">Service Type:</el-text>
-                    <el-select
-                      v-model="ServiceType"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="ServiceType" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="On-Premises" :value=0 />
                       <el-option label="SaaS" :value=1 />
                       <el-option label="Hybrid" :value=2 />
@@ -231,74 +136,31 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">License Type:</el-text>
-                    <el-select
-                      v-model="LicenseType"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="LicenseType" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Permanent" :value=0 />
                       <el-option label="Subscription" :value=1 />
                       <el-option label="trial" :value=2 />
-                      <el-option
-                        label="volume licensing"
-                        value="volume licensing"
-                      />
+                      <el-option label="volume licensing" value="volume licensing" />
                     </el-select>
                   </el-col>
-                </el-row>
-
-                <el-row gutter="{20}">
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text"
-                      >License Start Date:<span
-                        class="required-asterisk"
-                        >*</span
-                      >:</el-text
-                    >
-                    <el-date-picker
-                      v-model="LicenseStartDate"
-                      type="date"
-                      placeholder="Pick a day"
-                      style="width: 100%"
-                      clearable
-                    />
-                  </el-col>
-                  <el-col :span="10" offset="2">
-                    <el-text class="q-text"
-                      >License Expire Date:<span
-                        class="required-asterisk"
-                        >*</span
-                      >:</el-text
-                    >
-                    <el-date-picker
-                      v-model="LicenseExpireDate"
-                      type="date"
-                      placeholder="Pick a day"
-                      style="width: 100%"
-                      clearable
-                    />
+                    <el-text class="q-text">License Start and Expire Date:<span
+                        class="required-asterisk">*</span>:</el-text>
+                    <el-date-picker v-model="dateRange" type="daterange" range-separator="To"
+                      start-placeholder="Start date" end-placeholder="End date" :size="size"
+                      @change="handleDateRangeChange" />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">License Number:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="LicenseNumber"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="LicenseNumber" placeholder="Please input" clearable />
                   </el-col>
                   <el-col :span="10">
                     <el-text class="q-text">Related Contract Number:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="RelatedContractNumber"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="RelatedContractNumber" placeholder="Please input"
+                      clearable />
                   </el-col>
                 </el-row>
               </div>
@@ -312,21 +174,10 @@
               <!-- Fixed or Non-fixed Physical Asset -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Physical Asset Type<span class="required-asterisk">*</span
-                    >:</el-text
-                  >
-                  <el-select
-                    v-model="physicalAssetType"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label="Fixed Physical Asset" :value= 0 />
-                    <el-option
-                      label="Non-fixed Physical Asset"
-                      :value= 1
-                    />
+                  <el-text class="q-text">Physical Asset Type<span class="required-asterisk">*</span>:</el-text>
+                  <el-select v-model="physicalAssetType" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Fixed Physical Asset" :value=0 />
+                    <el-option label="Non-fixed Physical Asset" :value=1 />
                   </el-select>
                 </el-col>
               </el-row>
@@ -336,50 +187,19 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Asset Category (Fixed):</el-text>
-                    <el-select
-                      v-model="fixedAssetCategory"
-                      placeholder="Select Category"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Buildings & Structures"
-                        :value=0
-                      />
-                      <el-option
-                        label="Production Equipment & Machinery"
-                        :value=1
-                      />
-                      <el-option
-                        label="Office Equipment"
-                        :value=2
-                      />
-                      <el-option
-                        label="Transportation Vehicles"
-                        :value=3
-                      />
-                      <el-option
-                        label="Network & IT Infrastructure"
-                        :value=4
-                      />
-                      <el-option
-                        label="Power & Utility Equipment"
-                        :value=5
-                      />
-                      <el-option
-                        label="Security Equipment"
-                        :value=6
-                      />
+                    <el-select v-model="fixedAssetCategory" placeholder="Select Category" style="width: 100%" clearable>
+                      <el-option label="Buildings & Structures" :value=0 />
+                      <el-option label="Production Equipment & Machinery" :value=1 />
+                      <el-option label="Office Equipment" :value=2 />
+                      <el-option label="Transportation Vehicles" :value=3 />
+                      <el-option label="Network & IT Infrastructure" :value=4 />
+                      <el-option label="Power & Utility Equipment" :value=5 />
+                      <el-option label="Security Equipment" :value=6 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Location:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="Location"
-                      placeholder="Enter location"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="Location" placeholder="Enter location" clearable />
                   </el-col>
                 </el-row>
               </div>
@@ -387,100 +207,48 @@
               <div v-if="physicalAssetType === 1">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text"
-                      >Asset Category (Non-fixed):</el-text
-                    >
-                    <el-select
-                      v-model="nonFixedAssetCategory"
-                      placeholder="Select Category"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Mobile Electronic Devices"
-                        :value=0
-                      />
-                      <el-option
-                        label="Removable Storage Media"
-                        :value=1
-                      />
-                      <el-option
-                        label="Temporary Facilities and Tools"
-                        :value=2
-                      />
-                      <el-option
-                        label="Transportation and Logistics Assets"
-                        :value=3
-                      />
-                      <el-option
-                        label="Laboratory and Production Consumables"
-                        :value=4
-                      />
-                      <el-option
-                        label="Security and Emergency Equipment"
-                        :value=5
-                      />
-                      <el-option
-                        label="Other High-Mobility Assets"
-                        :value=6
-                      />
+                    <el-text class="q-text">Asset Category (Non-fixed):</el-text>
+                    <el-select v-model="nonFixedAssetCategory" placeholder="Select Category" style="width: 100%"
+                      clearable>
+                      <el-option label="Mobile Electronic Devices" :value=0 />
+                      <el-option label="Removable Storage Media" :value=1 />
+                      <el-option label="Temporary Facilities and Tools" :value=2 />
+                      <el-option label="Transportation and Logistics Assets" :value=3 />
+                      <el-option label="Laboratory and Production Consumables" :value=4 />
+                      <el-option label="Security and Emergency Equipment" :value=5 />
+                      <el-option label="Other High-Mobility Assets" :value=6 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Current Holder:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="CurrentHolder"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="CurrentHolder" placeholder="Please input" clearable />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Checkout Date:</el-text>
-                    <el-date-picker
-                      v-model="CheckoutDate"
-                      type="date"
-                      placeholder="Pick a day"
-                      style="width: 100%"
-                      clearable
-                    />
+                    <el-date-picker v-model="CheckoutDate" type="date" placeholder="Pick a day" style="width: 100%"
+                      clearable />
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Expected Return Date:</el-text>
-                    <el-date-picker
-                      v-model="ExpectedReturnDate"
-                      type="date"
-                      placeholder="Pick a day"
-                      style="width: 100%"
-                      clearable
-                    />
+                    <el-date-picker v-model="ExpectedReturnDate" type="date" placeholder="Pick a day"
+                      style="width: 100%" clearable />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Condition:</el-text>
-                    <el-select
-                      v-model="Condition"
-                      placeholder="Select Condition"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Condition" placeholder="Select Condition" style="width: 100%" clearable>
                       <el-option label="Good" :value=1 />
                       <el-option label="Damaged" :value=0 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Data Encryption:</el-text>
-                    <el-select
-                      v-model="DataEncryption"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="DataEncryption" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
                     </el-select>
@@ -490,12 +258,7 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Remote Wipe Capability:</el-text>
-                    <el-select
-                      v-model="RemoteWipeCapability"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="RemoteWipeCapability" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
                     </el-select>
@@ -508,47 +271,22 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Purchase Date:</el-text>
-                  <el-date-picker
-                    v-model="PurchaseDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    style="width: 100%"
-                    clearable
-                  />
+                  <el-date-picker v-model="PurchaseDate" type="date" placeholder="Pick a day" style="width: 100%"
+                    clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Depreciation Period:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="DepreciationPeriod"
-                  />
+                  <el-input style="width: 100%" v-model="DepreciationPeriod" @blur="validateDepreciationPeriod" />
                 </el-col>
               </el-row>
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Maintenance Cycle:</el-text>
-                  <el-select
-                    v-model="MaintenanceCycle"
-                    placeholder="Select Cycle"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Daily, Weekly, Every 72 Operating Hours"
-                      :value=0
-                    />
-                    <el-option
-                      label="Monthly, Quarterly, Every 5000 km"
-                      :value=1
-                    />
-                    <el-option
-                      label="Annually, Biannually, Every 5 Years"
-                      :value=2
-                    />
-                    <el-option
-                      label="As Needed, After Event, On Failure"
-                      :value=3
-                    />
+                  <el-select v-model="MaintenanceCycle" placeholder="Select Cycle" style="width: 100%" clearable>
+                    <el-option label="Daily, Weekly, Every 72 Operating Hours" :value=0 />
+                    <el-option label="Monthly, Quarterly, Every 5000 km" :value=1 />
+                    <el-option label="Annually, Biannually, Every 5 Years" :value=2 />
+                    <el-option label="As Needed, After Event, On Failure" :value=3 />
                   </el-select>
                 </el-col>
               </el-row>
@@ -562,39 +300,23 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Retention Policy:</el-text>
-                  <el-select
-                    v-model="informationRetentionPolicy"
-                    placeholder="Select Policy"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="informationRetentionPolicy" placeholder="Select Policy" style="width: 100%"
+                    clearable>
                     <el-option label="Permanent" :value=0 />
                     <el-option label="5 Years" :value=1 />
                   </el-select>
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Storage Location:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="informationStorageLocation"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="informationStorageLocation" placeholder="Please input"
+                    clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Asset Category<span class="required-asterisk">*</span
-                    >:</el-text
-                  >
-                  <el-select
-                    v-model="InformationAssetCategory"
-                    placeholder="Select Type"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-text class="q-text">Asset Category<span class="required-asterisk">*</span>:</el-text>
+                  <el-select v-model="InformationAssetCategory" placeholder="Select Type" style="width: 100%" clearable>
                     <el-option label="Database" :value=0 />
                     <el-option label="Document" :value=1 />
                     <el-option label="Patent" :value=2 />
@@ -607,12 +329,7 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Data Schema:</el-text>
-                    <el-select
-                      v-model="DataSchema"
-                      placeholder="Select Schema"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="DataSchema" placeholder="Select Schema" style="width: 100%" clearable>
                       <el-option label="MySQL" :value=0 />
                       <el-option label="MongoDB" :value=1 />
                       <el-option label="Other" :value=2 />
@@ -620,36 +337,21 @@
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Version:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="databaseVersion"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="databaseVersion" placeholder="Please input" clearable />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Contains PII:</el-text>
-                    <el-select
-                      v-model="containsPII"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="containsPII" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Backup Frequency:</el-text>
-                    <el-select
-                      v-model="backupFrequency"
-                      placeholder="Select Frequency"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="backupFrequency" placeholder="Select Frequency" style="width: 100%" clearable>
                       <el-option label="Daily" :value=0 />
                       <el-option label="Weekly" :value=1 />
                       <el-option label="Monthly" :value=2 />
@@ -661,12 +363,7 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">File Format:</el-text>
-                    <el-select
-                      v-model="fileFormat"
-                      placeholder="Select Format"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="fileFormat" placeholder="Select Format" style="width: 100%" clearable>
                       <el-option label="PDF" :value=0 />
                       <el-option label="DOCX" :value=1 />
                       <el-option label="CAD" :value=2 />
@@ -675,12 +372,7 @@
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Confidentiality Level:</el-text>
-                    <el-select
-                      v-model="confidentialityLevel"
-                      placeholder="Select Level"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="confidentialityLevel" placeholder="Select Level" style="width: 100%" clearable>
                       <el-option label="Public" :value=0 />
                       <el-option label="Internal" :value=1 />
                       <el-option label="Secret" :value=2 />
@@ -693,22 +385,12 @@
                 <el-row gutter="{20}">
                   <el-col :span="10">
                     <el-text class="q-text">Registration Number:</el-text>
-                    <el-input
-                      style="width: 100%"
-                      v-model="registrationNumber"
-                      placeholder="Please input"
-                      clearable
-                    />
+                    <el-input style="width: 100%" v-model="registrationNumber" placeholder="Please input" clearable />
                   </el-col>
                   <el-col :span="10" offset="2">
                     <el-text class="q-text">Expiry Date:</el-text>
-                    <el-date-picker
-                      v-model="expiryDate"
-                      type="date"
-                      placeholder="Pick a day"
-                      style="width: 100%"
-                      clearable
-                    />
+                    <el-date-picker v-model="expiryDate" type="date" placeholder="Pick a day" style="width: 100%"
+                      clearable />
                   </el-col>
                 </el-row>
               </div>
@@ -722,48 +404,28 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Department:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="department"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="department" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Position:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="position"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="position" placeholder="Please input" clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Hire Date:</el-text>
-                  <el-date-picker
-                    v-model="hireDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    style="width: 100%"
-                    clearable
-                  />
+                  <el-date-picker v-model="hireDate" type="date" placeholder="Pick a day" style="width: 100%"
+                    clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Background Check Status:</el-text>
-                  <el-select
-                    v-model="backgroundCheckStatus"
-                    placeholder="Select Status"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label="Completed" value="Completed" />
-                    <el-option label="Pending" value="Pending" />
-                    <el-option label="Failed" value="Failed" />
-                    <el-option label="Expired" value="Expired" />
-                    <el-option label="Not Required" value="Not Required" />
+                  <el-select v-model="backgroundCheckStatus" placeholder="Select Status" style="width: 100%" clearable>
+                    <el-option label="Completed" :value=0 />
+                    <el-option label="Pending" :value=1 />
+                    <el-option label="Failed" :value=2 />
+                    <el-option label="Expired" :value=3 />
+                    <el-option label="Not Required" :value=4 />
                   </el-select>
                 </el-col>
               </el-row>
@@ -771,67 +433,42 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Security Training Status:</el-text>
-                  <el-select
-                    v-model="securityTrainingStatus"
-                    placeholder="Select Status"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label="Completed" value="Completed" />
-                    <el-option label="Pending" value="Pending" />
-                    <el-option label="Failed" value="Failed" />
-                    <el-option label="Expired" value="Expired" />
-                    <el-option label="Not Required" value="Not Required" />
+                  <el-select v-model="securityTrainingStatus" placeholder="Select Status" style="width: 100%" clearable>
+                    <el-option label="Completed" :value=0 />
+                    <el-option label="Pending" :value=1 />
+                    <el-option label="Failed" :value=2 />
+                    <el-option label="Expired" :value=3 />
+                    <el-option label="Not Required" :value=4 />
                   </el-select>
                 </el-col>
                 <el-col :span="10">
                   <el-text class="q-text">NDA Signing Date:</el-text>
-                  <el-date-picker
-                    v-model="NDASigningDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    style="width: 100%"
-                    clearable
-                  />
+                  <el-date-picker v-model="NDASigningDate" type="date" placeholder="Pick a day" style="width: 100%"
+                    clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Remote Work Agreement Status:</el-text
-                  >
-                  <el-select
-                    v-model="RemoteWorkAgreementStatus"
-                    placeholder="Select Status"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label="Yes" value="Yes" />
-                    <el-option label="No" value="No" />
+                  <el-text class="q-text">Remote Work Agreement Status:</el-text>
+                  <el-select v-model="RemoteWorkAgreementStatus" placeholder="Select Status" style="width: 100%"
+                    clearable>
+                    <el-option label="Yes" :value=1 />
+                    <el-option label="No" :value=0 />
                   </el-select>
                 </el-col>
                 <el-col :span="10" offset="2">
                   <el-text class="q-text">Security Incident Records:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="securityIncidentRecords"
-                    placeholder="Please input"
-                    clearable
-                  />
+                  <el-input style="width: 100%" v-model="securityIncidentRecords" placeholder="Please input"
+                    clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Last Audit Date:</el-text>
-                  <el-date-picker
-                    v-model="LastAuditDate"
-                    type="date"
-                    placeholder="Pick a day"
-                    style="width: 100%"
-                    clearable
-                  />
+                  <el-date-picker v-model="LastAuditDate" type="date" placeholder="Pick a day" style="width: 100%"
+                    clearable />
                 </el-col>
               </el-row>
 
@@ -842,39 +479,15 @@
             <div class="basicInfo-second">
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text"
-                    >Status<span class="required-asterisk">*</span>:</el-text
-                  >
-                  <el-select
-                    v-model="status"
-                    placeholder="Default"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in Status"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
+                  <el-text class="q-text">Status<span class="required-asterisk">*</span>:</el-text>
+                  <el-select v-model="status" placeholder="Default" style="width: 100%" clearable>
+                    <el-option v-for="item in Status" :key="item.value" :label="item.label" :value="item.value" />
                   </el-select>
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text"
-                    >Importance<span class="required-asterisk">*</span></el-text
-                  >
-                  <el-select
-                    v-model="importance"
-                    placeholder="Default"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in Importances"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value"
-                    />
+                  <el-text class="q-text">Importance<span class="required-asterisk">*</span></el-text>
+                  <el-select v-model="importance" placeholder="Default" style="width: 100%" clearable>
+                    <el-option v-for="item in Importances" :key="item.value" :label="item.label" :value="item.value" />
                   </el-select>
                 </el-col>
               </el-row>
@@ -882,13 +495,8 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Associated Assets:</el-text>
-                  <el-input
-                    style="width: 100%"
-                    v-model="associatedAssets"
-                    :autosize="{ minRows: 2, maxRows: 2 }"
-                    type="textarea"
-                    placeholder="Please input"
-                  />
+                  <el-input style="width: 100%" v-model="associatedAssets" :autosize="{ minRows: 2, maxRows: 2 }"
+                    type="textarea" placeholder="Please input" />
                 </el-col>
               </el-row>
             </div>
@@ -925,11 +533,14 @@ export default {
       showConfirmDialog: false,
       leaveConfirmed: false,
       targetRoute: null,
+      dateRange: [],
+      searchTimeout: false,
       name: "",
       assetID: "",
-      swid:"",
+      swid: "",
       AssetType: "",
       assetOwner: "",
+      assetOwnerID: 0,
       description: "",
       contact: "",
       status: "",
@@ -944,7 +555,7 @@ export default {
       ServiceType: "",
       LicenseType: "",
       LicenseStartDate: "",
-      LicenseExpireDate:"",
+      LicenseExpireDate: "",
       LicenseNumber: "",
       RelatedContractNumber: "",
       //Physical
@@ -959,7 +570,7 @@ export default {
       DataEncryption: "",
       RemoteWipeCapability: "",
       PurchaseDate: "",
-      DepreciationPeriod: "5",
+      DepreciationPeriod: "",
       MaintenanceCycle: "",
       //Information
       informationRetentionPolicy: "",
@@ -1035,9 +646,58 @@ export default {
   },
   methods: {
     // TODO:1.修改save逻辑,判断emptyfiled 
-    // 2.限制physical-time的输入大小 
-    // 3.限制software-license的开始时间和结束时间 
     // 4.对于asset owner进行搜索匹配，显示名字但是传递id;
+    querySearch(queryString, cb) {
+      this.assetOwnerID = 0
+      if (queryString.length < 2) {
+        cb([])
+        return
+      }
+
+      // 防抖处理
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout)
+      }
+
+      this.searchTimeout = setTimeout(async () => {
+        try {
+          const response = await axios.get(API_BASE_URL + '/user/search', {
+            params: { query: queryString }
+          })
+          if (response.data.success) {
+            console.log(response.data)
+            const results = response.data.users.map(user => ({
+              value: user.name,
+              id: user.id
+            }))
+
+            cb(results)
+          }
+        } catch (error) {
+          console.error('搜索用户失败:', error)
+          cb([])
+        }
+      }, 1000)
+    },
+
+    handleSelect(item) {
+      this.assetOwner = item.value
+      this.assetOwnerID = item.id
+      // console.log(this.assetOwnerID)
+    },
+    handleDateRangeChange(val) {
+      // console.log(this.dateRange)
+      this.LicenseStartDate = val ? val[0] : null;
+      this.LicenseExpireDate = val ? val[1] : null;
+    },
+    validateDepreciationPeriod() {
+      const value = this.DepreciationPeriod;
+      if (value < 0 || value > 100) {
+        this.$message.error('Depreciation Period must be between 0 and 100!');
+        // 可选：自动重置为合法值
+        this.DepreciationPeriod = "";
+      }
+    },
     async Pre_filled() {
       console.log("get pre-filled information");
       try {
@@ -1056,13 +716,14 @@ export default {
           this.name = response.data.data.assetName;
           this.swid = response.data.data.swid;
           this.assetOwner = response.data.data.assetOwner.assetUserName;
+          this.assetOwnerID = response.data.data.assetOwner.assetUserId;
           this.contact = response.data.data.contact;
           this.description = response.data.data.description;
           this.status = response.data.data.status;
           this.importance = response.data.data.importance;
           this.associatedAssets = response.data.data.associatedAssets;
           //映射Software
-          if(this.AssetType=='Software'){
+          if (this.AssetType == 'Software') {
             this.version = response.data.data.version;
             this.installDate = response.data.data.installDate;
             this.authorizedOperatingSystems = response.data.data.operatingSystems;
@@ -1072,11 +733,12 @@ export default {
             this.LicenseType = response.data.data.licenseType;
             this.LicenseStartDate = response.data.data.licenseStartDate;
             this.LicenseExpireDate = response.data.data.licenseEndDate;
+            this.dateRange = [this.LicenseStartDate, this.LicenseExpireDate]
             this.LicenseNumber = response.data.data.licenseNumber;
             this.RelatedContractNumber = response.data.data.relatedContractNumber;
           }
           //映射physical
-          if(this.AssetType=='Physical'){
+          if (this.AssetType == 'Physical') {
             this.physicalAssetType = response.data.data.fixedPhysicalAsset;
             this.fixedAssetCategory = response.data.data.assetCategory;
             this.Location = response.data.data.location;
@@ -1092,7 +754,7 @@ export default {
             this.MaintenanceCycle = response.data.data.maintenanceCycle;
           }
           // 映射infomation
-          if(this.AssetType=='Information'){
+          if (this.AssetType == 'Information') {
             this.informationRetentionPolicy = response.data.data.retentionPolicy;
             this.informationStorageLocation = response.data.data.storageLocation;
             this.InformationAssetCategory = response.data.data.assetCategory;
@@ -1104,6 +766,18 @@ export default {
             this.confidentialityLevel = response.data.data.confidentialityLevel;
             this.registrationNumber = response.data.data.registrationNumber;
             this.expiryDate = response.data.data.expiryDate;
+          }
+          // 映射people
+          if (this.AssetType == 'People') {
+            this.department = response.data.data.department;
+            this.position = response.data.data.position;
+            this.hireDate = response.data.data.hireDate;
+            this.backgroundCheckStatus = response.data.data.backgroundCheckStatus;
+            this.securityTrainingStatus = response.data.data.securityTrainingStatus;
+            this.NDASigningDate = response.data.data.ndaSigningDate;
+            this.RemoteWorkAgreementStatus = response.data.data.remoteWorkAgreementStatus;
+            this.securityIncidentRecords = response.data.data.securityIncidentRecords;
+            this.LastAuditDate = response.data.data.lastAuditDate;
           }
         } else {
           console.error(response.data.message);
@@ -1134,70 +808,10 @@ export default {
       this.goBack(); // 调用 goBack 方法返回页面
     },
     async handleSave() {
-      const formData = {
-        name: this.name,
-        assetID: this.assetID,
-        swid:this.swid,
-        AssetType: this.AssetType,
-        assetOwner: this.assetOwner,
-        description: this.description,
-        contact: this.contact,
-        status: this.status,
-        importance: this.importance,
-        associatedAssets: this.associatedAssets,
-        // software
-        version: this.version,
-        installDate: this.installDate,
-        authorizedOperatingSystems: this.authorizedOperatingSystems,
-        externalSupplied: this.externalSupplied,
-        Manufacture: this.Manufacture,
-        ServiceType: this.ServiceType,
-        LicenseType: this.LicenseType,
-        LicenseStartDate: this.LicenseStartDate,
-        LicenseExpireDate:this.LicenseExpireDate,
-        LicenseNumber: this.LicenseNumber,
-        RelatedContractNumber: this.RelatedContractNumber,
-        //Physical
-        physicalAssetType: this.physicalAssetType,
-        fixedAssetCategory: this.fixedAssetCategory,
-        Location: this.Location,
-        nonFixedAssetCategory: this.nonFixedAssetCategory,
-        CurrentHolder: this.CurrentHolder,
-        CheckoutDate: this.CheckoutDate,
-        ExpectedReturnDate: this.ExpectedReturnDate,
-        Condition: this.Condition,
-        DataEncryption: this.dataEncryption,
-        RemoteWipeCapability: this.RemoteWipeCapability,
-        PurchaseDate: this.PurchaseDate,
-        DepreciationPeriod: this.DepreciationPeriod,
-        MaintenanceCycle: this.MaintenanceCycle,
-        //INformation
-        informationRetentionPolicy: this.informationRetentionPolicy,
-        informationStorageLocation: this.informationStorageLocation,
-        InformationAssetCategory: this.InformationAssetCategory,
-        DataSchema: this.DataSchema,
-        containsPII: this.containsPII,
-        backupFrequency: this.backupFrequency,
-        fileFormat: this.fileFormat,
-        confidentialityLevel: this.confidentialityLevel,
-        registrationNumber: this.registrationNumber,
-        expiryDate: this.expiryDate,
-        databaseVersion: this.databaseVersion,
-        // People
-        department: this.department,
-        position: this.position,
-        hireDate: this.hireDate,
-        backgroundCheckStatus: this.backgroundCheckStatus,
-        securityTrainingStatus: this.securityTrainingStatus,
-        NDASigningDate: this.NDASigningDate,
-        RemoteWorkAgreementStatus: this.RemoteWorkAgreementStatus,
-        securityIncidentRecords: this.securityIncidentRecords,
-        LastAuditDate: this.LastAuditDate,
-        timestamp: new Date().toISOString().split("T")[0], // Format: YYYY-MM-DD
-      };
+      let emptyField = true;
 
       if (this.name === "" || this.name === null || this.name === undefined) {
-        alert("Name is required.");
+        this.$message.error("Name is required.");
         return;
       }
 
@@ -1206,7 +820,7 @@ export default {
         this.AssetType === null ||
         this.AssetType === undefined
       ) {
-        alert("Asset Type is required.");
+        this.$message.error("Asset Type is required.");
         return;
       }
 
@@ -1215,16 +829,19 @@ export default {
         this.assetOwner === null ||
         this.assetOwner === undefined
       ) {
-        alert("Asset Owner is required.");
+        this.$message.error("Asset Owner is required.");
         return;
       }
-
+      if (this.assetOwnerID <= 0) {
+        this.$message.error("There is no such user.");
+        return;
+      }
       if (
         this.status === "" ||
         this.status === null ||
         this.status === undefined
       ) {
-        alert("Status is required.");
+        this.$message.error("Status is required.");
         return;
       }
 
@@ -1233,62 +850,191 @@ export default {
         this.importance === null ||
         this.importance === undefined
       ) {
-        alert("Importance is required.");
+        this.$message.error("Importance is required.");
         return;
       }
 
-      if (
-        this.AssetType === "Software" &&
-        (this.version === "" ||
+      // 总体的空字符串判断
+      if (this.swid == "" || this.contact == "" || this.description == "") {
+        emptyField = true;
+      } else {
+        emptyField = false;
+      }
+
+      let payload = {
+        id: this.assetID,
+        assetName: this.name,
+        swid: this.swid,
+        assetOwner: this.assetOwnerID,
+        contact: this.contact,
+        description: this.description,
+        status: this.status,
+        importance: this.importance,
+        associatedAssets: this.associatedAssets,
+      }
+      // -----------------------------Software -----------------------------
+      if (this.AssetType === 'Software') {
+        // 必填字段验证
+        if (this.version === "" ||
           this.version === null ||
-          this.version === undefined)
-      ) {
-        alert("Version is required for Software assets.");
-        return;
-      }
+          this.version === undefined) {
+          this.$message.error("Version is required for Software assets.");
+          return;
+        }
+        if (!this.installDate) {
+          this.$message.error("Install Date is required for Software assets.");
+          return;
+        }
 
-      if (this.AssetType === "Software" && !this.installDate) {
-        alert("Install Date is required for Software assets.");
-        return;
-      }
-
-      if (
-        this.AssetType === "Software" &&
-        (this.authorizedOperatingSystems === "" ||
+        if (this.authorizedOperatingSystems === "" ||
           this.authorizedOperatingSystems === null ||
-          this.authorizedOperatingSystems === undefined)
-      ) {
-        alert("Authorized Operating Systems is required.");
-        return;
+          this.authorizedOperatingSystems === undefined) {
+          this.$message.error("Authorized Operating Systems is required.");
+          return;
+        }
+        if (this.externalSupplied === "" ||
+          this.externalSupplied === null ||
+          this.externalSupplied === undefined) {
+          this.$message.error("Authorized Operating Systems is required.");
+          return;
+        }
+        // 空子段填写判断
+        if (this.externalSupplied == 0) {
+          emptyField = emptyField || this.Manufacture === "" || this.ServiceType == "" || this.LicenseType == "" || this.LicenseStartDate == "" || this.LicenseExpireDate == "" || this.LicenseNumber == "" || this.RelatedContractNumber == "";
+        }
+        // 字段填写
+        payload = {
+          ...payload,
+          AssetType: 0,
+          EmptyField: emptyField ? 0 : 1,
+          version: this.version,
+          installDate: this.installDate,
+          operatingSystems: this.authorizedOperatingSystems,
+          externalSuppliedService: this.externalSupplied,
+          manufacture: this.Manufacture,
+          serviceType: this.ServiceType,
+          licenseType: this.LicenseType,
+          licenseStartDate: this.LicenseStartDate,
+          licenseEndDate: this.LicenseExpireDate,
+          licenseNumber: this.LicenseNumber,
+          relatedContractNumber: this.RelatedContractNumber,
+        };
       }
-
-      if (this.AssetType === "Physical" && !this.physicalAssetType) {
-        alert("Physical Asset Type is required");
-        return;
+      // -------------------------------------Physical------------------------------
+      if (this.AssetType === 'Physical') {
+        if (this.physicalAssetType==="") {
+          this.$message.error("Physical Asset Type is required");
+          return;
+        }
+        emptyField = emptyField || this.PurchaseDate === "" || this.DepreciationPeriod === "" || this.MaintenanceCycle === "";
+        payload = {
+          ...payload,
+          AssetType: 1,
+          physicalAssetType: this.physicalAssetType,
+          epurchaseDate: this.PurchaseDate,
+          depreciationPeriod: this.DepreciationPeriod,
+          maintenanceCycle: this.MaintenanceCycle,
+        };
+        if (this.physicalAssetType === 0) {
+          emptyField = emptyField || this.fixedAssetCategory === "" || this.Location === "";
+          payload = {
+            ...payload,
+            EmptyField: emptyField ? 0 : 1,
+            assetCategory: this.fixedAssetCategory,
+            location: this.Location,
+          }
+        } else {
+          emptyField = emptyField || this.nonFixedAssetCategory === "" || this.CurrentHolder === ""
+            || this.CheckoutDate === "" || this.ExpectedReturnDate === "" || this.Condition === "" || this.DataEncryption === "" || this.RemoteWipeCapability === "";
+          payload = {
+            ...payload,
+            EmptyField: emptyField ? 0 : 1,
+            assetCategory2: this.nonFixedAssetCategory,
+            currentHolder: this.CurrentHolder,
+            checkoutDate: this.CheckoutDate,
+            expectedReturnDate: this.ExpectedReturnDate,
+            conditions: this.Condition,
+            dateEncryption: this.DataEncryption,
+            remoteWipeCapability: this.RemoteWipeCapability,
+          }
+        }
       }
-
-      if (this.AssetType === "Information" && !this.InformationAssetCategory) {
-        alert("Information Asset Category is required");
-        return;
+      // -------------------------------------------Information----------------------------------
+      if (this.AssetType === 'Information') {
+        if (!this.InformationAssetCategory) {
+          this.$message.error("Information Asset Category is required");
+          return;
+        }
+        emptyField = emptyField || this.informationRetentionPolicy === "" || this.informationStorageLocation === "";
+        payload = {
+          ...payload,
+          AssetType: 2,
+          informationRetentionPolicy: this.informationRetentionPolicy,
+          informationStorageLocation: this.informationStorageLocation,
+          informationAssetCategory: this.InformationAssetCategory,
+        };
+        if(this.InformationAssetCategory==0){
+          emptyField = emptyField || this.databaseVersion === "" || this.DataSchema === ""|| this.containsPII === "" || this.backupFrequency === "";
+          payload = {
+            ...payload,
+            EmptyField: emptyField ? 0 : 1,
+            databaseVersion: this.databaseVersion,
+            DataSchema: this.DataSchema,
+            containsPII: this.containsPII,
+            backupFrequency: this.backupFrequency,
+          }
+        }
+        if(this.InformationAssetCategory==1){
+          emptyField = emptyField || this.fileFormat === "" || this.confidentialityLevel === "";
+          payload = {
+            ...payload,
+            EmptyField: emptyField ? 0 : 1,
+            fileFormat: this.fileFormat,
+            confidentialityLevel: this.confidentialityLevel
+          }
+        }
+        if(this.InformationAssetCategory==2){
+          emptyField = emptyField || this.registrationNumber === "" || this.expiryDate === "";
+          payload = {
+            ...payload,
+            EmptyField: emptyField ? 0 : 1,
+            registrationNumber: this.registrationNumber,
+            expiryDate: this.expiryDate,
+          }
+        }
       }
-
-      //localhost的，仅做演示用，之后删掉
-
-      // let storedData = JSON.parse(sessionStorage.getItem("assets")) || [];
-      // storedData.push(formData);
-      // sessionStorage.setItem("assets", JSON.stringify(storedData));
-
+      // --------------------------------People-------------------------------------
+      if(this.AssetType === 'People'){
+        emptyField = emptyField || this.registrationNumber === "" || this.expiryDate === "";
+        payload = {
+          ...payload,
+          AssetType: 3,
+          EmptyField: emptyField ? 0 : 1,
+          department: this.department,
+          position: this.position,
+          hireDate: this.hireDate,
+          backgroundCheckStatus: this.backgroundCheckStatus,
+          securityTrainingStatus: this.securityTrainingStatus,
+          NDASigningDate: this.NDASigningDate,
+          RemoteWorkAgreementStatus: this.RemoteWorkAgreementStatus,
+          securityIncidentRecords: this.securityIncidentRecords,
+          LastAuditDate: this.LastAuditDate,
+        };
+      }
       // POST 请求到后端
       try {
         const response = await axios.post(
-          "http://localhost:8081/api/asset-management/save",
-          formData
+          API_BASE_URL+'/inventory/save',
+          payload
         );
-        console.log("Data sent to backend:", response.data); // 控制台显示后端响应
-        alert("Data saved and sent to backend successfully!");
+        if(response.data.success){
+          console.log("Data sent to backend:", response.data); // 控制台显示后端响应
+          this.assetID = response.data.id;
+          this.$message.success(response.data.message+" successfully!");
+        }
       } catch (error) {
         console.error("Error sending data to backend:", error);
-        alert("Failed to send data to backend.");
+        this.$message.error("Failed to save data. Please try again!");
       }
 
       // alert("Data saved successfully!");
@@ -1312,25 +1058,27 @@ export default {
   flex-wrap: wrap;
   justify-content: space-between;
   margin-bottom: 20px;
-  padding: 0 10%; /* 添加左右内边距，让内容向中间聚集 */
+  padding: 0 10%;
+  /* 添加左右内边距，让内容向中间聚集 */
 }
 
 .el-col {
-  flex: 1 1 48%; /* 每个输入框占用 48% 宽度 */
+  flex: 1 1 48%;
+  /* 每个输入框占用 48% 宽度 */
   padding-right: 20px;
   box-sizing: border-box;
 }
 
-.el-row > .el-col:last-child {
+.el-row>.el-col:last-child {
   margin-left: 0;
 }
 
-.el-row > .el-col:first-child {
+.el-row>.el-col:first-child {
   margin-right: 0;
 }
 
 /* 当只有一个输入框时，让它占满一行并左对齐 */
-.el-row > .el-col:only-child {
+.el-row>.el-col:only-child {
   flex: 1 1 100%;
   margin-left: 0;
 }
