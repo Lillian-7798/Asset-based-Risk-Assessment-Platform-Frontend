@@ -20,24 +20,6 @@ const routes = [
     path: "/NewAsset",
     name: "NewAsset",
     component: () => import("../pages/NewAsset"),
-    children: [
-      // {
-      //     path: 'software',
-      //     component: () => import('../pages/NewAsset/Software.vue')
-      // },
-      // {
-      //     path: 'physical',
-      //     component: () => import('../pages/NewAsset/Physical.vue')
-      // },
-      // {
-      //     path: 'information',
-      //     component: () => import('../pages/NewAsset/Information.vue')
-      // },
-      // {
-      //     path: 'people',
-      //     component: () => import('../pages/NewAsset/People.vue')
-      // }
-    ],
   },
   {
     path: "/RiskQuestionare/software",
@@ -94,6 +76,11 @@ const routes = [
         path: "risk-management",
         name: "RiskManagement",
         component: () => import("../pages/Home/RiskManagement.vue"),
+      },
+      {
+        path: "my-risk",
+        name: "Myrisk",
+        component: () => import("../pages/Home/MyRisk.vue"),
       },
       { path: "", redirect: "/home/asset-inventory" }, // 默认重定向
     ],

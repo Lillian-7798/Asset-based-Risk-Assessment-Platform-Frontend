@@ -1,4 +1,3 @@
-<!-- 数据传输显示以及页面跳转等仅用于update3问卷界面的演示，需要更改 -->
 <template>
   <!-- 过滤条件弹出框 -->
   <el-dialog
@@ -14,7 +13,7 @@
       </el-col>
       <el-col :span="8">
         <el-select
-          v-model="AssetType"
+          v-model="filterParams.assetType"
           placeholder="Default"
           style="width: 95%; justify-content: left"
           clearable
@@ -33,13 +32,13 @@
       </el-col>
       <el-col :span="8">
         <el-select
-          v-model="QStatus"
+          v-model="filterParams.qstatus"
           placeholder="Default"
           style="width: 95%; justify-content: left"
           clearable
         >
           <el-option
-            v-for="item in QStatus"
+            v-for="item in QuestionareStatus"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -54,13 +53,13 @@
       </el-col>
       <el-col :span="8">
         <el-select
-          v-model="Status"
+          v-model="filterParams.status"
           placeholder="Default"
           style="width: 95%; justify-content: left"
           clearable
         >
           <el-option
-            v-for="item in Status"
+            v-for="item in AssetStatus"
             :key="item.value"
             :label="item.label"
             :value="item.value"
@@ -71,7 +70,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="dialogVisible = false">
+        <el-button type="primary"  @click="applyFilters">
           Confirm
         </el-button>
       </div>
