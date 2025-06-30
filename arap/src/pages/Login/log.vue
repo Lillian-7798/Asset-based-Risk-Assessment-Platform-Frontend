@@ -85,7 +85,8 @@ export default {
           const userData = {
             username: response.data.username || 'guest',
             userId: response.data.userId || '',
-            useremail: response.data.useremail || ''
+            useremail: response.data.useremail || '',
+            userLevel:response.data.userLevel,
           };
           console.log('准备存储的用户数据:', userData);
 

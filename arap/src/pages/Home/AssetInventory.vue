@@ -76,9 +76,10 @@
     </el-row>
     <div class="table-container">
       <div class="table">
-        <el-table :data="tableData" border style="width: 100%">
+        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
+                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
           <el-table-column prop="date" label="Date" width="200" />
-          <el-table-column prop="name" label="Name" width="150">
+          <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
               <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type} }"
                 style="color: #409EFF; text-decoration: none">
@@ -86,13 +87,14 @@
               </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="Type" width="100" />
-          <el-table-column prop="owner" label="Owner" width="200" />
+          <el-table-column prop="type" label="Type" width="200" />
+          <el-table-column prop="owner" label="Owner" width="300" />
           <el-table-column prop="emptyFields" label="EmptyFields" />
           <!-- Status 列 - 使用自定义模板 -->
           <el-table-column prop="status" label="Status">
             <template #default="{ row }">
-              <el-tag :type="getStatusTagType(row.status)" effect="dark">
+              <el-tag :type="getStatusTagType(row.status)" effect="dark" size="large"
+                                class="bigger-tag">
                 {{ row.status }}
               </el-tag>
             </template>
@@ -101,7 +103,8 @@
           <!-- Importance 列 - 使用自定义模板 -->
           <el-table-column prop="importance" label="Importance">
             <template #default="{ row }">
-              <el-tag type="info" style="border: none" :color="getImportanceTagType(row.importance)" effect="dark">
+              <el-tag type="info" style="border: none" :color="getImportanceTagType(row.importance)" effect="dark" size="large"
+                                class="bigger-tag">
                 {{ row.importance }}
               </el-tag>
             </template>
@@ -190,7 +193,7 @@ export default {
       ],
       tableData: [],
       currentPage: 1,
-      pageSize: 14,
+      pageSize: 12,
       totalItems: 0,
       isFilterActive: false, // 新增：标记是否处于过滤状态
       originalPage: 1, // 新增：保存原始分页位置
@@ -442,5 +445,13 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.bigger-tag {
+    font-size: 15px;
+    /* 调大字号 */
+    padding: 8px 12px;
+    /* 调整内边距（上下 左右） */
+    font-weight: bold;
+    /* 可选：加粗文字 */
 }
 </style>

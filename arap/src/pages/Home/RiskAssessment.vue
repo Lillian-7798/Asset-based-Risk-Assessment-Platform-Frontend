@@ -95,9 +95,10 @@
         </el-row>
         <div class="table-container">
             <div class="table">
-                <el-table :data="tableData" border style="width: 100%">
+                <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
+                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
                     <el-table-column prop="date" label="Date" width="200" />
-                    <el-table-column prop="name" label="Name" width="180">
+                    <el-table-column prop="name" label="Name" width="300">
                         <template #default="{ row }">
                             <router-link :to="getRiskQuestionnaireLink(row)"
                                 style="color: #409EFF; text-decoration: none">
@@ -105,12 +106,13 @@
                             </router-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="type" label="Type" width="100" />
-                    <el-table-column prop="owner" label="Owner" width="200" />
+                    <el-table-column prop="type" label="Type" width="200" />
+                    <el-table-column prop="owner" label="Owner" width="300" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
                     <el-table-column prop="AssetStatus" label="Asset Status">
                         <template #default="{ row }">
-                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark">
+                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark" size="large"
+                                class="bigger-tag">
                                 {{ row.AssetStatus }}
                             </el-tag>
                         </template>
@@ -119,7 +121,8 @@
                     <!-- Importance 列 - 使用自定义模板 -->
                     <el-table-column prop="QuestionareStatus" label="Questionare Status">
                         <template #default="{ row }">
-                            <el-tag :type="getQSTagType(row.QuestionareStatus)" effect="dark">
+                            <el-tag :type="getQSTagType(row.QuestionareStatus)" effect="dark" size="large"
+                                class="bigger-tag">
                                 {{ row.QuestionareStatus }}
                             </el-tag>
                         </template>
@@ -185,7 +188,7 @@ export default {
             ],
             tableData: [],
             currentPage: 1,
-            pageSize: 14,
+            pageSize: 12,
             totalItems: 0,
             isFilterActive: false, // 新增：标记是否处于过滤状态
             originalPage: 1, // 新增：保存原始分页位置
@@ -455,5 +458,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.bigger-tag {
+    font-size: 15px;
+    /* 调大字号 */
+    padding: 8px 12px;
+    /* 调整内边距（上下 左右） */
+    font-weight: bold;
+    /* 可选：加粗文字 */
 }
 </style>
