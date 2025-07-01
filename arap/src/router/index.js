@@ -22,11 +22,6 @@ const routes = [
     component: () => import("../pages/NewAsset"),
   },
   {
-    path: "/RisksHomepage",
-    name: "RisksHomepage",
-    component: () => import("../pages/RisksHomepage"),
-  },
-  {
     path: "/RiskQuestionare/software",
     name: "Software",
     component: () => import("../pages/RiskQuestionare/Software.vue"),
@@ -61,6 +56,11 @@ const routes = [
     path: "/RiskQuestionare/people",
     name: "People",
     component: () => import("../pages/RiskQuestionare/People.vue"),
+  },
+  {
+    path: "/SubRiskManagement/SubRiskManage",
+    name: "SubRiskManage",
+    component: () => import("../pages/SubRiskManagement/SubRiskManage.vue"),
   },
   {
     path: "/Home",
