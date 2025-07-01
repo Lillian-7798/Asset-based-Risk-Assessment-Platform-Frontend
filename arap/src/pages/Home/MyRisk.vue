@@ -14,12 +14,13 @@
             </el-col>
             <el-col :span="1"></el-col>
             <el-col :span="4" class="center-align">
-                <el-text>Risk Treatment Status</el-text>
+                <el-text>Treatment Status</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="filterParams.rtstatus" placeholder="Default"
+                <el-select v-model="filterParams.treatmentstatus" placeholder="Default"
                     style="width: 95%; justify-content: left" clearable>
-                    <el-option v-for="item in RTStatus" :key="item.value" :label="item.label" :value="item.value" />
+                    <el-option v-for="item in treatmentStatus" :key="item.value" :label="item.label"
+                        :value="item.value" />
                 </el-select>
             </el-col>
         </el-row>
@@ -97,16 +98,18 @@
                                     <el-table-column label="Risk" prop="risk" width="700" />
                                     <el-table-column label="Due Date" prop="due" width="500" />
                                     <el-table-column width="100">
-                                        <template #default="scope">
-                                            <el-button size="small"
-                                                @click="handleEdit(scope.$index, scope.row)">treat</el-button>
+                                        <template #default="{ row }">
+                                            <router-link :to="{ path: '/RisksHomepage', query: { id: row.id } }"
+                                                style="color: #409EFF; text-decoration: none">
+                                                treat
+                                            </router-link>
                                         </template>
                                     </el-table-column>
                                     <el-table-column prop="treatmentStatus" label="Treatment Status">
                                         <template #default="{ row }">
-                                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark" size="large"
-                                                class="bigger-tag">
-                                                {{ row.AssetStatus }}
+                                            <el-tag :type="getTreatmentStatusTagType(row.treatmentStatus)" effect="dark"
+                                                size="large" class="bigger-tag">
+                                                {{ row.treatmentStatus }}
                                             </el-tag>
                                         </template>
                                     </el-table-column>
@@ -184,7 +187,7 @@ export default {
             filterParams: { // 新增：存储过滤参数
                 assetType: null,
                 status: null,
-                rtstatus: null
+                treatmentstatus: null
             }
         }
     },
@@ -239,21 +242,12 @@ export default {
         },
         async fetchSearchCount() {
             try {
-                let response
-                if (this.userLevel == 0) {
-                    response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
-                        params: {
-                            searchTerm: this.searchInput,
-                        }
-                    });
-                } else {
-                    response = await axios.get(`${API_BASE_URL}/asset/search_assets_count_2`, {
-                        params: {
-                            searchTerm: this.searchInput,
-                            userId: this.userId
-                        }
-                    });
-                }
+                const response = await axios.get(`${API_BASE_URL}/risk/search_assets_count`, {
+                    params: {
+                        searchTerm: this.searchInput,
+                        userId: this.userId
+                    }
+                });
                 if (response.data.success) {
                     this.totalItems = response.data.count;
                 } else {
@@ -267,12 +261,12 @@ export default {
         async fetchFilterCount() {
             console.log("Fileter Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/filter_assets_count_3`, {
+                const response = await axios.get(`${API_BASE_URL}/risk/filter_assets_count`, {
                     params: {
                         assetType: this.filterParams.assetType,
                         status: this.filterParams.status,
-                        rtstatus: this.filterParams.rtstatus,
-                        userId: this.userLevel == 0 ? 0 : this.userId
+                        treatmentstatus: this.filterParams.treatmentstatus,
+                        userId: this.userId
                     }
                 });
                 if (response.data.success) {
@@ -321,7 +315,7 @@ export default {
                 const params = {
                     page: this.currentPage - 1,
                     size: this.pageSize,
-                    userId: this.userLevel == 0 ? 0 : this.userId
+                    userId: this.userId
                 };
 
                 let endpoint = "/getAssetsByOwner";
@@ -330,17 +324,16 @@ export default {
                     Object.assign(params, {
                         assetType: this.filterParams.assetType || "",
                         status: this.filterParams.status || "",
-                        rtstatus: this.filterParams.rtstatus || ""
+                        treatmentstatus: this.filterParams.treatmentstatus || ""
                     });
                     endpoint = "/filteredAssets";
                 } else if (this.isSearchActive) {
                     Object.assign(params, {
                         searchTerm: this.searchInput
                     });
-                    if (this.userLevel == 0) endpoint = "/searchAssets"
-                    else endpoint = "/searchAssetsByOwner";
+                    endpoint = "/searchAssetsByOwner";
                 }
-
+                console.log(params)
                 const response = await axios.get(`${API_BASE_URL}/risk${endpoint}`, { params });
                 if (response.data.success) {
                     console.log(response.data.data)
@@ -351,7 +344,7 @@ export default {
                         type: asset.assetType,
                         owner: asset.assetOwner,
                         AssetStatus: asset.status,
-                        risks:asset.assetRisks
+                        risks: asset.assetRisks
                     }));
                 }
             } catch (error) {
@@ -384,7 +377,7 @@ export default {
                     return 'info'
             }
         },
-        getRTSTagType(importance) {
+        getTreatmentStatusTagType(importance) {
             switch (importance) {
                 case 'Finished':
                     return 'success'
@@ -450,6 +443,8 @@ export default {
 .expanded-panel {
     background-color: #fffbe6;
     /* 浅黄色背景 */
+    padding: 10px;
+    /* 添加一些内边距 */
 }
 
 /* 内部表格样式 */
@@ -457,13 +452,19 @@ export default {
     width: 100%;
     font-size: 15px;
     background-color: #fffbe6;
+    /* 与展开面板相同的背景色 */
     font-weight: border;
 }
 
 /* 自定义表头样式 */
 :deep(.custom-header) {
     background-color: #fdf0ac !important;
-    /* 更深的黄色 */
+    /* 表头使用稍深的黄色 */
     font-weight: bold;
+}
+
+/* 确保表格单元格也有背景色 */
+:deep(.inner-table .el-table__body tr td.el-table__cell) {
+    background-color: #fffbe6;
 }
 </style>
