@@ -1,49 +1,49 @@
+<!-- todo:1.提权为审计员之后指定审计项目
+        2. 判定当前user是否可以删除  -->
 <template>
+    <!-- 删除确认对话框 -->
+    <el-dialog v-model="deleteDialogVisible" title="Confirm Delete" width="30%">
+        <div style="display: flex; justify-content: center; align-items: center;">
+            <el-icon style="width: 20px; color: darkorange; margin-right: 8px;">
+                <Warning />
+            </el-icon>
+            <el-text>Are you sure to delete user "{{ currentDeleteUser?.name }}"?</el-text>
+        </div>
+        <template #footer>
+            <el-button @click="deleteDialogVisible = false">Cancel</el-button>
+            <el-button type="danger" @click="executeDelete">Confirm Delete</el-button>
+        </template>
+    </el-dialog>
+
+    <!-- 编辑权限对话框 -->
+    <el-dialog v-model="editDialogVisible" title="Edit Permission" width="30%">
+        <el-select v-model="selectedPermission" placeholder="Select permission">
+            <el-option v-for="item in Permissions" :key="item.value" :label="item.label" :value="item.value" />
+        </el-select>
+        <template #footer>
+            <el-button @click="editDialogVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="updatePermission">Confirm</el-button>
+        </template>
+    </el-dialog>
+
     <!-- 过滤条件弹出框 -->
     <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
-        <el-row>
-            <el-col :span="3" class="center-align">
-                <el-text>Asset Type</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.assetType" placeholder="Default"
-                    style="width: 95%; justify-content: left" clearable>
-                    <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-            <el-col :span="1"></el-col>
-            <el-col :span="4" class="center-align">
-                <el-text>Any Empty Fields?</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.emptyField" placeholder="Default"
-                    style="width: 95%; justify-content: left" clearable>
-                    <el-option v-for="item in EmptyFields" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-        </el-row>
-        <br />
-        <el-row>
-            <el-col :span="3" class="center-align">
-                <el-text>Importance</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.importance" placeholder="Default"
-                    style="width: 95%; justify-content: left" clearable>
-                    <el-option v-for="item in Importances" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-            <el-col :span="1"></el-col>
-            <el-col :span="4" class="center-align">
-                <el-text>Status</el-text>
-            </el-col>
-            <el-col :span="8">
-                <el-select v-model="filterParams.status" placeholder="Default" style="width: 95%; justify-content: left"
-                    clearable>
-                    <el-option v-for="item in Status" :key="item.value" :label="item.label" :value="item.value" />
-                </el-select>
-            </el-col>
-        </el-row>
+        <div style="height:50%">
+            <el-row>
+                <el-col :span="6"></el-col>
+                <el-col :span="4" class="center-align">
+                    <el-text>Permission</el-text>
+                </el-col>
+                <el-col :span="8">
+                    <el-select v-model="permission" placeholder="Default" style="width: 95%; justify-content: left"
+                        clearable>
+                        <el-option v-for="item in Permissions" :key="item.value" :label="item.label"
+                            :value="item.value" />
+                    </el-select>
+                </el-col>
+                <el-col :span="6"></el-col>
+            </el-row>
+        </div>
         <template #footer>
             <div class="dialog-footer">
                 <el-button @click="dialogVisible = false">Cancel</el-button>
@@ -74,13 +74,15 @@
             <div class="table">
                 <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
                     :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
-                    <el-table-column prop="User Name" label="User Name" width="200" />
-                    <el-table-column prop="Created Date" label="Created Date" width="200" />
-                    <el-table-column prop="Permission" label="Permission" width="300" />
-                    <el-table-column width="300">
-                        <template #default>
-                            <el-button link type="primary" size="large">Edit</el-button>
-                            <el-button link type="primary" size="large">Delete</el-button>
+                    <el-table-column prop="name" label="User Name" />
+                    <el-table-column prop="created_date" label="Created Date" />
+                    <el-table-column prop="permission" label="Permission" />
+                    <el-table-column label="Actions" fixed="right">
+                        <template #default="{ row }">
+                            <el-button link type="primary" size="large" :disabled="row.permission === 'Admin'"
+                                @click="showEditDialog(row)">Edit</el-button>
+                            <el-button link type="primary" size="large" :disabled="row.permission === 'Admin'"
+                                @click="confirmDelete(row)">Delete</el-button>
                         </template>
                     </el-table-column>
                 </el-table>
@@ -91,11 +93,6 @@
             </div>
         </div>
     </div>
-
-    <!-- 1111111测试用 -->
-    <!-- <el-button type="primary" round @click="handleShowAssets"
-    >Show All Assets</el-button
-  > -->
 </template>
 
 <script>
@@ -105,85 +102,104 @@ import { API_BASE_URL } from "@/components/axios";
 export default {
     data() {
         return {
+            deleteDialogVisible: false, // 新增：删除对话框显示状态
+            currentDeleteUser: null,     // 新增：当前要删除的用户
+            editDialogVisible: false,
+            selectedPermission: '',
+            currentEditingUser: null,
             isSearchActive: false,
             searchInput: "",
             Search,
             dialogVisible: false,
-            AssetTypes: [
-                {
-                    value: "Software",
-                    label: "Software",
-                },
-                {
-                    value: "Physical",
-                    label: "Physical",
-                },
-                {
-                    value: "Information",
-                    label: "Information",
-                },
-                {
-                    value: "People",
-                    label: "People",
-                },
-            ],
-            EmptyFields: [
-                {
-                    value: "Yes",
-                    label: "Yes",
-                },
-                {
-                    value: "No",
-                    label: "No",
-                },
-            ],
-            Importances: [
-                {
-                    value: "Extremely High",
-                    label: "Extremely High",
-                },
-                {
-                    value: "High",
-                    label: "High",
-                },
-                {
-                    value: "Medium",
-                    label: "Medium",
-                },
-                {
-                    value: "Low",
-                    label: "Low",
-                },
-            ],
-            Status: [
-                {
-                    value: "Active",
-                    label: "Active",
-                },
-                {
-                    value: "Decommissioned",
-                    label: "Decommissioned",
-                },
-            ],
             tableData: [],
             currentPage: 1,
             pageSize: 12,
             totalItems: 0,
             isFilterActive: false, // 新增：标记是否处于过滤状态
             originalPage: 1, // 新增：保存原始分页位置
-            filterParams: { // 新增：存储过滤参数
-                assetType: null,
-                emptyField: null,
-                importance: null,
-                status: null
-            }
+            permission: "",
+            Permissions: [
+                {
+                    value: "0",
+                    label: "Admin",
+                },
+                {
+                    value: "1",
+                    label: "Auditor",
+                },
+                {
+                    value: "2",
+                    label: "General",
+                },
+            ]
         };
     },
     mounted() {
-        this.fetchAssetsCount();
-        this.fetchAllAssets();
+        this.fetchUsersCount();
+        this.fetchAllUsers();
     },
     methods: {
+        showEditDialog(user) {
+            this.currentEditingUser = user;
+            this.selectedPermission = this.getPermissionValue(user.permission);
+            this.editDialogVisible = true;
+        },
+        // 更新权限
+        async updatePermission() {
+            try {
+                console.log(this.currentEditingUser)
+                const response = await axios.post(`${API_BASE_URL}/user/updatePermission`, new URLSearchParams({
+                    userId: this.currentEditingUser.id,
+                    permission: this.selectedPermission
+                }));
+
+                if (response.data.success) {
+                    this.$message.success('Permission updated successfully');
+                    this.fetchAllUsers(); // 刷新列表
+                    this.editDialogVisible = false;
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                this.$message.error('Failed to update permission');
+            }
+        },
+
+        // 修改后的确认删除方法
+        confirmDelete(user) {
+            this.currentDeleteUser = user;
+            this.deleteDialogVisible = true;
+        },
+        // 执行删除操作
+        async executeDelete() {
+            try {
+                const response = await axios.delete(`${API_BASE_URL}/user/delete`, {
+                    params: { userId: this.currentDeleteUser.id }
+                });
+
+                if (response.data.success) {
+                    this.$message.success('User deleted successfully');
+                    this.fetchAllUsers(); // 刷新列表
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            } catch (error) {
+                console.error(error);
+                this.$message.error('Failed to delete user');
+            } finally {
+                this.deleteDialogVisible = false;
+            }
+        },
+        // 将权限文本转换为值
+        getPermissionValue(permissionText) {
+            const permissionMap = {
+                'Admin': '0',
+                'Auditor': '1',
+                'General': '2'
+            };
+            return permissionMap[permissionText] || '';
+        },
         search() {
             if (this.searchInput == '') {
                 this.resetSearch();
@@ -206,28 +222,32 @@ export default {
             }
             this.currentPage = 1;
             this.fetchSearchCount();
-            this.fetchAllAssets();
+            this.fetchAllUsers();
         },
         resetSearch() {
             if (this.isSearchActive) {
                 this.isSearchActive = false;
                 this.currentPage = this.originalPage;
                 this.searchInput = '';
-                this.fetchAssetsCount();
-                this.fetchAllAssets();
+                this.fetchUsersCount();
+                this.fetchAllUsers();
             }
         },
         async applyFilters() {
             this.isFilterActive = true;
             this.originalPage = this.currentPage; // 保存当前页码
             this.currentPage = 1; // 重置为第一页
-            this.fetchAllAssets();
-            this.fetchFilterCount();
-            this.dialogVisible = false;
+            if (this.permission == "") {
+                this.$message.error("Permission can not be empty!")
+            } else {
+                this.fetchAllUsers();
+                this.fetchFilterCount();
+                this.dialogVisible = false;
+            }
         },
         async fetchSearchCount() {
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
+                const response = await axios.get(`${API_BASE_URL}/user/search_count`, {
                     params: {
                         searchTerm: this.searchInput
                     }
@@ -246,87 +266,73 @@ export default {
         async fetchFilterCount() {
             console.log("Fileter Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/filter_assets_count`, {
+                const response = await axios.get(`${API_BASE_URL}/user/filter_count`, {
                     params: {
-                        assetType: this.filterParams.assetType,
-                        emptyField: this.filterParams.emptyField,
-                        importance: this.filterParams.importance,
-                        status: this.filterParams.status
+                        permission: this.permission
                     }
                 });
                 if (response.data.success) {
                     console.log(response.data.count);
                     this.totalItems = response.data.count;
                 } else {
-                    console.error('获取资产数量失败:', response.data.message);
+                    console.error('获取用户数量失败:', response.data.message);
                 }
             } catch (error) {
-                console.error('获取资产数量出错:', error);
-                this.$message.error('获取资产数量失败，请稍后重试');
+                console.error('获取用户数量出错:', error);
+                this.$message.error('获取用户数量失败，请稍后重试');
             }
         },
         resetFilters() {
             this.isFilterActive = false;
             this.currentPage = this.originalPage;
-            this.filterParams = {
-                assetType: null,
-                emptyField: null,
-                importance: null,
-                status: null
-            };
-            this.fetchAssetsCount();
-            this.fetchAllAssets();
+            this.permission = ""
+            this.fetchUsersCount();
+            this.fetchAllUsers();
         },
-        async fetchAssetsCount() {
+        async fetchUsersCount() {
             console.log("Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/assets_count`);
+                const response = await axios.get(`${API_BASE_URL}/user/users_count`);
                 if (response.data.success) {
                     console.log(response.data.count);
                     this.totalItems = response.data.count;
                 } else {
-                    console.error('获取资产数量失败:', response.data.message);
+                    console.error('获取用户数量失败:', response.data.message);
                 }
             } catch (error) {
-                console.error('获取资产数量出错:', error);
-                this.$message.error('获取资产数量失败，请稍后重试');
+                console.error('获取用户数量出错:', error);
+                this.$message.error('Failed to fetch users count. Please try aga');
             }
         },
-        async fetchAllAssets() {
+        async fetchAllUsers() {
             try {
                 const params = {
                     page: this.currentPage - 1,
                     size: this.pageSize
                 };
 
-                let endpoint = "/Allassets";
+                let endpoint = "/getAllUsers";
 
                 if (this.isFilterActive) {
                     Object.assign(params, {
-                        assetType: this.filterParams.assetType || "",
-                        emptyField: this.filterParams.emptyField || "",
-                        importance: this.filterParams.importance || "",
-                        status: this.filterParams.status || ""
+                        permission: this.permission || ""
                     });
-                    endpoint = "/filteredAssets";
+                    endpoint = "/filteredUsers";
                 } else if (this.isSearchActive) {
                     Object.assign(params, {
                         searchTerm: this.searchInput
                     });
-                    endpoint = "/searchAssets";
+                    endpoint = "/searchUsers";
                 }
 
-                const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
+                const response = await axios.get(`${API_BASE_URL}/user${endpoint}`, { params });
                 if (response.data.success) {
-                    this.tableData = response.data.data.map(asset => ({
-                        id: asset.id,
-                        date: asset.dateAdded,
-                        name: asset.name,
-                        type: asset.assetType,
-                        owner: asset.assetOwner,
-                        emptyFields: asset.emptyFields,
-                        status: asset.status,
-                        importance: asset.importance
+                    console.log(response.data)
+                    this.tableData = response.data.users.map(user => ({
+                        id: user.id,
+                        name: user.name,
+                        created_date: user.created_date,
+                        permission: user.permission
                     }));
                 }
             } catch (error) {
@@ -341,8 +347,8 @@ export default {
         },
         handlePageChange(newPage) {
             this.currentPage = newPage;
-            this.fetchAssetsCount();
-            this.fetchAllAssets();
+            this.fetchUsersCount();
+            this.fetchAllUsers();
         },
         getStatusTagType(status) {
             switch (status) {

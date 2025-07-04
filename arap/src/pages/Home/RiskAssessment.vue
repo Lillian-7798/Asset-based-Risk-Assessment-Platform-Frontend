@@ -320,8 +320,8 @@ export default {
             this.currentPage = this.originalPage;
             this.filterParams = {
                 assetType: null,
-                qstatus: null,
-                status: null
+                status: null,
+                qstatus: null
             };
             this.fetchAssetsCount();
             this.fetchAllAssets();
