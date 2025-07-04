@@ -79,13 +79,16 @@
                 <div v-if="risk.applicable === 1" class="applicable-fields">
                   <div class="form-field">
                     <span class="required-field">Risk Owner:</span>
-                    <input
+                    <!-- <input
                         v-model="risk.riskOwner"
                         placeholder="Risk Owner"
                         class="risk-owner-input"
                         :class="{ 'input-error': showError(risk, 'riskOwner') }"
                         @input="markAsChanged(risk)"
-                    >
+                    > -->
+                    <el-autocomplete class="risk-owner-input"
+                        :class="{ 'input-error': showError(risk, 'riskOwner') }" v-model="risk.riskOwner" :fetch-suggestions="querySearch"
+                    placeholder="Risk Owner" @select="(item) => handleSelect(item, risk)" :trigger-on-focus="false"></el-autocomplete>
                   </div>
 
                   <div class="form-field due-date">
@@ -116,7 +119,7 @@
               <div class="save-section">
                 <button
                     class="save-button"
-                    @click="saveRiskData(risk, false)"
+                    @click="saveRiskData(risk, false,index)"
                     :disabled="!canSave(risk) || risk.loading"
                 >
                   Save Draft
@@ -125,7 +128,7 @@
                 <button
                     v-if="risk.applicable === 1"
                     class="complete-button"
-                    @click="saveRiskData(risk, true)"
+                    @click="saveRiskData(risk, true,index)"
                     :disabled="!canSave(risk) || risk.loading"
                 >
                   Mark as Complete
@@ -192,6 +195,43 @@ export default {
     this.fetchRiskTypes();
   },
   methods: {
+  querySearch(queryString, cb) {
+      this.assetOwnerID = 0
+      if (queryString.length < 2) {
+        cb([])
+        return
+      }
+
+      // 防抖处理
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout)
+      }
+
+      this.searchTimeout = setTimeout(async () => {
+        try {
+          const response = await axios.get(API_BASE_URL + '/user/search', {
+            params: { query: queryString }
+          })
+          if (response.data.success) {
+            console.log(response.data)
+            const results = response.data.users.map(user => ({
+              value: user.name,
+              id: user.id
+            }))
+
+            cb(results)
+          }
+        } catch (error) {
+          console.error('搜索用户失败:', error)
+          cb([])
+        }
+      }, 1000)
+    },
+    handleSelect(item,risk) {
+      risk.riskOwner = item.value
+      risk.riskOwnerID = item.id
+      this.markAsChanged(risk)
+    },
     getRouteParams() {
       this.assetId = this.$route.query.assetId;
       this.assetName = this.$route.query.name;
@@ -246,7 +286,7 @@ export default {
         }
       } catch (error) {
         console.error('Failed to fetch risk types:', error);
-        alert('Failed to load risk types: ' + error.message);
+        this.$message.error('Failed to load risk types: ' + error.message);
       }
     },
 
@@ -466,12 +506,12 @@ export default {
           treatmentInfo += `Comments:\n${details.comments}\n\n`;
           treatmentInfo += `Evidence Files:\n${details.evidence.join('\n')}`;
 
-          alert(treatmentInfo);
+          this.$message.success(treatmentInfo);
         } else {
           throw new Error(response.data.message);
         }
       } catch (error) {
-        alert(`Error loading treatment details: ${error.message}`);
+        this.$message.error(`Error loading treatment details: ${error.message}`);
       }
     },
 
@@ -479,6 +519,7 @@ export default {
       const currentData = JSON.stringify({
         applicable: risk.applicable,
         riskOwner: risk.riskOwner,
+        riskOwnerID:risk.riskOwnerID || 0,
         comments: risk.comments,
         dueDate: risk.dueDate
       });
@@ -503,11 +544,17 @@ export default {
       return risk.changed && risk.applicable === 1 && (!risk.riskOwner || !risk.dueDate);
     },
 
-    async saveRiskData(risk, isFinal) {
+    async saveRiskData(risk, isFinal,index) {
       risk.loading = true;
 
       if (!this.canSave(risk)) {
-        alert('Please fill in all required fields');
+        this.$message.error('Please fill in all required fields');
+        risk.loading = false;
+        return;
+      }
+      console.log(risk.riskOwnerID)
+      if(risk.applicable === 1 && risk.riskOwnerID === undefined){
+        this.$message.error('[Risk '+(index+1)+']: Can\'t set riskOwner; No such user');
         risk.loading = false;
         return;
       }
@@ -541,7 +588,7 @@ export default {
           throw new Error(response.data.message);
         }
 
-        alert(isFinal ? 'Risk marked as complete' : 'Draft saved successfully');
+        this.$message.success(isFinal ? 'Risk marked as complete' : 'Draft saved successfully');
 
         // 更新原始数据和状态
         risk.originalData = JSON.stringify({
@@ -558,7 +605,7 @@ export default {
 
       } catch (error) {
         console.error('Failed to save risk data:', error);
-        alert('Failed to save risk data: ' + error.message);
+        this.$message.error('Failed to save risk data: ' + error.message);
       } finally {
         risk.loading = false;
       }
@@ -568,7 +615,7 @@ export default {
       const unsavedRisks = this.riskTypes.filter(r => r.changed && this.canSave(r));
 
       if (unsavedRisks.length === 0) {
-        alert('No changes to save');
+        this.$message.error('No changes to save');
         return;
       }
 
@@ -581,11 +628,11 @@ export default {
           await this.saveRiskData(risk, false);
         }
 
-        alert('All changes saved successfully');
+        this.$message.success('All changes saved successfully');
         this.hasUnsavedChanges = false;
       } catch (error) {
         console.error('Failed to save all risks:', error);
-        alert('Failed to save all risks: ' + error.message);
+        this.$message.error('Failed to save all risks: ' + error.message);
       }
     },
 

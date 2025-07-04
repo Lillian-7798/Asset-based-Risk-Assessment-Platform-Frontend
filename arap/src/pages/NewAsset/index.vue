@@ -645,8 +645,6 @@ export default {
     };
   },
   methods: {
-    // TODO:1.修改save逻辑,判断emptyfiled 
-    // 4.对于asset owner进行搜索匹配，显示名字但是传递id;
     querySearch(queryString, cb) {
       this.assetOwnerID = 0
       if (queryString.length < 2) {
