@@ -126,7 +126,7 @@
                 </button>
 
                 <button
-
+                    v-if="risk.applicable === 1"
                     class="complete-button"
                     @click="saveRiskData(risk, true,index)"
                     :disabled="!canSave(risk) || risk.loading"
@@ -280,8 +280,6 @@ export default {
           }));
           console.log(response.data);
 
-          await this.fetchValidRelationships();
-
           await this.fetchExistingRiskData();
         } else {
           throw new Error(response.data.message);
@@ -291,43 +289,6 @@ export default {
         this.$message.error('Failed to load risk types: ' + error.message);
       }
     },
-
-
-    // 获取有效风险关系数据(valid=2/1)
-    async fetchValidRelationships() {
-      try {
-        // 并行获取所有风险类型的有效关系
-        const requests = this.riskTypes.map(risk =>
-            axios.get(`${API_BASE_URL}/api/risk-management/valid-relationships`, {
-              params: {
-                assetId: this.assetId,
-                typeID: risk.typeid
-              }
-            })
-        );
-
-        const responses = await Promise.all(requests);
-
-        // 更新风险类型数据
-        responses.forEach((response, index) => {
-          if (response.data.success && response.data.data) {
-            const validData = response.data.data;
-            const risk = this.riskTypes[index];
-
-            // 更新前端输入框的值
-            risk.applicable = validData.applicable ? 1 : 0;
-            risk.riskOwner = validData.riskOwner || '';
-            risk.comments = validData.comments || '';
-            risk.dueDate = validData.dueDate || '';
-            risk.status = validData.status === 'Treated' ? 'completed' : 'in-progress';
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching valid relationships:', error);
-      }
-    },
-
-
 
     async fetchExistingRiskData() {
       try {
@@ -354,7 +315,6 @@ export default {
             risk.applicable = latestLog.action === 'Assigned' ? 1 : 0;
             risk.riskOwner = latestLog.by;
             risk.status = latestLog.action === 'Treated' ? 'completed' : 'in-progress';
-
 
             // 获取完整风险数据
             const riskResponse = await axios.get(`${API_BASE_URL}/api/risk-management/risk-types`, {
@@ -450,12 +410,14 @@ export default {
         });
 
         if (response.data.success) {
+          console.log(response.data)
+          this.currentRiskStatus = response.data.status
           this.currentLogs = response.data.data.map((log, index) => ({
             index: index + 1,
             time: log.dateTime,
             action: log.action,
             by: log.by,
-            rid: log.rid
+            rid: log.id
           }));
         } else {
           throw new Error(response.data.message);
@@ -492,7 +454,7 @@ export default {
               ${details.evidence?.length ?
                   `<p><strong>Evidence (${details.evidence.length}):</strong></p>
                  <ul>${details.evidence.map(f => `<li>${f}</li>`).join('')}</ul>` :
-                  '<p>No evidence files</p>'
+                  '<p><strong>No evidence files</strong></p>'
               }
             </div>`,
               'Treatment Details',
@@ -592,7 +554,7 @@ export default {
         risk.loading = false;
         return;
       }
-      console.log(risk.riskOwnerID)
+      
       if(risk.applicable === 1 && risk.riskOwnerID === undefined){
         this.$message.error('[Risk '+(index+1)+']: Can\'t set riskOwner; No such user');
         risk.loading = false;

@@ -87,6 +87,21 @@ const routes = [
         name: "Myrisk",
         component: () => import("../pages/Home/MyRisk.vue"),
       },
+      {
+        path: "evidence-chain",
+        name: "EvidenceChain",
+        component: () => import("../pages/Home/EvidenceChain.vue"),
+      },
+      {
+        path: "audit-project",
+        name: "AuditProject",
+        component: () => import("../pages/Home/AuditProject.vue"),
+      },
+      {
+        path: "user-management",
+        name: "UserManagement",
+        component: () => import("../pages/Home/UserManegement.vue"),
+      },
       { path: "", redirect: "/home/asset-inventory" }, // 默认重定向
     ],
   },

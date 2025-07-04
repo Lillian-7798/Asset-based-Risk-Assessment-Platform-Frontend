@@ -51,7 +51,7 @@
       </el-table-column>
       <el-table-column
           prop="by"
-          label="Performed By"
+          label="By"
       ></el-table-column>
       <el-table-column
           label="Details"
@@ -63,11 +63,7 @@
               v-if="row.action === 'Treated'"
               type="primary"
               size="mini"
-              @click="handleViewDetails(row.rid)"
-              icon="el-icon-view"
-          >
-            Details
-          </el-button>
+              @click="handleViewDetails(row.rid)">Details</el-button>
           <span v-else>-</span>
         </template>
       </el-table-column>

@@ -14,12 +14,24 @@
         <el-menu-item class = "text" index="/home/risk-assessment">
           <span>Risk Assessment</span>
         </el-menu-item>
-        <el-sub-menu index="/home/risk-management">
+        <el-sub-menu index="1">
           <template #title>
             <span class="text">Risk Management</span>
           </template>
           <el-menu-item class="sub-text" index="/home/risk-management">Risk Management</el-menu-item>
           <el-menu-item class="sub-text" index="/home/my-risk">My Risk</el-menu-item>
+        </el-sub-menu>
+        <el-menu-item v-if ="userLevel===0" class = "text" index="/home/evidence-chain">
+          <span>Evidence Chain</span>
+        </el-menu-item>
+        <el-menu-item v-if ="userLevel!=2" class = "text" index="/home/audit-project">
+          <span>Audit Project</span>
+        </el-menu-item>
+        <el-sub-menu index="2" v-if ="userLevel===0">
+          <template #title>
+            <span class="text">Admin</span>
+          </template>
+          <el-menu-item class="sub-text" index="/home/user-management">User Management</el-menu-item>
         </el-sub-menu>
       </el-menu>
     </el-col>
@@ -29,7 +41,14 @@
 export default {
     data() {
         return {
+          userId:"",
+          userLevel:"",
         }
+    },
+    mounted() {
+        const userdata = JSON.parse(sessionStorage.getItem('userData'))
+        this.userId = userdata.userId;
+        this.userLevel = userdata.userLevel;
     },
     methods:{
 
