@@ -20,12 +20,12 @@
         style="width: 100%"
         height="400px"
         border
+        :default-sort="{ prop: 'time', order: 'descending' }"
         stripe
         v-loading="loading"
     >
       <el-table-column
           prop="index"
-          label="#"
           width="60"
           align="center"
       ></el-table-column>
@@ -33,6 +33,7 @@
           prop="time"
           label="Time"
           width="180"
+          sortable 
       >
         <template #default="{row}">
           {{ formatDateTime(row.time) }}
