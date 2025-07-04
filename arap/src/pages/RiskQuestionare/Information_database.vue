@@ -386,6 +386,7 @@
 <script>
 import Footer from "../../components/Footer.vue";
 import Header from "../../components/Header.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -431,7 +432,7 @@ export default {
       // 选择返回时执行此方法
       this.goBack(); // 调用 goBack 方法返回页面
     },
-    handleDone() {
+    async handleDone() {
       // 数据验证
       if (
         !this.Q1Status ||
@@ -451,44 +452,278 @@ export default {
         return;
       }
 
+      // 生成risks和warnings
+      let risks = [];
+      let warnings = [];
+
+      // 问题1
+      if (this.Q1Status === "No") {
+        risks.push("Data breach, regulatory fines");
+        warnings.push(
+          "Sensitive data is unencrypted, risking exposure to breaches."
+        );
+      }
+
+      // 问题2
+      if (this.Q2Status === "No") {
+        risks.push("Unable to trace breaches");
+        warnings.push(
+          "Insufficient log retention hinders forensic investigations and compliance."
+        );
+      }
+
+      // 问题3
+      if (this.Q3Status === "No") {
+        risks.push("Unauthorized privilege escalation");
+        warnings.push(
+          "Admin accounts lack MFA, increasing risk of unauthorized access."
+        );
+      }
+
+      // 问题4
+      if (this.Q4Status === "No") {
+        risks.push("Data corruption, exfiltration");
+        warnings.push(
+          "Missing SQLi protections leave the database vulnerable to attacks."
+        );
+      }
+
+      // 问题5
+      if (this.Q5Status === "No") {
+        risks.push("Exploitable vulnerabilities");
+        warnings.push(
+          "Delayed patching exposes databases to known vulnerabilities."
+        );
+      }
+
+      // 问题6
+      if (this.Q6Status === "No") {
+        risks.push("Failed disaster recovery");
+        warnings.push(
+          "Untested backups may fail during recovery, risking data loss."
+        );
+      }
+
+      // 问题7
+      if (this.Q7Status === "No") {
+        risks.push("GDPR non-compliance");
+        warnings.push(
+          "PII in test environments violates privacy and compliance."
+        );
+      }
+
+      // 问题8
+      if (this.Q8Status === "No") {
+        risks.push("Regional outage impact");
+        warnings.push(
+          "Lack of geo-isolation risks data loss in regional outages."
+        );
+      }
+
+      // 问题9
+      if (this.Q9Status === "No") {
+        risks.push("Third-party breaches");
+        warnings.push(
+          "Unverified cloud vendors may have inadequate security controls."
+        );
+      }
+
+      // 问题10
+      if (this.Q10Status === "No") {
+        risks.push("Operational inefficiencies");
+        warnings.push(
+          "Undocumented schemas complicate audits and data governance."
+        );
+      }
+
+      // 问题11
+      if (this.Q11Status === "No") {
+        risks.push("Test data leakage");
+        warnings.push(
+          "Unmasked sensitive data in test environments increases exposure risk."
+        );
+      }
+
+      // 问题12
+      if (this.Q12Status === "No") {
+        risks.push("Brute force attacks");
+        warnings.push(
+          "No account lockout allows brute-force attacks on credentials."
+        );
+      }
+
       // Done action
       const formData = {
-        Q1Status: this.Q1Status,
-        Q2Status: this.Q2Status,
-        Q3Status: this.Q3Status,
-        Q4Status: this.Q4Status,
-        Q5Status: this.Q5Status,
-        Q6Status: this.Q6Status,
-        Q7Status: this.Q7Status,
-        Q8Status: this.Q8Status,
-        Q9Status: this.Q9Status,
-        Q10Status: this.Q10Status,
-        Q11Status: this.Q11Status,
-        Q12Status: this.Q12Status,
-        Done: "Finished", // 新增字段 Done，存储 "Finished"
+        Q1: this.Q1Status,
+        Q2: this.Q2Status,
+        Q3: this.Q3Status,
+        Q4: this.Q4Status,
+        Q5: this.Q5Status,
+        Q6: this.Q6Status,
+        Q7: this.Q7Status,
+        Q8: this.Q8Status,
+        Q9: this.Q9Status,
+        Q10: this.Q10Status,
+        Q11: this.Q11Status,
+        Q12: this.Q12Status,
+        Q13: "",
+        Q14: "",
+        Q15: "",
+        Q16: "",
+        Q17: "",
+        Q18: "",
+        Q19: "",
+        Q20: "",
+        Q21: "",
+        Q22: "",
+        Q23: "",
+        Q24: "",
+        Q25: "",
+        risks: risks.join(";"), // 合并所有风险
+        warning: warnings.join(";"), // 合并所有警告
+
+        //Done: "Finished", // 新增字段 Done，存储 "Finished"
+        //这个done之后变成更新qstatus
       };
+      // 生成risks和warnings
+
       let storedData =
         JSON.parse(localStorage.getItem("Qinformationdata")) || [];
       storedData.push(formData);
       localStorage.setItem("Qinformationdata", JSON.stringify(storedData));
 
-      alert("Questionnaire is finished. All data has been successfully saved!");
+      // POST 请求到后端
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/api/questionaire/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          formData
+        );
+        console.log("Data sent to backend:", response.data); // 控制台显示后端响应
+        alert("Data saved and sent to backend successfully!");
+      } catch (error) {
+        console.error("Error sending data to backend:", error);
+        alert("Failed to send data to backend.");
+      }
+
+      // alert("Questionnaire is finished. All data has been successfully saved!");
     },
-    handleSave() {
+    async handleSave() {
+      // 生成risks和warnings
+      let risks = [];
+      let warnings = [];
+
+      // 问题1
+      if (this.Q1Status === "No") {
+        risks.push("Data breach, regulatory fines");
+        warnings.push(
+          "Sensitive data is unencrypted, risking exposure to breaches."
+        );
+      }
+
+      // 问题2
+      if (this.Q2Status === "No") {
+        risks.push("Unable to trace breaches");
+        warnings.push(
+          "Insufficient log retention hinders forensic investigations and compliance."
+        );
+      }
+
+      // 问题3
+      if (this.Q3Status === "No") {
+        risks.push("Unauthorized privilege escalation");
+        warnings.push(
+          "Admin accounts lack MFA, increasing risk of unauthorized access."
+        );
+      }
+
+      // 问题4
+      if (this.Q4Status === "No") {
+        risks.push("Data corruption, exfiltration");
+        warnings.push(
+          "Missing SQLi protections leave the database vulnerable to attacks."
+        );
+      }
+
+      // 问题5
+      if (this.Q5Status === "No") {
+        risks.push("Exploitable vulnerabilities");
+        warnings.push(
+          "Delayed patching exposes databases to known vulnerabilities."
+        );
+      }
+
+      // 问题6
+      if (this.Q6Status === "No") {
+        risks.push("Failed disaster recovery");
+        warnings.push(
+          "Untested backups may fail during recovery, risking data loss."
+        );
+      }
+
+      // 问题7
+      if (this.Q7Status === "No") {
+        risks.push("GDPR non-compliance");
+        warnings.push(
+          "PII in test environments violates privacy and compliance."
+        );
+      }
+
+      // 问题8
+      if (this.Q8Status === "No") {
+        risks.push("Regional outage impact");
+        warnings.push(
+          "Lack of geo-isolation risks data loss in regional outages."
+        );
+      }
+
+      // 问题9
+      if (this.Q9Status === "No") {
+        risks.push("Third-party breaches");
+        warnings.push(
+          "Unverified cloud vendors may have inadequate security controls."
+        );
+      }
+
+      // 问题10
+      if (this.Q10Status === "No") {
+        risks.push("Operational inefficiencies");
+        warnings.push(
+          "Undocumented schemas complicate audits and data governance."
+        );
+      }
+
+      // 问题11
+      if (this.Q11Status === "No") {
+        risks.push("Test data leakage");
+        warnings.push(
+          "Unmasked sensitive data in test environments increases exposure risk."
+        );
+      }
+
+      // 问题12
+      if (this.Q12Status === "No") {
+        risks.push("Brute force attacks");
+        warnings.push(
+          "No account lockout allows brute-force attacks on credentials."
+        );
+      }
+
       const formData = {
-        Q1Status: this.Q1Status,
-        Q2Status: this.Q2Status,
-        Q3Status: this.Q3Status,
-        Q4Status: this.Q4Status,
-        Q5Status: this.Q5Status,
-        Q6Status: this.Q6Status,
-        Q7Status: this.Q7Status,
-        Q8Status: this.Q8Status,
-        Q9Status: this.Q9Status,
-        Q10Status: this.Q10Status,
-        Q11Status: this.Q11Status,
-        Q12Status: this.Q12Status,
-        Done: "In-progress", // 新增字段 Done
+        Q1: this.Q1Status,
+        Q2: this.Q2Status,
+        Q3: this.Q3Status,
+        Q4: this.Q4Status,
+        Q5: this.Q5Status,
+        Q6: this.Q6Status,
+        Q7: this.Q7Status,
+        Q8: this.Q8Status,
+        Q9: this.Q9Status,
+        Q10: this.Q10Status,
+        Q11: this.Q11Status,
+        Q12: this.Q12Status,
+        //Done: "In-progress", // 新增字段 Done
+        risks: risks.join(";"), // 合并所有风险
+        warning: warnings.join(";"), // 合并所有警告
       };
 
       let storedData =
@@ -496,7 +731,20 @@ export default {
       storedData.push(formData);
       localStorage.setItem("Qinformationdata", JSON.stringify(storedData));
 
-      alert("Data saved successfully!");
+      // POST 请求到后端
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/api/questionaire/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          formData
+        );
+        console.log("Data sent to backend:", response.data); // 控制台显示后端响应
+        alert("Data saved and sent to backend successfully!");
+      } catch (error) {
+        console.error("Error sending data to backend:", error);
+        alert("Failed to send data to backend.");
+      }
+
+      // alert("Data saved successfully!");
     },
   },
 };

@@ -219,6 +219,7 @@
 <script>
 import Footer from "../../components/Footer.vue";
 import Header from "../../components/Header.vue";
+import axios from "axios";
 
 export default {
   components: {
@@ -227,7 +228,8 @@ export default {
   },
   data() {
     return {
-      commentsFromAssigner: "Very important", // 暂时固定值
+      rid: 1, //应该由上个界面传过来
+      commentsFromAssigner: "", // 默认值
       tooltipContent: `
         Risk treatment involves selecting and implementing measures to address identified risks. Four primary strategies:
         1. Risk Avoidance: Completely eliminating the activity or process that creates the risk.
@@ -254,6 +256,7 @@ export default {
     };
   },
   created() {
+    this.fetchComments(); // 组件创建时加载 comments
     // 在组件加载时从localStorage读取已保存的文件列表
     const savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
     this.savedFiles = savedFiles;
@@ -265,6 +268,16 @@ export default {
     },
   },
   methods: {
+    fetchComments() {
+      axios
+        .get(`http://localhost:8081/api/risk_relationship/${this.rid}`)
+        .then((response) => {
+          this.commentsFromAssigner = response.data;
+        })
+        .catch((error) => {
+          console.error("Error fetching comments:", error);
+        });
+    },
     handleFileChange(file, fileList) {
       this.fileList = fileList; // 更新当前的文件列表
     },
@@ -281,6 +294,7 @@ export default {
 
       // Update localStorage with the new saved files
       localStorage.setItem("uploadedFiles", JSON.stringify(this.savedFiles));
+      //这里先不用数据库显示？感觉挺好
     },
 
     // 打开文件（双击）
@@ -307,7 +321,7 @@ export default {
       // 选择返回时执行此方法
       this.goBack(); // 调用 goBack 方法返回页面
     },
-    handleDone() {
+    async handleDone() {
       // 数据验证
       if (
         !this.RiskLevel ||
@@ -341,9 +355,22 @@ export default {
       // Clear fileList after saving
       this.fileList = [];
 
-      alert("Treatment is finished. All data has been successfully saved!");
+      // POST 请求到后端
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/api/risk_treatment/save/9", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          formData
+        );
+        console.log("Data sent to backend:", response.data); // 控制台显示后端响应
+        alert("Data saved and sent to backend successfully!");
+      } catch (error) {
+        console.error("Error sending data to backend:", error);
+        alert("Failed to send data to backend.");
+      }
+
+      //alert("Treatment is finished. All data has been successfully saved!");
     },
-    handleSave() {
+    async handleSave() {
       const formData = {
         RiskLevel: this.RiskLevel,
         TreatmentOption: this.TreatmentOption,
@@ -367,7 +394,20 @@ export default {
       // Clear fileList after saving
       this.fileList = [];
 
-      alert("Data saved successfully!");
+      // POST 请求到后端
+      try {
+        const response = await axios.post(
+          "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          formData
+        );
+        console.log("Data sent to backend:", response.data); // 控制台显示后端响应
+        alert("Data saved and sent to backend successfully!");
+      } catch (error) {
+        console.error("Error sending data to backend:", error);
+        alert("Failed to send data to backend.");
+      }
+
+      //alert("Data saved successfully!");
     },
   },
 };

@@ -63,6 +63,11 @@ const routes = [
     component: () => import("../pages/SubRiskManagement/SubRiskManage.vue"),
   },
   {
+    path: "/RisksHomepage",
+    name: "RisksHomepage",
+    component: () => import("../pages/RisksHomepage"),
+  },
+  {
     path: "/Home",
     name: "Home",
     component: () => import("../pages/Home"),
