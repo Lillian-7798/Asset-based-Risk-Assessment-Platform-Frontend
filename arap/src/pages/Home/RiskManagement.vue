@@ -1,3 +1,4 @@
+<!-- TODO:连接跳转到资产风险管理页面，并且只有当前用户是该资产拥有者的时候可以跳转 -->
 <template>
   <!-- 过滤条件弹出框 -->
   <el-dialog
@@ -95,9 +96,10 @@
         </el-row>
         <div class="table-container">
             <div class="table">
-                <el-table :data="tableData" border style="width: 100%">
+                <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
+                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
                     <el-table-column prop="date" label="Date" width="200" />
-                    <el-table-column prop="name" label="Name" width="180">
+                    <el-table-column prop="name" label="Name" width="300">
                         <template #default="{ row }">
                             <router-link :to="{path:'/SubRiskManagement/SubRiskManage',
                              query:{ assetId: row.id,name: row.name,assetOwner: row.owner}}"
@@ -106,12 +108,13 @@
                             </router-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="type" label="Type" width="100" />
-                    <el-table-column prop="owner" label="Owner" width="200" />
+                    <el-table-column prop="type" label="Type" width="200" />
+                    <el-table-column prop="owner" label="Owner" width="300" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
                     <el-table-column prop="AssetStatus" label="Asset Status">
                         <template #default="{ row }">
-                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark">
+                            <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark" size="large"
+                                class="bigger-tag">
                                 {{ row.AssetStatus }}
                             </el-tag>
                         </template>
@@ -120,7 +123,8 @@
                     <!-- Importance 列 - 使用自定义模板 -->
                     <el-table-column prop="RTStatus" label="Risk Treatment Status">
                         <template #default="{ row }">
-                            <el-tag :type="getRTSTagType(row.RTStatus)" effect="dark">
+                            <el-tag :type="getRTSTagType(row.RTStatus)" effect="dark" size="large"
+                                class="bigger-tag">
                                 {{ row.RTStatus }}
                             </el-tag>
                         </template>
@@ -142,6 +146,8 @@ import { API_BASE_URL } from "@/components/axios";
 export default {
     data() {
         return {
+            userId:"",
+            userLevel:"",
             isSearchActive: false,
             searchInput: "",
             Search,
@@ -186,7 +192,7 @@ export default {
             ],
             tableData: [],
             currentPage: 1,
-            pageSize: 14,
+            pageSize: 12,
             totalItems: 0,
             isFilterActive: false, // 新增：标记是否处于过滤状态
             originalPage: 1, // 新增：保存原始分页位置
@@ -198,6 +204,9 @@ export default {
         }
     },
     mounted() {
+        const userdata = JSON.parse(sessionStorage.getItem('userData'))
+        this.userId = userdata.userId;
+        this.userLevel = userdata.userLevel;
         this.fetchAssetsCount();
         this.fetchAllAssets();
     },
@@ -245,11 +254,21 @@ export default {
         },
         async fetchSearchCount() {
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
+                let response
+                if(this.userLevel==0){
+                    response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
                     params: {
-                        searchTerm: this.searchInput
+                        searchTerm: this.searchInput,
                     }
                 });
+                }else{
+                    response = await axios.get(`${API_BASE_URL}/asset/search_assets_count_2`, {
+                    params: {
+                        searchTerm: this.searchInput,
+                        userId:this.userId
+                    }
+                });
+                }
                 if (response.data.success) {
                     this.totalItems = response.data.count;
                 } else {
@@ -267,7 +286,8 @@ export default {
                     params: {
                         assetType: this.filterParams.assetType,
                         status: this.filterParams.status,
-                        rtstatus: this.filterParams.rtstatus
+                        rtstatus: this.filterParams.rtstatus,
+                        userId:this.userLevel ==0? 0:this.userId
                     }
                 });
                 if (response.data.success) {
@@ -295,7 +315,11 @@ export default {
         async fetchAssetsCount() {
             console.log("Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/asset/assets_count`);
+                const response = await axios.get(`${API_BASE_URL}/asset/assets_count_by_owner`,{
+                    params:{
+                        userId:this.userLevel ==0? 0:this.userId
+                    }
+                });
                 if (response.data.success) {
                     console.log(response.data.count);
                     this.totalItems = response.data.count;
@@ -311,10 +335,11 @@ export default {
             try {
                 const params = {
                     page: this.currentPage - 1,
-                    size: this.pageSize
+                    size: this.pageSize,
+                    userId:this.userLevel ==0? 0:this.userId
                 };
 
-                let endpoint = "/Allassets";
+                let endpoint = "/getAssetsByOwner";
 
                 if (this.isFilterActive) {
                     Object.assign(params, {
@@ -327,7 +352,8 @@ export default {
                     Object.assign(params, {
                         searchTerm: this.searchInput
                     });
-                    endpoint = "/searchAssets";
+                    if(this.userLevel==0) endpoint="/searchAssets"
+                    else endpoint = "/searchAssetsByOwner";
                 }
 
                 const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
@@ -424,5 +450,13 @@ export default {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+.bigger-tag {
+    font-size: 15px;
+    /* 调大字号 */
+    padding: 8px 12px;
+    /* 调整内边距（上下 左右） */
+    font-weight: bold;
+    /* 可选：加粗文字 */
 }
 </style>

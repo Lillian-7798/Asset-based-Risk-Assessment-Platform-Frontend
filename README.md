@@ -1,6 +1,7 @@
 # Some bug to fix
 - 1. questionaire页面美观性调整（包括header修改/warning/help message按钮的添加/Done按钮添加）
 - 2. inventory页面（help message按钮添加/选择栏选择后取消选择需要清空字段）
+- 3. login页面，输入密码之后按回车可以登录
 # Asset-based-Risk-Assessment-Platform-Frontend
 HKU CS project proposal
 
