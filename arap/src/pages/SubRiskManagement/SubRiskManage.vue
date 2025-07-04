@@ -280,6 +280,7 @@ export default {
           }));
           console.log(response.data);
 
+          await this.fetchValidRelationships();
           await this.fetchExistingRiskData();
         } else {
           throw new Error(response.data.message);
@@ -635,6 +636,39 @@ export default {
       } catch (error) {
         console.error('Failed to save all risks:', error);
         this.$message.error('Failed to save all risks: ' + error.message);
+      }
+    },
+        // 获取有效风险关系数据(valid=2/1)
+    async fetchValidRelationships() {
+      try {
+        // 并行获取所有风险类型的有效关系
+        const requests = this.riskTypes.map(risk =>
+            axios.get(`${API_BASE_URL}/api/risk-management/valid-relationships`, {
+              params: {
+                assetId: this.assetId,
+                typeID: risk.typeid
+              }
+            })
+        );
+
+        const responses = await Promise.all(requests);
+        console.log("valid:"+responses)
+        // 更新风险类型数据
+        responses.forEach((response, index) => {
+          if (response.data.success && response.data.data) {
+            const validData = response.data.data;
+            const risk = this.riskTypes[index];
+
+            // 更新前端输入框的值
+            risk.applicable = validData.applicable ? 1 : 0;
+            risk.riskOwner = validData.riskOwner || '';
+            risk.comments = validData.comments || '';
+            risk.dueDate = validData.dueDate || '';
+            risk.status = validData.status === 'Treated' ? 'completed' : 'in-progress';
+          }
+        });
+      } catch (error) {
+        console.error('Error fetching valid relationships:', error);
       }
     },
 
