@@ -174,6 +174,13 @@ export default {
     },
 
     handleAuditorSelect(item) {
+      if (item.level !== 1) {
+        ElMessage.warning('Only Level 1 users can be selected as auditors');
+        this.auditorSearch = '';
+        this.selectedAuditor = null;
+        return;
+      }
+
       this.selectedAuditor = item // 存储完整对象
 
       this.auditorSearch = item.name // 更新输入框显示
@@ -201,6 +208,10 @@ export default {
     async createProject() {
       if (!this.newProjectName.trim()) {
         ElMessage.error('Please enter a project name');
+        return;
+      }
+      if (!this.selectedAuditor || this.selectedAuditor.level !== 1) {
+        ElMessage.error('Please select a valid auditor (Level 1)');
         return;
       }
 
