@@ -1,68 +1,51 @@
 <template>
-  <!-- 过滤条件弹出框 -->
-  <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
-    <el-row>
-      <el-col :span="3" class="center-align">
-        <el-text>Asset Type</el-text>
-      </el-col>
-      <el-col :span="8">
-        <el-select v-model="filterParams.assetType" placeholder="Default" style="width: 95%; justify-content: left"
-          clearable>
-          <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-col>
-      <el-col :span="1"></el-col>
-      <el-col :span="4" class="center-align">
-        <el-text>Any Empty Fields?</el-text>
-      </el-col>
-      <el-col :span="8">
-        <el-select v-model="filterParams.emptyField" placeholder="Default" style="width: 95%; justify-content: left"
-          clearable>
-          <el-option v-for="item in EmptyFields" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-col>
-    </el-row>
-    <br />
-    <el-row>
-      <el-col :span="3" class="center-align">
-        <el-text>Importance</el-text>
-      </el-col>
-      <el-col :span="8">
-        <el-select v-model="filterParams.importance" placeholder="Default" style="width: 95%; justify-content: left"
-          clearable>
-          <el-option v-for="item in Importances" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-col>
-      <el-col :span="1"></el-col>
-      <el-col :span="4" class="center-align">
-        <el-text>Status</el-text>
-      </el-col>
-      <el-col :span="8">
-        <el-select v-model="filterParams.status" placeholder="Default" style="width: 95%; justify-content: left"
-          clearable>
-          <el-option v-for="item in Status" :key="item.value" :label="item.label" :value="item.value" />
-        </el-select>
-      </el-col>
-    </el-row>
+  <!-- 创建新审计项目的弹窗 -->
+  <el-dialog v-model="createModalVisible" title="Creating New Audit Project" width="40%" :center="true">
+    <el-form>
+      <el-form-item label="Project Name" required>
+        <el-input v-model="newProjectName" placeholder="Enter project name"></el-input>
+      </el-form-item>
+      <el-form-item label="Auditor" required>
+        <el-autocomplete
+            v-model="auditorSearch"
+            :fetch-suggestions="querySearch"
+            placeholder="Search auditor (min 2 chars)"
+            value-key="name"
+          @select="handleAuditorSelect"
+          clearable
+          style="width: 100%"
+          >
+        <template #default="{ item }">
+          <div>{{ item.name }}</div>
+        </template>
+        </el-autocomplete>
+      </el-form-item>
+    </el-form>
     <template #footer>
       <div class="dialog-footer">
-        <el-button @click="dialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="applyFilters">
-          Confirm
-        </el-button>
+        <el-button @click="cancelCreate">Cancel</el-button>
+        <el-button type="primary" @click="createProject">Done</el-button>
       </div>
     </template>
   </el-dialog>
 
-  <!-- 正常页面 -->
+  <!-- 主页面 -->
   <div class="container">
     <el-row>
       <el-col :span="12" style="display: flex; align-items: center; justify-content: left">
-        <el-button type="primary" round @click="newAsset">
+        <h1 class="page-title">AuditProject</h1>
+        <el-button
+            v-if="showNewButton"
+            type="primary"
+            round
+            @click="showCreateModal"
+            style="margin-left: 20px"
+        >
           <el-icon>
             <Plus />
           </el-icon>
-          New</el-button>
+          New
+        </el-button>
       </el-col>
       <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
         <el-icon style="margin-right: 10px" @click="toggleFilter" :color="isFilterActive ? '#409EFF' : ''">
@@ -70,42 +53,30 @@
         </el-icon>
       </el-col>
       <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
-        <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
-          :prefix-icon="Search" @change="search" clearable />
+        <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Search by Name or Created By"
+                  :prefix-icon="Search" @change="search" clearable />
       </el-col>
     </el-row>
     <div class="table-container">
       <div class="table">
-        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
-                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
+        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: lighter;"
+                  :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
+
+
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
-              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type} }"
-                style="color: #409EFF; text-decoration: none">
+              <router-link :to="{ path: '/audit-detail', query: { id: row.id } }"
+                           style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="Type" width="200" />
-          <el-table-column prop="owner" label="Owner" width="300" />
-          <el-table-column prop="emptyFields" label="EmptyFields" />
-          <!-- Status 列 - 使用自定义模板 -->
+          <el-table-column prop="createdBy" label="Created By" width="300" />
           <el-table-column prop="status" label="Status">
             <template #default="{ row }">
-              <el-tag :type="getStatusTagType(row.status)" effect="dark" size="large"
-                                class="bigger-tag">
+              <el-tag :type="getStatusTagType(row.status)" effect="dark" size="large" class="bigger-tag">
                 {{ row.status }}
-              </el-tag>
-            </template>
-          </el-table-column>
-
-          <!-- Importance 列 - 使用自定义模板 -->
-          <el-table-column prop="importance" label="Importance">
-            <template #default="{ row }">
-              <el-tag type="info" style="border: none" :color="getImportanceTagType(row.importance)" effect="dark" size="large"
-                                class="bigger-tag">
-                {{ row.importance }}
               </el-tag>
             </template>
           </el-table-column>
@@ -113,108 +84,179 @@
       </div>
       <div class="pagination">
         <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize"
-          :current-page="currentPage" @current-change="handlePageChange" />
+                       :current-page="currentPage" @current-change="handlePageChange" />
       </div>
     </div>
   </div>
 
-  <!-- 1111111测试用 -->
-  <!-- <el-button type="primary" round @click="handleShowAssets"
-    >Show All Assets</el-button
-  > -->
+  <!-- 状态过滤弹窗 -->
+  <el-dialog v-model="filterDialogVisible" title="Filter by Status" width="30%">
+    <el-select v-model="filterParams.status" placeholder="Select status" style="width: 100%">
+      <el-option label="All" value=""></el-option>
+      <el-option label="In Progress" value="in-progress"></el-option>
+      <el-option label="Finished" value="finished"></el-option>
+    </el-select>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="resetFilters">Reset</el-button>
+        <el-button type="primary" @click="applyFilters">Apply</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script>
-import { Search } from "@element-plus/icons-vue";
+import { Search, Plus, Filter } from "@element-plus/icons-vue";
 import axios from "axios";
 import { API_BASE_URL } from "@/components/axios";
+import { ElMessage } from 'element-plus';
+
 export default {
   data() {
     return {
-      isSearchActive: false,
-      searchInput: "",
       Search,
-      dialogVisible: false,
-      AssetTypes: [
-        {
-          value: "Software",
-          label: "Software",
-        },
-        {
-          value: "Physical",
-          label: "Physical",
-        },
-        {
-          value: "Information",
-          label: "Information",
-        },
-        {
-          value: "People",
-          label: "People",
-        },
-      ],
-      EmptyFields: [
-        {
-          value: "Yes",
-          label: "Yes",
-        },
-        {
-          value: "No",
-          label: "No",
-        },
-      ],
-      Importances: [
-        {
-          value: "Extremely High",
-          label: "Extremely High",
-        },
-        {
-          value: "High",
-          label: "High",
-        },
-        {
-          value: "Medium",
-          label: "Medium",
-        },
-        {
-          value: "Low",
-          label: "Low",
-        },
-      ],
-      Status: [
-        {
-          value: "Active",
-          label: "Active",
-        },
-        {
-          value: "Decommissioned",
-          label: "Decommissioned",
-        },
-      ],
+      Plus,
+      Filter,
+      createModalVisible: false,
+      filterDialogVisible: false,
+      newProjectName: '',
       tableData: [],
       currentPage: 1,
       pageSize: 12,
       totalItems: 0,
-      isFilterActive: false, // 新增：标记是否处于过滤状态
-      originalPage: 1, // 新增：保存原始分页位置
-      filterParams: { // 新增：存储过滤参数
-        assetType: null,
-        emptyField: null,
-        importance: null,
-        status: null
-      }
+      searchInput: "",
+      isSearchActive: false,
+      isFilterActive: false,
+      originalPage: 1,
+      userId: null,
+      userLevel: null,
+      showNewButton: false,
+      currentUsername: null,
+      filterParams: {
+        status: ""
+      },
+      auditorSearch: '', // 搜索输入框绑定值
+      selectedAuditor: null, // 存储选中的审计员
+      searchTimeout: null // 防抖计时器
     };
   },
   mounted() {
-    this.fetchAssetsCount();
-    this.fetchAllAssets();
+    this.fetchProjectsCount();
+    this.fetchAllProjects();
+    this.checkUserLevel();
+    this.fetchProjectsCount();
+    this.fetchAllProjects();
   },
   methods: {
-    search(){
-      if (this.searchInput == '') {
+    async querySearch(queryString, cb) {
+      if (queryString.length < 2) {
+        cb([])
+        return
+      }
+
+      try {
+        const res = await axios.get(`${API_BASE_URL}/user/search-auditor`, {
+          params: { query: queryString }
+        })
+
+        cb(res.data.users.map(u => ({
+          id: u.id,
+          name: u.name,
+          value: u.name, // 必须包含value字段
+          level: u.level
+
+
+        })))
+      } catch (err) {
+        console.error('搜索失败:', err)
+        cb([])
+      }
+    },
+
+    handleAuditorSelect(item) {
+      this.selectedAuditor = item // 存储完整对象
+
+      this.auditorSearch = item.name // 更新输入框显示
+    },
+
+    checkUserLevel() {
+      const userData = JSON.parse(sessionStorage.getItem('userData'));
+      if (userData) {
+        this.userId = userData.userId;
+        this.userLevel = userData.userLevel;
+        this.showNewButton = this.userLevel === 0; // 只有userLevel为0时显示+New按钮
+        this.currentUsername = userData.username; // 保存当前用户名
+      } else {
+        console.error('User data not found in sessionStorage');
+        this.$router.push('/login');
+      }
+    },
+    showCreateModal() {
+      this.createModalVisible = true;
+      this.newProjectName = '';
+    },
+    cancelCreate() {
+      this.createModalVisible = false;
+    },
+    async createProject() {
+      if (!this.newProjectName.trim()) {
+        ElMessage.error('Please enter a project name');
+        return;
+      }
+
+      const user = sessionStorage.getItem('userData');
+      if (!user) {
+        console.error('Please login first');
+        this.$router.push('/login');
+        return;
+      }
+
+      const userData = JSON.parse(user);
+      //const username = userData.username;
+      //const userId = userData.userId;
+
+      try {
+        const requestData = {
+          projectName: this.newProjectName,
+          createdBy: userData.username,
+          auditor: this.auditorSearch
+        };
+
+        console.log(requestData);
+
+
+        const response = await axios.post(`${API_BASE_URL}/audit/create`, requestData, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+
+        if (response.data.success) {
+          ElMessage.success('Project created successfully');
+          this.createModalVisible = false;
+          this.resetCreateForm();
+          this.fetchProjectsCount();
+          this.fetchAllProjects();
+        } else {
+          ElMessage.error(response.data.message || 'Failed to create project');
+        }
+      } catch (error) {
+        console.error('Error creating project:', error);
+        ElMessage.error('Failed to create project');
+      }
+    },
+
+    // 重置表单
+    resetCreateForm() {
+      this.newProjectName = '';
+      this.auditorSearch = '';
+      this.selectedAuditor = null;
+    },
+    search() {
+      if (this.searchInput === '') {
         this.resetSearch();
       } else {
-        // You can add debounce here if needed
         this.applySearch();
       }
     },
@@ -225,35 +267,59 @@ export default {
       }
 
       this.isSearchActive = true;
-      if(!this.isFilterActive){
+      if (!this.isFilterActive) {
         this.originalPage = this.currentPage;
-      }else{
+      } else {
         this.isFilterActive = false;
       }
       this.currentPage = 1;
       this.fetchSearchCount();
-      this.fetchAllAssets();
+      this.fetchAllProjects();
     },
     resetSearch() {
       if (this.isSearchActive) {
         this.isSearchActive = false;
         this.currentPage = this.originalPage;
         this.searchInput = '';
-        this.fetchAssetsCount();
-        this.fetchAllAssets();
+        this.fetchProjectsCount();
+        this.fetchAllProjects();
       }
     },
-    async applyFilters() {
+    toggleFilter() {
+      this.filterDialogVisible = true;
+    },
+    applyFilters() {
       this.isFilterActive = true;
-      this.originalPage = this.currentPage; // 保存当前页码
-      this.currentPage = 1; // 重置为第一页
-      this.fetchAllAssets();
+      this.originalPage = this.currentPage;
+      this.currentPage = 1;
       this.fetchFilterCount();
-      this.dialogVisible = false;
+      this.fetchAllProjects();
+      this.filterDialogVisible = false;
+    },
+    resetFilters() {
+      this.isFilterActive = false;
+      this.filterParams.status = "";
+      this.currentPage = this.originalPage;
+      this.fetchProjectsCount();
+      this.fetchAllProjects();
+      this.filterDialogVisible = false;
+    },
+    async fetchProjectsCount() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/audit/count`);
+        if (response.data.success) {
+          this.totalItems = response.data.count;
+        } else {
+          console.error('Failed to get projects count:', response.data.message);
+        }
+      } catch (error) {
+        console.error('Error getting projects count:', error);
+        ElMessage.error('Failed to get projects count');
+      }
     },
     async fetchSearchCount() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
+        const response = await axios.get(`${API_BASE_URL}/audit/search-count`, {
           params: {
             searchTerm: this.searchInput
           }
@@ -261,148 +327,100 @@ export default {
         if (response.data.success) {
           this.totalItems = response.data.count;
         } else {
-          console.error('获取搜索数量失败:', response.data.message);
+          console.error('Failed to get search count:', response.data.message);
         }
       } catch (error) {
-        console.error('获取搜索数量出错:', error);
-        this.$message.error('获取搜索数量失败，请稍后重试');
+        console.error('Error getting search count:', error);
+        ElMessage.error('Failed to get search count');
       }
     },
-
     async fetchFilterCount() {
-      console.log("Fileter Count")
       try {
-        const response = await axios.get(`${API_BASE_URL}/asset/filter_assets_count`, {
+        const response = await axios.get(`${API_BASE_URL}/audit/filter-count`, {
           params: {
-            assetType: this.filterParams.assetType,
-            emptyField: this.filterParams.emptyField,
-            importance: this.filterParams.importance,
             status: this.filterParams.status
           }
         });
         if (response.data.success) {
-          console.log(response.data.count);
           this.totalItems = response.data.count;
         } else {
-          console.error('获取资产数量失败:', response.data.message);
+          console.error('Failed to get filter count:', response.data.message);
         }
       } catch (error) {
-        console.error('获取资产数量出错:', error);
-        this.$message.error('获取资产数量失败，请稍后重试');
+        console.error('Error getting filter count:', error);
+        ElMessage.error('Failed to get filter count');
       }
     },
-    resetFilters() {
-      this.isFilterActive = false;
-      this.currentPage = this.originalPage;
-      this.filterParams = {
-        assetType: null,
-        emptyField: null,
-        importance: null,
-        status: null
-      };
-      this.fetchAssetsCount();
-      this.fetchAllAssets();
-    },
-    async fetchAssetsCount() {
-      console.log("Count")
-      try {
-        const response = await axios.get(`${API_BASE_URL}/asset/assets_count`);
-        if (response.data.success) {
-          console.log(response.data.count);
-          this.totalItems = response.data.count;
-        } else {
-          console.error('获取资产数量失败:', response.data.message);
-        }
-      } catch (error) {
-        console.error('获取资产数量出错:', error);
-        this.$message.error('获取资产数量失败，请稍后重试');
-      }
-    },
-    async fetchAllAssets() {
+
+    async fetchAllProjects() {
       try {
         const params = {
           page: this.currentPage - 1,
           size: this.pageSize
         };
 
-        let endpoint = "/Allassets";
+        let endpoint = "/list";
 
         if (this.isFilterActive) {
           Object.assign(params, {
-            assetType: this.filterParams.assetType || "",
-            emptyField: this.filterParams.emptyField || "",
-            importance: this.filterParams.importance || "",
             status: this.filterParams.status || ""
           });
-          endpoint = "/filteredAssets";
+          endpoint = "/filter";
         } else if (this.isSearchActive) {
           Object.assign(params, {
             searchTerm: this.searchInput
           });
-          endpoint = "/searchAssets";
+          endpoint = "/search";
         }
 
-        const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
+        const response = await axios.get(`${API_BASE_URL}/audit${endpoint}`, { params });
+
+        console.log(response.data);
+
         if (response.data.success) {
-          this.tableData = response.data.data.map(asset => ({
-            id: asset.id,
-            date: asset.dateAdded,
-            name: asset.name,
-            type: asset.assetType,
-            owner: asset.assetOwner,
-            emptyFields: asset.emptyFields,
-            status: asset.status,
-            importance: asset.importance
-          }));
+          // 获取当前用户信息
+          const user = JSON.parse(sessionStorage.getItem('userData'));
+          const userId = user.userId;
+
+
+          // 过滤数据
+          this.tableData = response.data.data
+              .map(project => ({
+                id: project.id,
+                date: project.date,
+                name: project.name,
+                createdBy: project.createdBy,
+                status: project.status === "in-progress" ? "In Progress" : "Finished",
+                auditorId: project.auditorId, // 添加auditor字段
+              }))
+              .filter(project => {
+                // 如果userLevel == 0(管理员)，显示所有记录
+                // 如果userLevel == 1，只显示当前用户是auditor的记录
+                return this.userLevel === 0 ||
+                    (this.userLevel === 1 && project.auditorId === userId);
+              });
         }
       } catch (error) {
-        console.error(error);
-        this.$message.error('获取资产数据失败，请稍后重试');
+        console.error('Error fetching projects:', error);
+        ElMessage.error('Failed to fetch projects');
       }
     },
-    newAsset() {
-      this.$router.push({
-        path: "/NewAsset",
-      });
-    },
+
     handlePageChange(newPage) {
       this.currentPage = newPage;
-      this.fetchAssetsCount();
-      this.fetchAllAssets();
+      this.fetchAllProjects();
     },
     getStatusTagType(status) {
       switch (status) {
-        case "Active":
+        case "In Progress":
+          return "warning";
+        case "Finished":
           return "success";
-        case "Decommissioned":
-          return "info";
+        default:
+          return "";
       }
-    },
-    getImportanceTagType(importance) {
-      switch (importance) {
-        case "Extremely High":
-          return "#ED2826";
-        case "High":
-          return "#f56e6d";
-        case "Medium":
-          return "#e5a43e";
-        case "Low":
-          return "#4e9bff";
-      }
-    },
-    toggleFilter() {
-      if (this.isFilterActive) {
-        this.resetFilters();
-      } else {
-        this.dialogVisible = true;
-      }
-    },
-
-    handleClose(done) {
-      this.dialogVisible = false;
-      done();
     }
-  },
+  }
 };
 </script>
 
@@ -411,7 +429,6 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100%;
-  /* 或者使用 min-height: 100vh; 根据你的需求 */
 }
 
 .table-container {
@@ -430,15 +447,6 @@ export default {
   padding: 10px 0;
   display: flex;
   justify-content: center;
-  /* background: white;
-    border-top: 1px solid #eee;
-    可选：添加顶部边框分隔 */
-}
-
-.center-align {
-  display: flex;
-  align-items: center;
-  justify-content: left;
 }
 
 .dialog-footer {
@@ -446,12 +454,25 @@ export default {
   align-items: center;
   justify-content: center;
 }
+
 .bigger-tag {
-    font-size: 15px;
-    /* 调大字号 */
-    padding: 8px 12px;
-    /* 调整内边距（上下 左右） */
-    font-weight: bold;
-    /* 可选：加粗文字 */
+  font-size: 15px;
+  padding: 8px 12px;
+  font-weight: bold;
 }
+
+.page-title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+.auditor-input {
+  width: 100%;
+}
+
+/* 使输入框与项目名称输入框对齐 */
+.el-form-item__content {
+  width: 100%;
+}
+
 </style>
