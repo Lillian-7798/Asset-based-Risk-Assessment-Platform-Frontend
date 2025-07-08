@@ -13,12 +13,12 @@
             </el-col>
             <el-col :span="1"></el-col>
             <el-col :span="4" class="center-align">
-                <el-text>Treatment Status</el-text>
+                <el-text>Questionaire Status</el-text>
             </el-col>
             <el-col :span="8">
-                <el-select v-model="filterParams.treatmentstatus" placeholder="Default"
+                <el-select v-model="filterParams.qstatus" placeholder="Default"
                     style="width: 95%; justify-content: left" clearable>
-                    <el-option v-for="item in treatmentStatus" :key="item.value" :label="item.label"
+                    <el-option v-for="item in QuestionareStatus" :key="item.value" :label="item.label"
                         :value="item.value" />
                 </el-select>
             </el-col>
@@ -45,6 +45,37 @@
         </template>
     </el-dialog>
 
+    <!-- Add to Audit Project Dialog -->
+    <el-dialog v-model="auditProjectDialogVisible" title="Add to Audit Project" width="50%">
+        <div style="width: 95%;">
+            <el-row>
+                <el-col :span="8" class="center-align">
+                    <el-text>Select an Audit Project:</el-text>
+                </el-col>
+                <el-col :span="16">
+                    <el-autocomplete style="width: 100%" v-model="auditProjectForm.name"
+                        :fetch-suggestions="querySearch" placeholder="Please enter audit project name"
+                        @select="handleSelect" :trigger-on-focus="false">
+                    </el-autocomplete>
+                </el-col>
+            </el-row>
+        </div>
+        <el-form :model="auditProjectForm">
+            <!-- <el-form-item label="Audit Project Name">
+                <el-input v-model="auditProjectForm.name" placeholder="Please enter audit project name" />
+            </el-form-item> -->
+        </el-form>
+        <template #footer>
+            <div class="dialog-footer">
+                <el-button @click="auditProjectDialogVisible = false">Cancel</el-button>
+                <el-button type="primary" @click="addToAuditProject">
+                    Confirm
+                </el-button>
+            </div>
+        </template>
+    </el-dialog>
+
+
     <!-- 正常页面 -->
     <div class="container">
         <el-row>
@@ -64,8 +95,9 @@
         <div class="table-container">
             <div class="table">
                 <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
-                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
-                    <el-table-column prop="date" label="Date" width="250" />
+                    :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }"
+                    row-key="id" @expand-change="handleExpand" ref="tableRef">
+                    <el-table-column prop="date" label="Date" width="200" />
                     <el-table-column prop="name" label="Name" width="300">
                         <template #default="{ row }">
                             <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type } }"
@@ -74,8 +106,8 @@
                             </router-link>
                         </template>
                     </el-table-column>
-                    <el-table-column prop="type" label="Type" width="200" />
-                    <el-table-column prop="owner" label="Owner" width="300" />
+                    <el-table-column prop="type" label="Type" width="150" />
+                    <el-table-column prop="owner" label="Owner" width="200" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
                     <el-table-column prop="AssetStatus" label="Asset Status">
                         <template #default="{ row }">
@@ -86,30 +118,47 @@
                         </template>
                     </el-table-column>
 
+                    <!-- Importance 列 - 使用自定义模板 -->
+                    <el-table-column prop="QuestionareStatus" label="Questionare Status">
+                        <template #default="{ row }">
+                            <el-tag :type="getQSTagType(row.QuestionareStatus)" effect="dark" size="large"
+                                class="bigger-tag">
+                                {{ row.QuestionareStatus }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+                    <el-table-column>
+                        <template #default="{ row }">
+                            <el-button type="primary" link @click="generateReport(row.id)">
+                                Generate
+                            </el-button>
+                        </template>
+                    </el-table-column>
                     <!-- 折叠面板展开 -->
                     <el-table-column type="expand">
                         <template #default="props">
                             <div class="expanded-panel">
-                                <el-table :data="props.row.risks" :border="childBorder" class="inner-table"
-                                    header-cell-class-name="custom-header"
+                                <el-table :data="props.row.evidenceChains || []" :border="childBorder"
+                                    class="inner-table" header-cell-class-name="custom-header"
                                     :header-cell-style="{ 'text-align': 'center' }"
-                                    :cell-style="{ 'text-align': 'center' }">
-                                    <el-table-column label="Risk" prop="risk" width="700" />
-                                    <el-table-column label="Due Date" prop="due" width="500" />
+                                    :cell-style="{ 'text-align': 'center' }" v-loading="loading[props.row.id]">
+
+                                    <el-table-column label="Version" prop="name" width="500" />
+                                    <el-table-column label="Generate Date" prop="generateDate" width="300" />
+                                    <el-table-column label="Generate By" prop="generateby" width="300" />
                                     <el-table-column width="100">
                                         <template #default="{ row }">
-                                            <router-link :to="{ path: '/RisksHomepage', query: { id: row.id } }"
-                                                style="color: #409EFF; text-decoration: none">
-                                                treat
-                                            </router-link>
+                                            <el-button type="primary" link @click="viewReport(row.id)">
+                                                View
+                                            </el-button>
                                         </template>
                                     </el-table-column>
-                                    <el-table-column prop="treatmentStatus" label="Treatment Status">
+                                    <el-table-column>
                                         <template #default="{ row }">
-                                            <el-tag :type="getTreatmentStatusTagType(row.treatmentStatus)" effect="dark"
-                                                size="large" class="bigger-tag">
-                                                {{ row.treatmentStatus }}
-                                            </el-tag>
+                                            <el-button type="primary" link @click="openAddToAuditProjectDialog(row)"
+                                                :disabled="row.isAdded">
+                                                Add to Audit Project
+                                            </el-button>
                                         </template>
                                     </el-table-column>
                                 </el-table>
@@ -133,8 +182,14 @@ import { API_BASE_URL } from "@/components/axios";
 export default {
     data() {
         return {
-            userId: "",
-            userLevel: "",
+            auditProjectDialogVisible: false,
+            auditProjectForm: {
+                name: '',
+                evidenceChainId: null,
+                auditprojectId: 0,
+            },
+            loading: {},
+            evidenceChains: {},
             isSearchActive: false,
             searchInput: "",
             Search,
@@ -157,7 +212,7 @@ export default {
                     label: 'People',
                 },
             ],
-            treatmentStatus: [
+            QuestionareStatus: [
                 {
                     value: 'Finished',
                     label: 'Finished',
@@ -186,18 +241,130 @@ export default {
             filterParams: { // 新增：存储过滤参数
                 assetType: null,
                 status: null,
-                treatmentstatus: null
-            }
+                qstatus: null
+            },
+            userId: "",
+            userName: ""
         }
     },
     mounted() {
         const userdata = JSON.parse(sessionStorage.getItem('userData'))
         this.userId = userdata.userId;
-        this.userLevel = userdata.userLevel;
+        this.userName = userdata.username
         this.fetchAssetsCount();
         this.fetchAllAssets();
     },
     methods: {
+        querySearch(queryString, cb) {
+            this.auditProjectForm.auditprojectId = 0
+            if (queryString.length < 2) {
+                cb([])
+                return
+            }
+
+            // 防抖处理
+            if (this.searchTimeout) {
+                clearTimeout(this.searchTimeout)
+            }
+
+            this.searchTimeout = setTimeout(async () => {
+                try {
+                    const response = await axios.get(API_BASE_URL + '/audit/recommand', {
+                        params: { query: queryString }
+                    })
+                    if (response.data.success) {
+                        console.log(response.data)
+                        const results = response.data.auditProjects.map(auditProject => ({
+                            value: auditProject.name,
+                            id: auditProject.id
+                        }))
+
+                        cb(results)
+                    }
+                } catch (error) {
+                    console.error('搜索用户失败:', error)
+                    cb([])
+                }
+            }, 1000)
+        },
+
+        handleSelect(item) {
+            this.auditProjectForm.name = item.value;
+            this.auditProjectForm.auditprojectId = item.id;
+        },
+        openAddToAuditProjectDialog(evidenceChain) {
+            this.auditProjectForm = {
+                name: '',
+                evidenceChainId: evidenceChain.id,
+                auditprojectId: 0
+            };
+            this.auditProjectDialogVisible = true;
+        },
+        async addToAuditProject() {
+            console.log(this.auditProjectForm.auditprojectId)
+            if (this.auditProjectForm.auditprojectId == "" || this.auditProjectForm.auditprojectId == 0) {
+                this.$message.error('No such Audit Project!');
+                return;
+            }
+
+            try {
+                const response = await axios.post(`${API_BASE_URL}/evidence_chain/add_evidence_to_auditproject`, new URLSearchParams({
+                    projectId: this.auditProjectForm.auditprojectId,
+                    evidenceChainId: this.auditProjectForm.evidenceChainId
+                }));
+
+                console.log(response)
+                if (response.data.success) {
+                    this.$message.success('Evidence chain added to audit project successfully');
+                    this.auditProjectDialogVisible = false;
+
+                    // Find and update the specific evidence chain
+                    for (const asset of this.tableData) {
+                        if (asset.evidenceChains) {
+                            const evidenceChain = asset.evidenceChains.find(
+                                chain => chain.id === this.auditProjectForm.evidenceChainId
+                            );
+
+                            if (evidenceChain) {
+                                // In Vue 3, directly assigning to a reactive property works
+                                evidenceChain.isAdded = true;
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            } catch (error) {
+                console.error('Error adding to audit project:', error);
+                this.$message.error('Failed to add to audit project');
+            }
+        },
+        async handleExpand(row, expandedRows) {
+            const isExpanding = expandedRows.some(r => r.id === row.id);
+            console.log('当前行:', row.id, '是否展开:', isExpanding);
+
+            if (isExpanding) {
+                await this.loadEvidenceChains(row);
+            } else {
+                row.evidenceChains = []; // 收起时清空数据
+            }
+        },
+
+        async loadEvidenceChains(row) {
+            try {
+                this.loading = { ...this.loading, [row.id]: true };
+                const { data } = await axios.get(`${API_BASE_URL}/evidence_chain/getall`, {
+                    params: { assetId: row.id }
+                });
+                row.evidenceChains = data.data || [];
+            } catch (error) {
+                row.evidenceChains = [];
+                console.error('加载证据链失败:', error);
+            } finally {
+                this.loading = { ...this.loading, [row.id]: false };
+            }
+        },
         search() {
             if (this.searchInput == '') {
                 this.resetSearch();
@@ -241,10 +408,9 @@ export default {
         },
         async fetchSearchCount() {
             try {
-                const response = await axios.get(`${API_BASE_URL}/risk/search_assets_count`, {
+                const response = await axios.get(`${API_BASE_URL}/asset/search_assets_count`, {
                     params: {
-                        searchTerm: this.searchInput,
-                        userId: this.userId
+                        searchTerm: this.searchInput
                     }
                 });
                 if (response.data.success) {
@@ -260,12 +426,11 @@ export default {
         async fetchFilterCount() {
             console.log("Fileter Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/risk/filter_assets_count`, {
+                const response = await axios.get(`${API_BASE_URL}/asset/filter_assets_count_2`, {
                     params: {
                         assetType: this.filterParams.assetType,
                         status: this.filterParams.status,
-                        treatmentstatus: this.filterParams.treatmentstatus,
-                        userId: this.userId
+                        qstatus: this.filterParams.qstatus
                     }
                 });
                 if (response.data.success) {
@@ -284,8 +449,8 @@ export default {
             this.currentPage = this.originalPage;
             this.filterParams = {
                 assetType: null,
-                qstatus: null,
-                status: null
+                status: null,
+                qstatus: null
             };
             this.fetchAssetsCount();
             this.fetchAllAssets();
@@ -293,11 +458,7 @@ export default {
         async fetchAssetsCount() {
             console.log("Count")
             try {
-                const response = await axios.get(`${API_BASE_URL}/risk/assets_count_by_owner`, {
-                    params: {
-                        userId: this.userId
-                    }
-                });
+                const response = await axios.get(`${API_BASE_URL}/asset/assets_count`);
                 if (response.data.success) {
                     console.log(response.data.count);
                     this.totalItems = response.data.count;
@@ -313,27 +474,26 @@ export default {
             try {
                 const params = {
                     page: this.currentPage - 1,
-                    size: this.pageSize,
-                    userId: this.userId
+                    size: this.pageSize
                 };
 
-                let endpoint = "/getAssetsByOwner";
+                let endpoint = "/Allassets";
 
                 if (this.isFilterActive) {
                     Object.assign(params, {
                         assetType: this.filterParams.assetType || "",
                         status: this.filterParams.status || "",
-                        treatmentstatus: this.filterParams.treatmentstatus || ""
+                        qstatus: this.filterParams.qstatus || ""
                     });
-                    endpoint = "/filteredAssets";
+                    endpoint = "/filteredAssets_2";
                 } else if (this.isSearchActive) {
                     Object.assign(params, {
                         searchTerm: this.searchInput
                     });
-                    endpoint = "/searchAssetsByOwner";
+                    endpoint = "/searchAssets";
                 }
-                console.log(params)
-                const response = await axios.get(`${API_BASE_URL}/risk${endpoint}`, { params });
+
+                const response = await axios.get(`${API_BASE_URL}/asset${endpoint}`, { params });
                 if (response.data.success) {
                     console.log(response.data.data)
                     this.tableData = response.data.data.map(asset => ({
@@ -343,7 +503,7 @@ export default {
                         type: asset.assetType,
                         owner: asset.assetOwner,
                         AssetStatus: asset.status,
-                        risks: asset.assetRisks
+                        QuestionareStatus: asset.qstatus
                     }));
                 }
             } catch (error) {
@@ -363,7 +523,66 @@ export default {
                 this.dialogVisible = true;
             }
         },
+        async generateReport(assetId) {
+            try {
+                // 1. 生成报告
+                const response = await axios.post(
+                    `${API_BASE_URL}/pdf/generate/${assetId}`,
+                    null,
+                    { headers: { 'X-Generated-By': this.userName } }
+                );
 
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+
+                    // 2. 处理目标行的展开状态
+                    const table = this.$refs.tableRef;
+                    console.log(table)
+                    if (!table) return;
+
+                    const expandedRows = table.store.states.expandRows.value;
+                    const targetRow = this.tableData.find(row => row.id === assetId);
+
+                    if (!targetRow) return;
+
+                    // 检查目标行是否已展开
+                    const isExpanded = expandedRows.some(row => row.id === assetId);
+
+                    if (isExpanded) {
+                        // 已展开：直接刷新数据
+                        await this.loadEvidenceChains(targetRow);
+                    } else {
+                        // 未展开：先展开行再加载数据
+                        table.toggleRowExpansion(targetRow, true);
+                        // 注意：toggleRowExpansion会触发expand-change事件
+                        // 所以数据加载会在handleExpand中处理
+                    }
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            } catch (error) {
+                console.error('生成报告失败:', error);
+                this.$message.error('生成证据链失败');
+            }
+        },
+        // async fetchEvidenceChains(assetId) {
+        //     try {
+        //         const response = await axios.get(`${API_BASE_URL}/evidence_chain`, {
+        //             params: { assetId }
+        //         });
+        //         this.$set(this.evidenceChains, assetId, response.data);
+        //     } catch (error) {
+        //         console.error('Error fetching evidence chains:', error);
+        //     }
+        // },
+        viewReport(id) {
+            // Get the latest evidence chain ID
+            // const latestEvidenceChain = this.evidenceChains[assetId][0];
+            this.$router.push({
+                path: '/EvidenceChainDetail',
+                query: { id: id }
+            });
+        },
         handleClose(done) {
             this.dialogVisible = false;
             done();
@@ -376,7 +595,7 @@ export default {
                     return 'info'
             }
         },
-        getTreatmentStatusTagType(importance) {
+        getQSTagType(importance) {
             switch (importance) {
                 case 'Finished':
                     return 'success'
