@@ -43,7 +43,12 @@
           <div class="risk-content">
             <div class="risk-header">
               <h3 class="risk-title">Risk {{ index + 1 }}: {{ risk.content }}</h3>
+
             </div>
+            <div class="risk-header">
+              <h3 class="risk-warning">warning: {{ risk.warning }}</h3>
+            </div>
+
 
             <div class="risk-controls">
               <div class="radio-group">
@@ -269,6 +274,7 @@ export default {
           this.riskTypes = response.data.data.map(risk => ({
             typeid: risk.typeId,
             content: risk.content,
+            warning: risk.warning,
             applicable: null,
             riskOwner: '',
             comments: '',
@@ -281,7 +287,6 @@ export default {
           console.log(response.data);
 
           await this.fetchValidRelationships();
-          await this.fetchExistingRiskData();
         } else {
           throw new Error(response.data.message);
         }
@@ -291,109 +296,43 @@ export default {
       }
     },
 
-    async fetchExistingRiskData() {
+    // 获取有效风险关系数据(valid=2/1)
+    async fetchValidRelationships() {
       try {
-        // 获取风险关系计数
-        const countResponse = await axios.get(`${API_BASE_URL}/api/risk-management/count`, {
-          params: { assetId: this.assetId }
-        });
-
-        if (countResponse.data.success) {
-          console.log(`Total risk relationships: ${countResponse.data.count}`);
-        }
-
-        for (const risk of this.riskTypes) {
-          const logsResponse = await axios.get(`${API_BASE_URL}/api/risk-management/logs`, {
-            params: {
-              assetId: this.assetId,
-              typeID: risk.typeid
-            }
-          });
-
-          if (logsResponse.data.success && logsResponse.data.data.length > 0) {
-            // 获取最新的日志记录
-            const latestLog = logsResponse.data.data[0];
-            risk.applicable = latestLog.action === 'Assigned' ? 1 : 0;
-            risk.riskOwner = latestLog.by;
-            risk.status = latestLog.action === 'Treated' ? 'completed' : 'in-progress';
-
-            // 获取完整风险数据
-            const riskResponse = await axios.get(`${API_BASE_URL}/api/risk-management/risk-types`, {
-              params: { assetId: this.assetId }
-            });
-
-            if (riskResponse.data.success) {
-              const fullRiskData = riskResponse.data.data.find(r => r.typeID === risk.typeid);
-              if (fullRiskData) {
-                risk.comments = fullRiskData.comments || '';
-                risk.dueDate = fullRiskData.dueDate || '';
-              }
-            }
-
-            risk.originalData = JSON.stringify({
-              applicable: risk.applicable,
-              riskOwner: risk.riskOwner,
-              comments: risk.comments,
-              dueDate: risk.dueDate
-            });
-          }
-        }
-      } catch (error) {
-        console.error('Failed to fetch existing risk data:', error);
-      }
-    },
-    /*
-        async showLogDialog(risk) {
-          try {
-            const response = await axios.get(`${API_BASE_URL}/api/risk-management/logs`, {
+        // 并行获取所有风险类型的有效关系
+        const requests = this.riskTypes.map(risk =>
+            axios.get(`${API_BASE_URL}/api/risk-management/valid-relationships`, {
               params: {
                 assetId: this.assetId,
-                typeId: risk.typeid
+                typeID: risk.typeid
               }
-            });
+            })
+        );
 
-            if (response.data.success) {
-              // 构建更详细的日志信息
-              let logDetails = `=== Risk: ${risk.content} ===\n\n`;
-              logDetails += `Current Status: ${risk.status}\n\n`;
-              logDetails += `=== Log History ===\n\n`;
+        const responses = await Promise.all(requests);
+        console.log("valid:"+responses)
+        // 更新风险类型数据
+        responses.forEach((response, index) => {
+          if (response.data.success && response.data.data) {
+            const validData = response.data.data;
+            const risk = this.riskTypes[index];
 
-              response.data.data.forEach((log, index) => {
-                logDetails += `#${index + 1}\n`;
-                logDetails += `Time: ${new Date(log.dateTime).toLocaleString()}\n`;
-                logDetails += `Action: ${log.action}\n`;
-                logDetails += `Performed By: ${log.by}\n`;
+            // 更新前端输入框的值
+            risk.applicable = validData.applicable ? 1 : 0;
+            risk.riskOwner = validData.riskOwner || '';
+            risk.comments = validData.comments || '';
+            risk.dueDate = validData.dueDate || '';
+            risk.status = validData.status === 'Treated' ? 'completed' : 'in-progress';
 
-                // 如果是处理记录，显示RID并询问是否查看详情
-                if (log.action === 'Treated') {
-                  logDetails += `Treatment ID: ${log.rid}\n`;
-                }
-
-                logDetails += `----------------\n`;
-              });
-
-              // 显示日志详情
-              const viewDetails = confirm(`${logDetails}\n\nView latest treatment details?`);
-
-              if (viewDetails) {
-                const latestTreatment = response.data.data
-                    .find(log => log.action === 'Treated');
-
-                if (latestTreatment) {
-                  await this.showTreatmentDetails(latestTreatment.rid);
-                } else {
-                  alert('No treatment records found for this risk');
-                }
-              }
-            } else {
-              throw new Error(response.data.message);
-            }
-          } catch (error) {
-            console.error('Error loading risk logs:', error);
-            alert('Failed to load risk logs: ' + error.message);
+            console.log("riskOwner: " + validData.riskOwner);
           }
-        },
-    */
+
+        });
+
+      } catch (error) {
+        console.error('Error fetching valid relationships:', error);
+      }
+    },
 
     async showLogDialog(risk) {
       try {
@@ -638,39 +577,7 @@ export default {
         this.$message.error('Failed to save all risks: ' + error.message);
       }
     },
-        // 获取有效风险关系数据(valid=2/1)
-    async fetchValidRelationships() {
-      try {
-        // 并行获取所有风险类型的有效关系
-        const requests = this.riskTypes.map(risk =>
-            axios.get(`${API_BASE_URL}/api/risk-management/valid-relationships`, {
-              params: {
-                assetId: this.assetId,
-                typeID: risk.typeid
-              }
-            })
-        );
 
-        const responses = await Promise.all(requests);
-        console.log("valid:"+responses)
-        // 更新风险类型数据
-        responses.forEach((response, index) => {
-          if (response.data.success && response.data.data) {
-            const validData = response.data.data;
-            const risk = this.riskTypes[index];
-
-            // 更新前端输入框的值
-            risk.applicable = validData.applicable ? 1 : 0;
-            risk.riskOwner = validData.riskOwner || '';
-            risk.comments = validData.comments || '';
-            risk.dueDate = validData.dueDate || '';
-            risk.status = validData.status === 'Treated' ? 'completed' : 'in-progress';
-          }
-        });
-      } catch (error) {
-        console.error('Error fetching valid relationships:', error);
-      }
-    },
 
     checkUnsavedChanges() {
       if (this.hasUnsavedChanges) {
@@ -773,6 +680,12 @@ export default {
   margin: 0;
   color: #333;
   font-size: 16px;
+}
+
+.risk-warning {
+  margin: 0;
+  color: #ff4444;
+  font-size: 13px;
 }
 
 .status-badge {
