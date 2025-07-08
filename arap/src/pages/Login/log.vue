@@ -4,10 +4,10 @@
       <ul class="info">
         <img src="../../assets/logo.png" style="height: 90px;" />
         <li>
-          <input type="text" id="username" v-model="loginForm.username" placeholder="username" @blur="validateUserName"/>
+          <input type="text" id="username" v-model="loginForm.username" placeholder="username" @blur="validateUserName" @keyup.enter="handleLogin"/>
         </li>
         <li>
-          <input type="password" id="password" v-model="loginForm.password" placeholder="password" @blur="validatePassword"/>
+          <input type="password" id="password" v-model="loginForm.password" placeholder="password" @blur="validatePassword" @keyup.enter="handleLogin"/>
         </li>
         <li>
           <button id="btn" @click="handleLogin" :disabled="isLoading" style="margin: 0 auto; width: 20vw">{{ isLoading ? 'Logging in...' : 'Login' }}</button>
