@@ -144,8 +144,6 @@ export default {
     this.fetchProjectsCount();
     this.fetchAllProjects();
     this.checkUserLevel();
-    this.fetchProjectsCount();
-    this.fetchAllProjects();
   },
   methods: {
     async querySearch(queryString, cb) {
@@ -247,6 +245,8 @@ export default {
           ElMessage.success('Project created successfully');
           this.createModalVisible = false;
           this.resetCreateForm();
+          this.resetFilters();
+          this.resetSearch();
           this.fetchProjectsCount();
           this.fetchAllProjects();
         } else {
@@ -303,8 +303,9 @@ export default {
       this.isFilterActive = true;
       this.originalPage = this.currentPage;
       this.currentPage = 1;
-      this.fetchFilterCount();
+     //
       this.fetchAllProjects();
+      this.fetchFilterCount();
       this.filterDialogVisible = false;
     },
     resetFilters() {
@@ -317,9 +318,20 @@ export default {
     },
     async fetchProjectsCount() {
       try {
-        const response = await axios.get(`${API_BASE_URL}/audit/count`);
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+
+        const response = await axios.get(`${API_BASE_URL}/audit/count`,{
+          params:{
+            userLevel: user.userLevel,
+            userId: user.userId
+          }
+        });
+
+        console.log(response);
+
         if (response.data.success) {
           this.totalItems = response.data.count;
+          console.log(response);
         } else {
           console.error('Failed to get projects count:', response.data.message);
         }
@@ -330,13 +342,19 @@ export default {
     },
     async fetchSearchCount() {
       try {
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+
         const response = await axios.get(`${API_BASE_URL}/audit/search-count`, {
           params: {
-            searchTerm: this.searchInput
+            searchTerm: this.searchInput,
+            userLevel: user.userLevel,
+            userId: user.userId
+
           }
         });
         if (response.data.success) {
           this.totalItems = response.data.count;
+
         } else {
           console.error('Failed to get search count:', response.data.message);
         }
@@ -347,13 +365,27 @@ export default {
     },
     async fetchFilterCount() {
       try {
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+
         const response = await axios.get(`${API_BASE_URL}/audit/filter-count`, {
           params: {
-            status: this.filterParams.status
+            status: this.filterParams.status,
+            userLevel: user.userLevel,
+            userId: user.userId
           }
         });
+        console.log(this.filterParams.status);
+        if(this.filterParams.status === "") {
+          this.resetCreateForm();
+          this.resetFilters();
+          this.resetSearch();
+        }
+
         if (response.data.success) {
           this.totalItems = response.data.count;
+
+          console.log(response);
+
         } else {
           console.error('Failed to get filter count:', response.data.message);
         }
@@ -365,9 +397,14 @@ export default {
 
     async fetchAllProjects() {
       try {
+        const user = JSON.parse(sessionStorage.getItem('userData'));
+
+
         const params = {
-          page: this.currentPage - 1,
-          size: this.pageSize
+          page: this.currentPage - 1,  // 后端通常从0开始计数
+          size: this.pageSize,// 每页12条记录
+          userId: user.userId,
+          userLevel: user.userLevel,
         };
 
         let endpoint = "/list";
@@ -386,36 +423,46 @@ export default {
 
         const response = await axios.get(`${API_BASE_URL}/audit${endpoint}`, { params });
 
-        console.log(response.data);
-
         if (response.data.success) {
-          // 获取当前用户信息
           const user = JSON.parse(sessionStorage.getItem('userData'));
           const userId = user.userId;
 
-
-          // 过滤数据
-          this.tableData = response.data.data
+          // 先过滤数据再分页
+          const filteredData = response.data.data
               .map(project => ({
                 id: project.id,
                 date: project.date,
                 name: project.name,
                 createdBy: project.createdBy,
                 status: project.status === "in-progress" ? "In Progress" : "Finished",
-                auditorId: project.auditorId, // 添加auditor字段
+                auditorId: project.auditorId,
               }))
               .filter(project => {
-                // 如果userLevel == 0(管理员)，显示所有记录
-                // 如果userLevel == 1，只显示当前用户是auditor的记录
                 return this.userLevel === 0 ||
-                    (this.userLevel === 1 && project.auditorId === userId);
-              });
+                   (this.userLevel === 1 && project.auditorId === userId);
+            });
+
+          // 确保分页正确
+          this.tableData = filteredData;
+
+          console.log(response.data.data);
+          console.log(filteredData);
+
+          // 更新总记录数
+          if (this.isFilterActive) {
+            await this.fetchFilterCount();
+          } else if (this.isSearchActive) {
+            await this.fetchSearchCount();
+          } else {
+            await this.fetchProjectsCount();
+          }
         }
       } catch (error) {
         console.error('Error fetching projects:', error);
         ElMessage.error('Failed to fetch projects');
       }
     },
+
 
     handlePageChange(newPage) {
       this.currentPage = newPage;
