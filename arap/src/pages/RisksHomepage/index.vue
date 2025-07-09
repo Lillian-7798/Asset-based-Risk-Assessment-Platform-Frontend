@@ -73,19 +73,24 @@
                 <el-col :span="10" style="text-align: left">
                   <el-text class="q-text">Upload evidence:</el-text>
                   <el-upload
+                    ref="upload"
                     class="upload-demo"
                     drag
-                    action=""
+                    action="http://localhost:8081/api/file/upload/3"
                     :on-change="handleFileChange"
                     :file-list="fileList"
                     :auto-upload="false"
                     :limit="5"
                   >
+                    <!-- action后面的数字也要换成rid -->
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">
                       Drag and drop files here or click to upload(max files=5)
                     </div>
                   </el-upload>
+                  <!-- <el-upload action="/api/upload" multiple :data="uploadData">
+                    <el-button type="primary">上传文件</el-button>
+                  </el-upload> -->
                   <el-text class="q-text"
                     >Evidence Uploaded<span class="required-asterisk">*</span
                     >:</el-text
@@ -339,6 +344,7 @@ export default {
         comments: this.comments,
         Done: "Finished", // 新增字段 Done，存储 "Finished"
       };
+      this.$refs.upload.submit(); // 触发上传操作
       let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
       storedData.push(formData);
       localStorage.setItem("RisksHomepage", JSON.stringify(storedData));
@@ -358,7 +364,7 @@ export default {
       // POST 请求到后端
       try {
         const response = await axios.post(
-          "http://localhost:8081/api/risk_treatment/save/9", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
           formData
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
@@ -377,6 +383,8 @@ export default {
         comments: this.comments,
         Done: "In-progress", // 新增字段 Done
       };
+      //测试文件上传
+      this.$refs.upload.submit(); // 触发上传操作
 
       let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
       storedData.push(formData);
