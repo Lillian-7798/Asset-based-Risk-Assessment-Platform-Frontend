@@ -1,7 +1,9 @@
 # Some bug to fix
 - 1. questionaire页面美观性调整（包括header修改/warning/help message按钮的添加/Done按钮添加）
 - 2. inventory页面（help message按钮添加/选择栏选择后取消选择需要清空字段）
-- 3. login页面，输入密码之后按回车可以登录
+- 3. new asset save逻辑，非必填项是空的也需要填写空值（主要体现在修改上，如果修改只删除了一个值，直接save目前是不会对数据库做修改的）
+- 4. 点击back应该是回到上一个打开的页面
+- 5. 保存之后 进行路由跳转应该不会提示
 # Asset-based-Risk-Assessment-Platform-Frontend
 HKU CS project proposal
 
