@@ -1,6 +1,20 @@
 <template>
+  <el-row
+    style="width: 100%; display: flex; justify-content: space-between"
+    v-if="userLevel == 2"
+  >
+    <el-col
+      :span="12"
+      style="display: flex; align-items: center; justify-content: left"
+    >
+      <el-text style="font-size: 20px; font-weight: bold">
+        Sorry, you do not have permission to view this interface.
+      </el-text>
+    </el-col>
+  </el-row>
   <!-- 正常页面 -->
-  <div class="container">
+
+  <div class="container" v-if="userLevel !== 2">
     <el-row style="width: 100%; display: flex; justify-content: space-between">
       <el-col
         :span="12"
@@ -23,6 +37,7 @@
       >
         <el-button
           type="primary"
+          v-if="userLevel === 0"
           @click="toggleFilter"
           style="background-color: #409eff; color: white"
         >
@@ -78,7 +93,7 @@
             </template>
           </el-table-column>
           <!-- 新增的 Remove 列 -->
-          <el-table-column label="" width="200">
+          <el-table-column label="" width="200" v-if="userLevel === 0">
             <template #default="{ row }">
               <el-button size="small" type="danger" @click="removeRow(row)">
                 Remove
@@ -107,6 +122,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      userLevel: 2, // 默认值，之后会从 sessionStorage 中获取
       AssetType: "",
       EmptyField: "",
       Importance: "",
@@ -151,6 +167,16 @@ export default {
   },
   mounted() {
     this.fetchTableData();
+
+    const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
+
+    // 输出 userData 和 userLevel 进行调试
+    console.log("userData:", userData);
+
+    // 如果 userLevel 存在，则使用 userLevel，否则使用默认值 2
+    this.userLevel = userData.userLevel !== undefined ? userData.userLevel : 2;
+
+    console.log("userLevel:", this.userLevel); // 输出 userLevel
   },
   methods: {
     formatDate(dateString) {
