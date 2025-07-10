@@ -68,9 +68,21 @@ const routes = [
     component: () => import("../pages/RisksHomepage"),
   },
   {
-    path:"/EvidenceChainDetail",
-    name:"EvidenceChainDetail",
-    component:() =>import("../pages/EvidenceChainDetail"),
+    path: "/auditdetail",
+    name: "auditdetail",
+    component: () => import("../pages/auditdetail"),
+    children: [
+      {
+        path: "detail",
+        name: "detail",
+        component: () => import("../pages/auditdetail/detail.vue"),
+      },
+    ],
+  },
+  {
+    path: "/EvidenceChainDetail",
+    name: "EvidenceChainDetail",
+    component: () => import("../pages/EvidenceChainDetail"),
   },
   {
     path: "/Home",
