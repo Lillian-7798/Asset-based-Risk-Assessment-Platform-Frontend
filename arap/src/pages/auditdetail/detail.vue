@@ -7,7 +7,8 @@
         style="display: flex; align-items: center; justify-content: left"
       >
         <el-text style="font-size: 20px; font-weight: bold">
-          27001 Certificate Audit
+          {{ auditProjectName }}
+          <!-- 显示传递过来的 audit project name -->
         </el-text>
         <!-- 这个之后根据传入名字修改 -->
       </el-col>
@@ -44,9 +45,22 @@
               {{ formatDate(row.generate_date) }}
             </template>
           </el-table-column>
-          <el-table-column prop="asset_name" label="Name" width="350">
-            <!-- 这个是name还是assetname？ -->
+          <el-table-column prop="name" label="Name" width="350">
+            <template #default="{ row }">
+              <!-- 为每一行的名称添加点击事件 -->
+              <router-link
+                :to="{
+                  path: '../EvidenceChainDetail',
+                  query: { name: row.name },
+                }"
+                style="color: #409eff; text-decoration: none"
+              >
+                {{ row.name }}
+              </router-link>
+            </template>
           </el-table-column>
+          <!-- 这个是assetname还是evidence name？ -->
+
           <el-table-column prop="asset_type" label="Type" width="200">
             <template #default="{ row }">
               <!-- 使用 getTypeName 方法将 asset_type 显示为对应的字符串 -->
@@ -130,7 +144,9 @@ export default {
       pageSize: 12,
       totalItems: 0,
       originalPage: 1, // 新增：保存原始分页位置
-      auditid: 1, // 假设传递的 auditid,要上级页面给我
+      auditid: this.$route.query.auditid || 1, // 先默认是1，假设传递的 auditid,要上级页面给我
+      auditProjectName:
+        this.$route.query.auditProjectName || "Default Project Name", // 获取传递的参数
     };
   },
   mounted() {
