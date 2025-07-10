@@ -66,7 +66,7 @@
               <router-link
                 :to="{
                   path: '../EvidenceChainDetail',
-                  query: { name: row.name },
+                  query: { name: row.name, id: row.id },
                 }"
                 style="color: #409eff; text-decoration: none"
               >
