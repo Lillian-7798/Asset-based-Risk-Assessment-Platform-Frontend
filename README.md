@@ -1,9 +1,23 @@
 # Some bug to fix
-- 1. questionaire页面美观性调整（包括header修改/warning/help message按钮的添加/Done按钮添加）
-- 2. inventory页面（help message按钮添加/选择栏选择后取消选择需要清空字段）
-- 3. new asset save逻辑，非必填项是空的也需要填写空值（主要体现在修改上，如果修改只删除了一个值，直接save目前是不会对数据库做修改的）
-- 4. 点击back应该是回到上一个打开的页面
-- 5. 保存之后 进行路由跳转应该不会提示
+New Asset页面：
+- 1. 一些问题旁边需要有帮助信息（具体参考excel），有个小问号的图标（图标代码参考https://element-plus.sxtxhy.com/zh-CN/component/icon.html），鼠标悬停的时候显示这个问题的具体解释
+- 2. 点击back按钮应该是回到上一个打开的页面，back按钮位置往右调整，不要贴着屏幕边
+- 3. save逻辑，非必填项是空的也需要在数据库中填写为空值（主要体现在修改上，如果修改只删除了一个值，直接save目前是不会对数据库做修改的）
+- 4. 保存之后 进行路由跳转应该不会提示。只有有修改且未保存的时候才会在路由跳转的时候出现提示
+- 5. 如果切换了问卷逻辑，原先填写的内容应该清空（比如asset type从software改成pysical或者改为空值,那么software特有的那些问卷字段应该全部清空。External Supplied Service从yes切换成no,也应该清空下面的问卷字段）
+- 6. 标题修改：新增的标题是Add a New Inventory， 修改的标题是[assetname] Inventory。标题字号调大，问卷内容和标题之间加一点间距
+- 7. 添加Done按钮，修改后端存储逻辑，不再在传输的时候通过检测所有字段是否为空来判定emptyfield
+
+Questionaire页面
+- 1. RiskAssessment home页面点击跳转的时候进行路由选择和参数传输（正在修）
+- 2. save 和done的后端逻辑(正在修)
+- 3. 一些问题旁边需要有帮助信息（具体参考excel），有个小问号的图标（图标代码参考https://element-plus.sxtxhy.com/zh-CN/component/icon.html），鼠标悬停的时候显示这个问题的具体解释
+- 4. 点击back按钮应该是回到上一个打开的页面，back按钮位置往右调整，不要贴着屏幕边
+- 5. 保存之后 进行路由跳转应该不会提示。只有有修改且未保存的时候才会在路由跳转的时候出现提示
+- 6. 标题修改：修改标题为Questionaire for [assetname]。标题字号调大，问卷内容和标题之间加一点间距
+
+Help按钮，直接放最后一版require文档得了
+
 # Asset-based-Risk-Assessment-Platform-Frontend
 HKU CS project proposal
 
