@@ -74,12 +74,12 @@
               </router-link>
             </template>
           </el-table-column>
-          <!-- 这个是assetname还是evidence name？ -->
+          <!-- 这个是evidence name -->
 
           <el-table-column prop="asset_type" label="Type" width="200">
             <template #default="{ row }">
-              <!-- 使用 getTypeName 方法将 asset_type 显示为对应的字符串 -->
-              {{ getTypeName(row.asset_type) }}
+              <!-- xxxxx使用 getTypeName 方法将 asset_type 显示为对应的字符串 -->
+              {{ row.asset_type }}
             </template>
           </el-table-column>
 
@@ -88,7 +88,7 @@
           <el-table-column prop="asset_status" label="Audit Status">
             <template #default="{ row }">
               <el-tag :type="getStatusTagType(row.asset_status)" effect="dark">
-                {{ row.asset_status === "0" ? "Active" : "Decommissioned" }}
+                {{ row.asset_status }}
               </el-tag>
             </template>
           </el-table-column>
@@ -228,11 +228,10 @@ export default {
       this.tableData = this.tableData.filter((item) => item.id !== row.id); //暂时的应该删除数据库中的
     },
     getStatusTagType(status) {
-      const statusInt = parseInt(status, 10); // 将 type 转换为整数
-      switch (statusInt) {
-        case 0:
+      switch (status) {
+        case "Active":
           return "success";
-        case 1:
+        case "Decommissioned":
           return "info";
       }
     },
