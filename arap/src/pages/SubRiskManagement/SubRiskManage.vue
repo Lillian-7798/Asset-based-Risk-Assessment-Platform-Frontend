@@ -192,6 +192,7 @@ export default {
       currentRiskTypeId: null,
       logLoading: false,
       isNotOwner: false, // 新增状态变量
+      fromPage: '',
     }
   },
   created() {
@@ -241,6 +242,7 @@ export default {
       this.assetId = this.$route.query.assetId;
       this.assetName = this.$route.query.name;
       this.assetOwner = this.$route.query.assetOwner;
+      this.fromPage = this.$route.query.fromPage;
     },
     checkPermission() {
       const user = sessionStorage.getItem('userData');
