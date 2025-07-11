@@ -163,9 +163,11 @@ export default {
       auditid: this.$route.query.auditid || 1, // 先默认是1，假设传递的 auditid,要上级页面给我
       auditProjectName:
         this.$route.query.auditProjectName || "Default Project Name", // 获取传递的参数
+
     };
   },
   mounted() {
+    this.fromPage = this.$route.query.fromPage;
 
     const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
@@ -244,9 +246,7 @@ export default {
         .then((response) => {
           console.log(response.data)
           // 根据返回的数据过滤，传递与传输的 auditid 相同的行数据
-          this.tableData = response.data.filter(
-            (item) => item.audit_project === this.auditid
-          );
+          this.tableData = response.data
         })
         .catch((error) => {
           console.error("Error fetching table data:", error);
