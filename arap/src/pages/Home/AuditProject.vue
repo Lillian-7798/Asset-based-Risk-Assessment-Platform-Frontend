@@ -66,7 +66,7 @@
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
-              <router-link :to="{ path: '/auditdetail', query: { auditid: row.id, auditProjectName: row.name} }"
+              <router-link :to="{ path: '/auditdetail', query: { auditid: row.id, auditProjectName: row.name, fromPage: currentPage} }"
                            style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>
@@ -141,6 +141,11 @@ export default {
     };
   },
   mounted() {
+
+    if (this.$route.query.page) {
+      this.currentPage = parseInt(this.$route.query.page) || 1;
+    }
+
     this.fetchProjectsCount();
     this.fetchAllProjects();
     this.checkUserLevel();
@@ -466,6 +471,10 @@ export default {
 
     handlePageChange(newPage) {
       this.currentPage = newPage;
+      // Update URL without creating new history entry
+      this.$router.replace({
+        query: { ...this.$route.query, page: newPage }
+      });
       this.fetchAllProjects();
     },
     getStatusTagType(status) {
