@@ -15,7 +15,7 @@
 
       <!-- Content -->
       <div class="page-header">
-        <div style="height: 20px"></div>
+        <div style="height: 35px;"></div>
 
         <div class="header-content" style="display: flex; align-items: center">
           <!-- 返回按钮 -->
@@ -23,6 +23,8 @@
               background-color: #409eff;
               color: white;
               border-color: #409eff;
+              margin-left: 20px;
+              align-items: center;
             ">
             <el-icon>
               <ArrowLeft />
@@ -31,8 +33,8 @@
           </el-button>
 
           <!-- 文字标题 -->
-          <el-text style="font-size: 20px; font-weight: bold; flex-grow: 1">
-            Add a New Inventory
+          <el-text style="font-size: 24px; font-weight: bold; flex-grow: 1;">
+            {{ name ? `${name}  Inventory` : 'Add a new Inventory' }}
           </el-text>
         </div>
       </div>
@@ -526,6 +528,8 @@ export default {
   mounted() {
     this.assetID = this.$route.query.id;
     this.AssetType = this.$route.query.assetType;
+    this.name = this.$route.query.name;
+    this.fromPage = this.$route.query.fromPage;
     this.Pre_filled();
   },
   data() {
@@ -537,6 +541,7 @@ export default {
       searchTimeout: false,
       name: "",
       assetID: "",
+      fromPage: "",
       swid: "",
       AssetType: "",
       assetOwner: "",
@@ -791,8 +796,18 @@ export default {
     handleClose() {
       this.showConfirmDialog = true;
     },
+
+   // handleBackClick() {
+   //   this.showConfirmDialog = true; // 显示确认弹窗
+   //   this.$router.go(-1);
+   // },
+
     handleBackClick() {
-      this.showConfirmDialog = true; // 显示确认弹窗
+      const fromPage = this.$route.query.fromPage || 1; // Get the page from query params
+      this.$router.push({
+        path: '/home/asset-inventory',
+        query: { page: fromPage } // Pass it back to the list view
+      });
     },
 
     handleBeforeClose(done) {
