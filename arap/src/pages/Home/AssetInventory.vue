@@ -76,12 +76,12 @@
     </el-row>
     <div class="table-container">
       <div class="table">
-        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border;"
+        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: lighter;"
                     :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
-              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type} }"
+              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type, name: row.name, fromPage: currentPage }}"
                 style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>
@@ -206,6 +206,11 @@ export default {
     };
   },
   mounted() {
+
+    if (this.$route.query.page) {
+      this.currentPage = parseInt(this.$route.query.page) || 1;
+    }
+
     this.fetchAssetsCount();
     this.fetchAllAssets();
   },
@@ -365,9 +370,18 @@ export default {
         path: "/NewAsset",
       });
     },
+
+   // handlePageChange(newPage) {
+   //   this.currentPage = newPage;
+   //   this.fetchAssetsCount();
+   //   this.fetchAllAssets();
+   // },
     handlePageChange(newPage) {
       this.currentPage = newPage;
-      this.fetchAssetsCount();
+      // Update URL without creating new history entry
+      this.$router.replace({
+        query: { ...this.$route.query, page: newPage }
+      });
       this.fetchAllAssets();
     },
     getStatusTagType(status) {
