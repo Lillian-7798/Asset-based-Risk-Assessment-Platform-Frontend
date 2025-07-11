@@ -45,7 +45,25 @@
             <div class="basicInfo-first">
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Name<span class="required-asterisk">*</span>:</el-text>
+                  <el-text class="q-text">Name
+                    <span class="required-asterisk">*</span>:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Name of the asset."
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="name" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
@@ -91,7 +109,25 @@
               <!-- Software-specific fields -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Version<span class="required-asterisk">*</span>:</el-text>
+                  <el-text class="q-text">Version
+                    <span class="required-asterisk">*</span>:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="The software inventory system should track the name, version, publisher, and install date for all software, including operating systems authorized by the organization."
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="version" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
@@ -121,7 +157,24 @@
               <div v-if="externalSupplied === 0">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Manufacture:</el-text>
+                    <el-text class="q-text">Manufacture:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="The software inventory system should track the name, version, publisher, and install date for all software, including operating systems authorized by the organization."
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-input style="width: 100%" v-model="Manufacture" placeholder="Please input" clearable />
                   </el-col>
                   <el-col :span="10">
@@ -137,7 +190,24 @@
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">License Type:</el-text>
+                    <el-text class="q-text">License Type:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="The organization shall ensure that required data and information about licenses, related entitlements, and usage against entitlements, for all IT assets in scope, is accurately recorded throughout the life cycle; that reconciliations are conducted and assessed periodically between requirements, usage against entitlements, and entitlements; and verified."
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="LicenseType" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Permanent" :value=0 />
                       <el-option label="Subscription" :value=1 />
@@ -176,7 +246,8 @@
               <!-- Fixed or Non-fixed Physical Asset -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Physical Asset Type<span class="required-asterisk">*</span>:</el-text>
+                  <el-text class="q-text">Physical Asset Type<span class="required-asterisk">*</span>:
+                  </el-text>
                   <el-select v-model="physicalAssetType" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Fixed Physical Asset" :value=0 />
                     <el-option label="Non-fixed Physical Asset" :value=1 />
@@ -188,7 +259,30 @@
               <div v-if="physicalAssetType === 0">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Asset Category (Fixed):</el-text>
+                    <el-text class="q-text">Asset Category (Fixed):
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="1. Buildings & Structures a) Office buildings, factories, warehouses b) Data center rooms (including earthquake/fire-resistant structures) c) Laboratories, R&D centers
+                                  2. Production Equipment & Machinery a) Industrial machinery: Lathes, injection molding machines, 3D printers b) Production line equipment: Assembly-line robots, packaging machines c) Special equipment: Boilers, pressure vessels (require compliance inspections)
+                                  3. Office Equipment a) Computers (desktops, laptops) b) Printers, copiers, projectors c) Telephone systems (IP phones, conference equipment)
+                                  4. Transportation Vehicles a) Freight vehicles (trucks, forklifts) b) Business vehicles (sedans, shuttle buses) c) Drones (for logistics/inspections)
+                                  5. Network & IT Infrastructure a) Servers (physical servers, blade servers) b) Storage devices (SAN/NAS, tape libraries) c) Networking equipment (routers, firewalls, fiber switches)
+                                  6. Power & Utility Equipment a) Generators, UPS (uninterruptible power supplies) b) Power distribution cabinets, transformers c) HVAC systems (data center precision cooling)
+                                  7. Security Equipment a) Surveillance cameras, access control systems b) Biometric devices (fingerprint/facial recognition systems) c) Fire protection systems (smoke detectors, sprinklers)"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="fixedAssetCategory" placeholder="Select Category" style="width: 100%" clearable>
                       <el-option label="Buildings & Structures" :value=0 />
                       <el-option label="Production Equipment & Machinery" :value=1 />
@@ -200,7 +294,24 @@
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Location:</el-text>
+                    <el-text class="q-text">Location:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Physical/Virtual location (e.g., Data Center A, Rack 3)"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-input style="width: 100%" v-model="Location" placeholder="Enter location" clearable />
                   </el-col>
                 </el-row>
@@ -209,7 +320,31 @@
               <div v-if="physicalAssetType === 1">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Asset Category (Non-fixed):</el-text>
+                    <el-text class="q-text">Asset Category (Non-fixed):
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="1.Mobile Electronic Devices a) Portable devices: i. Laptops, tablets ii. Smartphones, two-way radios iii. External hard drives, USB encryption dongles b) Peripheral tools: i. Portable projectors, barcode scanners ii. Temperature gauges, RFID readers
+                                    2.Removable Storage Media a) Magnetic tapes, optical discs (for backup) b) SD cards, portable SSD storage c) Encrypted USB drives (containing sensitive data)
+                                    3.Temporary Facilities and Tools a) Construction/maintenance tools: i. Power drills, multimeters, oscilloscopes ii. Temporary lighting equipment, ladders b) Exhibition/event assets: i. Roll-up banners, portable display booths ii. Rented audio equipment, LED screens
+                                    4.Transportation and Logistics Assets a) Logistics containers:
+                                    i. Pallets, transport containers, company-owned shipping containers ii. Cold chain transport boxes (for pharmaceutical/food industries) b) Short-term leased equipment: i. Temporarily rented forklifts, trucks
+                                    5.Laboratory and Production Consumables a) High-value consumables: i. Industrial sensors (reusable) ii. Precision laboratory glassware b) Spare parts: i. Server backup hard drives, network modules
+                                    6.Security and Emergency Equipment a) Fire extinguishers (require periodic replacement) b) Portable surveillance cameras c) Mobile backup generators
+                                    7.Other High-Mobility Assets a) Employee assets: i. ID badges, access cards (can be deactivated if lost) ii. Issued uniforms, safety helmets b) Customer assets: i. Equipment leased to customers (e.g., shared power banks)"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="nonFixedAssetCategory" placeholder="Select Category" style="width: 100%"
                       clearable>
                       <el-option label="Mobile Electronic Devices" :value=0 />
@@ -222,19 +357,70 @@
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Current Holder:</el-text>
+                    <el-text class="q-text">Current Holder:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Employee/Department using the asset"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-input style="width: 100%" v-model="CurrentHolder" placeholder="Please input" clearable />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Checkout Date:</el-text>
+                    <el-text class="q-text">Checkout Date:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Date assigned to holder"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-date-picker v-model="CheckoutDate" type="date" placeholder="Pick a day" style="width: 100%"
                       clearable />
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Expected Return Date:</el-text>
+                    <el-text class="q-text">Expected Return Date:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="For temporary assets."
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-date-picker v-model="ExpectedReturnDate" type="date" placeholder="Pick a day"
                       style="width: 100%" clearable />
                   </el-col>
@@ -242,14 +428,48 @@
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Condition:</el-text>
+                    <el-text class="q-text">Condition:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Physical state (e.g., Damaged/Good)"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="Condition" placeholder="Select Condition" style="width: 100%" clearable>
                       <el-option label="Good" :value=1 />
                       <el-option label="Damaged" :value=0 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Data Encryption:</el-text>
+                    <el-text class="q-text">Data Encryption:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Whether storage is encrypted"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="DataEncryption" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
@@ -259,7 +479,24 @@
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Remote Wipe Capability:</el-text>
+                    <el-text class="q-text">Remote Wipe Capability:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Critical for lost devices"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="RemoteWipeCapability" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
@@ -272,18 +509,69 @@
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Purchase Date:</el-text>
+                  <el-text class="q-text">Purchase Date:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Date of acquisition"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-date-picker v-model="PurchaseDate" type="date" placeholder="Pick a day" style="width: 100%"
                     clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">Depreciation Period:</el-text>
+                  <el-text class="q-text">Depreciation Period:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Lifespan for accounting"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="DepreciationPeriod" @blur="validateDepreciationPeriod" />
                 </el-col>
               </el-row>
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Maintenance Cycle:</el-text>
+                  <el-text class="q-text">Maintenance Cycle:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Scheduled maintenance frequency  e.g.1) Daily, Weekly, Every 72 Operating Hours 2)Monthly, Quarterly, Every 5000 km 3) Annually, Biannually, Every 5 Years 4)As Needed, After Event, On Failure"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-select v-model="MaintenanceCycle" placeholder="Select Cycle" style="width: 100%" clearable>
                     <el-option label="Daily, Weekly, Every 72 Operating Hours" :value=0 />
                     <el-option label="Monthly, Quarterly, Every 5000 km" :value=1 />
@@ -301,7 +589,24 @@
               <!-- Retention Policy, Storage Location, Information Asset Type -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Retention Policy:</el-text>
+                  <el-text class="q-text">Retention Policy:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Legal retention period"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-select v-model="informationRetentionPolicy" placeholder="Select Policy" style="width: 100%"
                     clearable>
                     <el-option label="Permanent" :value=0 />
@@ -309,7 +614,24 @@
                   </el-select>
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">Storage Location:</el-text>
+                  <el-text class="q-text">Storage Location:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Physical/cloud storage path"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="informationStorageLocation" placeholder="Please input"
                     clearable />
                 </el-col>
@@ -330,7 +652,24 @@
               <div v-if="InformationAssetCategory === 0">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Data Schema:</el-text>
+                    <el-text class="q-text">Data Schema:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Database engine"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="DataSchema" placeholder="Select Schema" style="width: 100%" clearable>
                       <el-option label="MySQL" :value=0 />
                       <el-option label="MongoDB" :value=1 />
@@ -338,21 +677,72 @@
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Version:</el-text>
+                    <el-text class="q-text">Version:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Database version"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-input style="width: 100%" v-model="databaseVersion" placeholder="Please input" clearable />
                   </el-col>
                 </el-row>
 
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Contains PII:</el-text>
+                    <el-text class="q-text">Contains PII:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Triggers GDPR compliance workflows"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="containsPII" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" :value=1 />
                       <el-option label="No" :value=0 />
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Backup Frequency:</el-text>
+                    <el-text class="q-text">Backup Frequency:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Backup policy"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="backupFrequency" placeholder="Select Frequency" style="width: 100%" clearable>
                       <el-option label="Daily" :value=0 />
                       <el-option label="Weekly" :value=1 />
@@ -364,7 +754,24 @@
               <div v-if="InformationAssetCategory === 1">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">File Format:</el-text>
+                    <el-text class="q-text">File Format:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Document type"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="fileFormat" placeholder="Select Format" style="width: 100%" clearable>
                       <el-option label="PDF" :value=0 />
                       <el-option label="DOCX" :value=1 />
@@ -373,7 +780,24 @@
                     </el-select>
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Confidentiality Level:</el-text>
+                    <el-text class="q-text">Confidentiality Level:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Access control basis"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-select v-model="confidentialityLevel" placeholder="Select Level" style="width: 100%" clearable>
                       <el-option label="Public" :value=0 />
                       <el-option label="Internal" :value=1 />
@@ -386,11 +810,45 @@
               <div v-if="InformationAssetCategory === 2">
                 <el-row gutter="{20}">
                   <el-col :span="10">
-                    <el-text class="q-text">Registration Number:</el-text>
+                    <el-text class="q-text">Registration Number:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Patent/trademark ID"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-input style="width: 100%" v-model="registrationNumber" placeholder="Please input" clearable />
                   </el-col>
                   <el-col :span="10" offset="2">
-                    <el-text class="q-text">Expiry Date:</el-text>
+                    <el-text class="q-text">Expiry Date:
+                      <el-tooltip
+                          class="item"
+                          effect="dark"
+                          content="Legal expiration date"
+                          placement="top"
+                      >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                      </el-tooltip>
+                    </el-text>
                     <el-date-picker v-model="expiryDate" type="date" placeholder="Pick a day" style="width: 100%"
                       clearable />
                   </el-col>
@@ -405,23 +863,91 @@
               <!-- People-specific fields -->
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Department:</el-text>
+                  <el-text class="q-text">Department:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Department of the employee"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="department" placeholder="Please input" clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">Position:</el-text>
+                  <el-text class="q-text">Position:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Current job title or role"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="position" placeholder="Please input" clearable />
                 </el-col>
               </el-row>
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Hire Date:</el-text>
+                  <el-text class="q-text">Hire Date:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Date of joining"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-date-picker v-model="hireDate" type="date" placeholder="Pick a day" style="width: 100%"
                     clearable />
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">Background Check Status:</el-text>
+                  <el-text class="q-text">Background Check Status:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Whether the background check has been completed"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-select v-model="backgroundCheckStatus" placeholder="Select Status" style="width: 100%" clearable>
                     <el-option label="Completed" :value=0 />
                     <el-option label="Pending" :value=1 />
@@ -434,7 +960,24 @@
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Security Training Status:</el-text>
+                  <el-text class="q-text">Security Training Status:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Whether the security awareness training is completed"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-select v-model="securityTrainingStatus" placeholder="Select Status" style="width: 100%" clearable>
                     <el-option label="Completed" :value=0 />
                     <el-option label="Pending" :value=1 />
@@ -444,7 +987,24 @@
                   </el-select>
                 </el-col>
                 <el-col :span="10">
-                  <el-text class="q-text">NDA Signing Date:</el-text>
+                  <el-text class="q-text">NDA Signing Date:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Date of signing confidentiality agreement/employment contract"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-date-picker v-model="NDASigningDate" type="date" placeholder="Pick a day" style="width: 100%"
                     clearable />
                 </el-col>
@@ -452,7 +1012,24 @@
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Remote Work Agreement Status:</el-text>
+                  <el-text class="q-text">Remote Work Agreement Status:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Whether the remote work agreement is signed"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-select v-model="RemoteWorkAgreementStatus" placeholder="Select Status" style="width: 100%"
                     clearable>
                     <el-option label="Yes" :value=1 />
@@ -460,7 +1037,24 @@
                   </el-select>
                 </el-col>
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">Security Incident Records:</el-text>
+                  <el-text class="q-text">Security Incident Records:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Records of any security incidents involving the employee"
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="securityIncidentRecords" placeholder="Please input"
                     clearable />
                 </el-col>
@@ -468,7 +1062,24 @@
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Last Audit Date:</el-text>
+                  <el-text class="q-text">Last Audit Date:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="Date of the last audit check of the employee's asset responsibilities and usage"
+                        placement="top"
+                    >
+                      <spans
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</spans
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-date-picker v-model="LastAuditDate" type="date" placeholder="Pick a day" style="width: 100%"
                     clearable />
                 </el-col>
@@ -496,7 +1107,24 @@
 
               <el-row gutter="{20}">
                 <el-col :span="10">
-                  <el-text class="q-text">Associated Assets:</el-text>
+                  <el-text class="q-text">Associated Assets:
+                    <el-tooltip
+                        class="item"
+                        effect="dark"
+                        content="An inventory of information and other associated assets, including owners, shall be developed and maintained."
+                        placement="top"
+                    >
+                      <span
+                          style="
+                          cursor: pointer;
+                          color: blue;
+                          font-size: 16px;
+                          margin-left: 5px;
+                        "
+                      >❓</span
+                      >
+                    </el-tooltip>
+                  </el-text>
                   <el-input style="width: 100%" v-model="associatedAssets" :autosize="{ minRows: 2, maxRows: 2 }"
                     type="textarea" placeholder="Please input" />
                 </el-col>
