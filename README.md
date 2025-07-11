@@ -1,8 +1,7 @@
 # Some bug to fix
 New Asset页面：
-- 1. save逻辑，非必填项是空的也需要在数据库中填写为空值（主要体现在修改上，如果修改只删除了一个值，直接save目前是不会对数据库做修改的）
-- 2. 如果切换了问卷逻辑，原先填写的内容应该清空（比如asset type从software改成pysical或者改为空值,那么software特有的那些问卷字段应该全部清空。External Supplied Service从yes切换成no,也应该清空下面的问卷字段）
-- 3.  information -- Asset Category  选择DataBase的时候，报错显示‘Information Asset category is required.’
+- 1. 如果切换了问卷逻辑，原先填写的内容应该清空（比如asset type从software改成pysical或者改为空值,那么software特有的那些问卷字段应该全部清空。External Supplied Service从yes切换成no,也应该清空下面的问卷字段）
+- 2.  information -- Asset Category  选择DataBase的时候，报错显示‘Information Asset category is required.’
 
 Questionaire页面
 - 1. RiskAssessment home页面点击跳转的时候进行路由选择和参数传输（正在修）
