@@ -66,7 +66,7 @@
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
-              <router-link :to="{ path: '/audit-detail', query: { id: row.id } }"
+              <router-link :to="{ path: '/auditdetail', query: { auditid: row.id, auditProjectName: row.name} }"
                            style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>

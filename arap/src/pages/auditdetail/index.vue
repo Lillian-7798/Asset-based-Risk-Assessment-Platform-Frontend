@@ -3,7 +3,7 @@
     <Header />
     <el-container class="main">
       <el-main class="content">
-        <router-view></router-view>
+        <Info />
       </el-main>
     </el-container>
     <div class="footer">
@@ -15,8 +15,10 @@
 <script>
 import Footer from "../../components/Footer.vue";
 import Header from "../../components/Header.vue";
+import Info from "./detail.vue";
 export default {
   components: {
+    Info,
     Header,
     Footer,
   },

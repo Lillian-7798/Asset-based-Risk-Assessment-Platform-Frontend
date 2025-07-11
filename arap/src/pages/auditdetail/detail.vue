@@ -166,7 +166,6 @@ export default {
     };
   },
   mounted() {
-    this.fetchTableData();
 
     const userData = JSON.parse(sessionStorage.getItem("userData") || "{}");
 
@@ -177,6 +176,8 @@ export default {
     this.userLevel = userData.userLevel !== undefined ? userData.userLevel : 2;
 
     console.log("userLevel:", this.userLevel); // 输出 userLevel
+
+    this.fetchTableData();
   },
   methods: {
     formatDate(dateString) {
@@ -237,9 +238,11 @@ export default {
     },
     // 请求数据
     async fetchTableData() {
+      console.log(this.auditid)
       axios
         .get(`http://localhost:8081/api/evidence_chain/${this.auditid}`)
         .then((response) => {
+          console.log(response.data)
           // 根据返回的数据过滤，传递与传输的 auditid 相同的行数据
           this.tableData = response.data.filter(
             (item) => item.audit_project === this.auditid

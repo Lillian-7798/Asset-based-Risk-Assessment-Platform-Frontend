@@ -71,13 +71,6 @@ const routes = [
     path: "/auditdetail",
     name: "auditdetail",
     component: () => import("../pages/auditdetail"),
-    children: [
-      {
-        path: "detail",
-        name: "detail",
-        component: () => import("../pages/auditdetail/detail.vue"),
-      },
-    ],
   },
   {
     path: "/EvidenceChainDetail",
