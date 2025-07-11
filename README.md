@@ -11,6 +11,19 @@ Questionaire页面
 - 5. 保存之后 进行路由跳转应该不会提示。只有有修改且未保存的时候才会在路由跳转的时候出现提示
 - 6. 标题修改：修改标题为Questionaire for [assetname]。标题字号调大，问卷内容和标题之间加一点间距
 
+Evidence Chain页面：
+- 1. （可选）给对应的 Asset 分配 auditor 后，增加一个 AuditProject 在淡黄色详情表中。目前只能看到该asset 已分配到某个auditorProject中，但不知道具体分配在哪一个auditProject中。如果auditorProject数量一多，就不知道要去那里remove。
+
+EvidenceChainDetail页面
+- 1. Risk Assessment -- Identified Risks -- 是否在完成Questionnaire后，就能显示risk内容 （目前risk_relationship有对应的riskType 但该区域无内容显示)
+- 2. 返回时，需返回上一个页面。
+
+Sub Risk Management页面
+- 1. Mark as Complete 改成 Done
+
+Audit Detail页面
+-1. Remove: （目前删除之后，数据库里的数据并没有被删除。刷新一下就又有显示了）。点击Remove后需要整个记录删除。
+
 Help按钮，直接放最后一版require文档得了
 
 # Asset-based-Risk-Assessment-Platform-Frontend
