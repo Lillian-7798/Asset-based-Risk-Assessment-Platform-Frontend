@@ -98,7 +98,7 @@
                     :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }"
                     row-key="id" @expand-change="handleExpand" ref="tableRef">
                     <el-table-column prop="date" label="Date" width="200" />
-                    <el-table-column prop="name" label="Name" width="300">
+                    <el-table-column prop="name" label="Name" width="280">
                         <template #default="{ row }">
                             <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type } }"
                                 style="color: #409EFF; text-decoration: none">
@@ -107,9 +107,9 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="type" label="Type" width="150" />
-                    <el-table-column prop="owner" label="Owner" width="200" />
+                    <el-table-column prop="owner" label="Owner" width="180" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
-                    <el-table-column prop="AssetStatus" label="Asset Status">
+                    <el-table-column prop="AssetStatus" label="Asset Status" width="180">
                         <template #default="{ row }">
                             <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark" size="large"
                                 class="bigger-tag">

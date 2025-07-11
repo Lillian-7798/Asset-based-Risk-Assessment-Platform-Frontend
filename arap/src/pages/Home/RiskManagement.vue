@@ -109,7 +109,7 @@
                         </template>
                     </el-table-column>
                     <el-table-column prop="type" label="Type" width="200" />
-                    <el-table-column prop="owner" label="Owner" width="300" />
+                    <el-table-column prop="owner" label="Owner" width="280" />
                     <!-- AssetStatus 列 - 使用自定义模板 -->
                     <el-table-column prop="AssetStatus" label="Asset Status">
                         <template #default="{ row }">
