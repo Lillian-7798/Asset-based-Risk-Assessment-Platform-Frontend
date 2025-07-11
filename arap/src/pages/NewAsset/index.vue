@@ -1505,13 +1505,13 @@ export default {
       let payload = {
         id: this.assetID,
         assetName: this.name,
-        swid: this.swid,
+        swid: this.swid || null,
         assetOwner: this.assetOwnerID,
-        contact: this.contact,
-        description: this.description,
+        contact: this.contact || null,
+        description: this.description || null,
         status: this.status,
         importance: this.importance,
-        associatedAssets: this.associatedAssets,
+        associatedAssets: this.associatedAssets || null,
       }
       // -----------------------------Software -----------------------------
       if (this.AssetType === 'Software') {
@@ -1552,13 +1552,13 @@ export default {
           installDate: this.installDate,
           operatingSystems: this.authorizedOperatingSystems,
           externalSuppliedService: this.externalSupplied,
-          manufacture: this.Manufacture,
-          serviceType: this.ServiceType,
-          licenseType: this.LicenseType,
-          licenseStartDate: this.LicenseStartDate,
-          licenseEndDate: this.LicenseExpireDate,
-          licenseNumber: this.LicenseNumber,
-          relatedContractNumber: this.RelatedContractNumber,
+          manufacture: this.Manufacture || null,
+          serviceType: this.ServiceType || null,
+          licenseType: this.LicenseType || null,
+          licenseStartDate: this.LicenseStartDate || null,
+          licenseEndDate: this.LicenseExpireDate || null,
+          licenseNumber: this.LicenseNumber || null,
+          relatedContractNumber: this.RelatedContractNumber || null,
         };
       }
       // -------------------------------------Physical------------------------------
@@ -1572,9 +1572,9 @@ export default {
           ...payload,
           AssetType: 1,
           physicalAssetType: this.physicalAssetType,
-          epurchaseDate: this.PurchaseDate,
-          depreciationPeriod: this.DepreciationPeriod,
-          maintenanceCycle: this.MaintenanceCycle,
+          epurchaseDate: this.PurchaseDate || null,
+          depreciationPeriod: this.DepreciationPeriod || null,
+          maintenanceCycle: this.MaintenanceCycle || null,
         };
         if (this.physicalAssetType === 0) {
           emptyField = emptyField || this.fixedAssetCategory === "" || this.Location === "";
@@ -1582,7 +1582,7 @@ export default {
             ...payload,
             EmptyField: emptyField ? 0 : 1,
             assetCategory: this.fixedAssetCategory,
-            location: this.Location,
+            location: this.Location || null,
           }
         } else {
           emptyField = emptyField || this.nonFixedAssetCategory === "" || this.CurrentHolder === ""
@@ -1591,12 +1591,12 @@ export default {
             ...payload,
             EmptyField: emptyField ? 0 : 1,
             assetCategory2: this.nonFixedAssetCategory,
-            currentHolder: this.CurrentHolder,
-            checkoutDate: this.CheckoutDate,
-            expectedReturnDate: this.ExpectedReturnDate,
-            conditions: this.Condition,
-            dateEncryption: this.DataEncryption,
-            remoteWipeCapability: this.RemoteWipeCapability,
+            currentHolder: this.CurrentHolder || null,
+            checkoutDate: this.CheckoutDate || null,
+            expectedReturnDate: this.ExpectedReturnDate || null,
+            conditions: this.Condition || null,
+            dateEncryption: this.DataEncryption || null,
+            remoteWipeCapability: this.RemoteWipeCapability || null,
           }
         }
       }
@@ -1611,7 +1611,7 @@ export default {
           ...payload,
           AssetType: 2,
           informationRetentionPolicy: this.informationRetentionPolicy,
-          informationStorageLocation: this.informationStorageLocation,
+          informationStorageLocation: this.informationStorageLocation || null,
           informationAssetCategory: this.InformationAssetCategory,
         };
         if(this.InformationAssetCategory==0){
@@ -1619,8 +1619,8 @@ export default {
           payload = {
             ...payload,
             EmptyField: emptyField ? 0 : 1,
-            databaseVersion: this.databaseVersion,
-            DataSchema: this.DataSchema,
+            databaseVersion: this.databaseVersion || null,
+            DataSchema: this.DataSchema || null,
             containsPII: this.containsPII,
             backupFrequency: this.backupFrequency,
           }
@@ -1639,8 +1639,8 @@ export default {
           payload = {
             ...payload,
             EmptyField: emptyField ? 0 : 1,
-            registrationNumber: this.registrationNumber,
-            expiryDate: this.expiryDate,
+            registrationNumber: this.registrationNumber || null,
+            expiryDate: this.expiryDate || null,
           }
         }
       }
@@ -1651,15 +1651,15 @@ export default {
           ...payload,
           AssetType: 3,
           EmptyField: emptyField ? 0 : 1,
-          department: this.department,
-          position: this.position,
-          hireDate: this.hireDate,
+          department: this.department || null,
+          position: this.position || null,
+          hireDate: this.hireDate || null,
           backgroundCheckStatus: this.backgroundCheckStatus,
           securityTrainingStatus: this.securityTrainingStatus,
-          NDASigningDate: this.NDASigningDate,
+          NDASigningDate: this.NDASigningDate || null,
           RemoteWorkAgreementStatus: this.RemoteWorkAgreementStatus,
-          securityIncidentRecords: this.securityIncidentRecords,
-          LastAuditDate: this.LastAuditDate,
+          securityIncidentRecords: this.securityIncidentRecords || null,
+          LastAuditDate: this.LastAuditDate || null,
         };
       }
       // POST 请求到后端
