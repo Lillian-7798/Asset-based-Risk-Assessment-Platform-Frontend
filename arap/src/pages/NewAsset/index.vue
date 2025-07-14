@@ -1444,7 +1444,7 @@ export default {
       if(pageName == 'EvidenceChain'){
         this.$router.push({
           path: '/home/evidence-chain',
-          query: { page: fromPage } // Pass it back to the list view
+          query: { page: fromPage } // Pass it back to the list views
         });
       }
 
@@ -1614,7 +1614,7 @@ export default {
       }
       // -------------------------------------------Information----------------------------------
       if (this.AssetType === 'Information') {
-        if (!this.InformationAssetCategory) {
+        if (this.InformationAssetCategory==="") {
           this.$message.error("Information Asset Category is required");
           return;
         }
