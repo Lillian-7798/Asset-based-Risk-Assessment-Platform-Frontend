@@ -40,7 +40,7 @@
 
           <!-- 文字标题 -->
           <el-text style="font-size: 20px; font-weight: bold; flex-grow: 1">
-            Database information Asset Questionnaire
+            {{ riskname }}
           </el-text>
         </div>
         <div style="height: 20px"></div>
@@ -76,13 +76,14 @@
                     ref="upload"
                     class="upload-demo"
                     drag
-                    action="http://localhost:8081/api/file/upload/3"
+                    :action="`http://localhost:8081/api/file/upload/${rid}`"
                     :on-change="handleFileChange"
                     :file-list="fileList"
                     :auto-upload="false"
                     :limit="5"
                   >
-                    <!-- action后面的数字也要换成rid -->
+                    <!-- 需要改成传输treatmentid 虽然之后展示有点麻烦 -->
+                    <!-- 因为一一对应，后端改treatmentid值在生成的时候等于rid的值即可 这样展示已上传文件和其他都方便 -->
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">
                       Drag and drop files here or click to upload(max files=5)
@@ -96,19 +97,22 @@
                     >:</el-text
                   >
 
-                  <div v-if="allFiles.length" style="margin-top: 10px">
+                  <div v-if="uploadedFiles.length" style="margin-top: 10px">
                     <div
-                      v-for="(file, index) in allFiles"
+                      v-for="(file, index) in uploadedFiles"
                       :key="index"
                       class="file-item"
                     >
-                      <span @dblclick="openFile(file)">{{ file.name }}</span>
-                      <el-button
-                        type="text"
-                        @click="deleteFile(index)"
-                        size="mini"
-                        >Delete</el-button
+                      <span
+                        @click="openFile(file)"
+                        style="
+                          cursor: pointer;
+                          color: #409eff;
+                          text-decoration: underline;
+                        "
                       >
+                        {{ file.original_name }}
+                      </span>
                     </div>
                   </div>
                 </el-col>
@@ -129,11 +133,12 @@
                       <span
                         style="
                           cursor: pointer;
-                          vertical-align: middle;  /* 添加这行 */
+                          vertical-align: middle; /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
                         "
-                        ><el-icon><InfoFilled /></el-icon></span>
+                        ><el-icon><InfoFilled /></el-icon
+                      ></span>
                     </el-tooltip>
                   </el-text>
                   <el-select
@@ -232,7 +237,9 @@ export default {
   },
   data() {
     return {
-      rid: 1, //应该由上个界面传过来
+      uploadedFiles: [], // 存储已上传的文件列表
+      rid: this.$route.query.rid || 1, // 默认值为 1
+      riskname: this.$route.query.riskname || "default riskname", // 默认值为 "default riskname"
       commentsFromAssigner: "", // 默认值
       tooltipContent: `
         Risk treatment involves selecting and implementing measures to address identified risks. Four primary strategies:
@@ -260,6 +267,7 @@ export default {
     };
   },
   created() {
+    this.fetchUploadedFiles();
     this.fetchComments(); // 组件创建时加载 comments
     // 在组件加载时从localStorage读取已保存的文件列表
     const savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
@@ -272,6 +280,30 @@ export default {
     },
   },
   methods: {
+    fetchUploadedFiles() {
+      axios
+        .get(`http://localhost:8081/api/file/find/${this.rid}`)
+        .then((response) => {
+          this.uploadedFiles = response.data; // 假设返回的数据是一个数组
+        })
+        .catch((error) => {
+          console.error("Error fetching files:", error);
+        });
+    },
+
+    // 打开文件
+    openFile(file) {
+      // 从 file_path 中提取文件的路径，去掉 'static\' 部分
+      const filePath = file.file_path.split("static\\")[1]; // 提取路径部分
+      const fileUrl = `http://localhost:8081/files/${filePath.replace(
+        /\\/g,
+        "/"
+      )}`; // 替换路径中的 \ 为 /
+
+      // 在新标签页中打开文件链接
+      window.open(fileUrl, "_blank");
+    },
+
     fetchComments() {
       axios
         .get(`http://localhost:8081/api/risk_relationship/${this.rid}`)
@@ -301,11 +333,6 @@ export default {
       //这里先不用数据库显示？感觉挺好
     },
 
-    // 打开文件（双击）
-    openFile(file) {
-      const fileUrl = URL.createObjectURL(file.raw);
-      window.open(fileUrl, "_blank");
-    },
     goBack() {
       this.$router.push("/home/my-risk");
     },
@@ -363,7 +390,8 @@ export default {
       // POST 请求到后端
       try {
         const response = await axios.post(
-          "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          // "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          `http://localhost:8081/api/risk_treatment/save/${this.rid}`,
           formData
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
@@ -404,7 +432,8 @@ export default {
       // POST 请求到后端
       try {
         const response = await axios.post(
-          "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          // "http://localhost:8081/api/risk_treatment/save/3", //这个id是要换的，根据主界面传入的id来换，这里先展示1
+          `http://localhost:8081/api/risk_treatment/save/${this.rid}`,
           formData
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
