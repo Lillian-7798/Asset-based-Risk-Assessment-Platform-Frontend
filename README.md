@@ -14,9 +14,6 @@ Questionaire页面
 Evidence Chain页面：
 - 1. （可选）给对应的 Asset 分配 auditor 后，增加一个 AuditProject 在淡黄色详情表中。目前只能看到该asset 已分配到某个auditorProject中，但不知道具体分配在哪一个auditProject中。如果auditorProject数量一多，就不知道要去那里remove。
 
-EvidenceChainDetail页面
-- 1. 返回时，需返回上一个页面。
-
 Audit Detail页面
 - 1. Remove: （目前删除之后，数据库里的数据并没有被删除。刷新一下就又有显示了）。
 
