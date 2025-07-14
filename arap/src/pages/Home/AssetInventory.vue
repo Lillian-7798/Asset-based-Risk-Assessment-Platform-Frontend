@@ -81,7 +81,7 @@
           <el-table-column prop="date" label="Date" width="200" />
           <el-table-column prop="name" label="Name" width="280">
             <template #default="{ row }">
-              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type, name: row.name, fromPage: currentPage }}"
+              <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type, name: row.name, fromPage: currentPage , pageName:'AssetInventory'}}"
                 style="color: #409EFF; text-decoration: none">
                 {{ row.name }}
               </router-link>

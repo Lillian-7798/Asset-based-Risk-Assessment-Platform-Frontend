@@ -100,7 +100,7 @@
                     <el-table-column prop="date" label="Date" width="200" />
                     <el-table-column prop="name" label="Name" width="280">
                         <template #default="{ row }">
-                            <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type } }"
+                            <router-link :to="{ path: '/NewAsset', query: { id: row.id, assetType: row.type ,fromPage: currentPage, pageName: 'EvidenceChain'} }"
                                 style="color: #409EFF; text-decoration: none">
                                 {{ row.name }}
                             </router-link>
@@ -248,6 +248,10 @@ export default {
         }
     },
     mounted() {
+      if (this.$route.query.page) {
+        this.currentPage = parseInt(this.$route.query.page) || 1;
+      }
+
         const userdata = JSON.parse(sessionStorage.getItem('userData'))
         this.userId = userdata.userId;
         this.userName = userdata.username
@@ -513,6 +517,9 @@ export default {
         },
         handlePageChange(newPage) {
             this.currentPage = newPage;
+            this.$router.replace({
+              query: { ...this.$route.query, page: newPage }
+            });
             this.fetchAssetsCount();
             this.fetchAllAssets();
         },
