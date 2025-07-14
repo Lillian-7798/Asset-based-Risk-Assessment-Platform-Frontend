@@ -1158,6 +1158,7 @@ export default {
     this.AssetType = this.$route.query.assetType;
     this.name = this.$route.query.name;
     this.fromPage = this.$route.query.fromPage;
+    this.pageName = this.$route.query.pageName;
     this.Pre_filled();
   },
   data() {
@@ -1170,6 +1171,7 @@ export default {
       name: "",
       assetID: "",
       fromPage: "",
+      pageName: "",
       swid: "",
       AssetType: "",
       assetOwner: "",
@@ -1432,10 +1434,20 @@ export default {
 
     handleBackClick() {
       const fromPage = this.$route.query.fromPage || 1; // Get the page from query params
-      this.$router.push({
-        path: '/home/asset-inventory',
-        query: { page: fromPage } // Pass it back to the list view
-      });
+      const pageName = this.$route.query.pageName || '';
+      if(pageName == 'AssetInventory'){
+        this.$router.push({
+          path: '/home/asset-inventory',
+          query: { page: fromPage } // Pass it back to the list view
+        });
+      }
+      if(pageName == 'EvidenceChain'){
+        this.$router.push({
+          path: '/home/evidence-chain',
+          query: { page: fromPage } // Pass it back to the list view
+        });
+      }
+
     },
 
     handleBeforeClose(done) {
