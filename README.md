@@ -8,7 +8,6 @@ Questionaire页面
 - 2. save 和done的后端逻辑(正在修)
 - 3. 一些问题旁边需要有帮助信息（具体参考excel），有个小问号的图标（图标代码参考https://element-plus.sxtxhy.com/zh-CN/component/icon.html），鼠标悬停的时候显示这个问题的具体解释
 - 4. 点击back按钮应该是回到上一个打开的页面，back按钮位置往右调整，不要贴着屏幕边
-- 5. 保存之后 进行路由跳转应该不会提示。只有有修改且未保存的时候才会在路由跳转的时候出现提示
 - 6. 标题修改：修改标题为Questionaire for [assetname]。标题字号调大，问卷内容和标题之间加一点间距
 
 Evidence Chain页面：

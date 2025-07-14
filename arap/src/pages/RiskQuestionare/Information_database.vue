@@ -161,12 +161,11 @@
                       <span
                         style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
                         "
-                        >❓</span
-                      >
+                        ><el-icon><InfoFilled /></el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select

@@ -2,18 +2,13 @@
   <div>
     <Header />
     <div class="content">
-      <!-- Confirm Dialog -->
-      <el-dialog
-        v-model="showConfirmDialog"
-        title="Warning"
-        width="30%"
-        :before-close="handleBeforeClose"
-      >
-        <span>The questionaire will not be saved, are you sure to exit?</span>
+      <!-- Confirm Dialog for unsaved changes -->
+      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
+        <span>You have unsaved changes. Are you sure you want to leave?</span>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="showConfirmDialog = false">No</el-button>
-            <el-button type="primary" @click="confirmLeave">Yes</el-button>
+            <el-button @click="showConfirmDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="confirmLeave">Leave Anyway</el-button>
           </span>
         </template>
       </el-dialog>
@@ -22,21 +17,16 @@
       <div class="page-header">
         <div style="height: 20px"></div>
         <div class="header-content" style="display: flex; align-items: center">
-          <!-- 返回按钮 -->
-          <el-button
-            type="primary"
-            round
-            @click="handleBackClick"
-            style="
+          <el-button type="primary" round @click="handleBackClick" style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            "
-          >
-            <el-icon><ArrowLeft /></el-icon> Back
+            ">
+            <el-icon>
+              <ArrowLeft />
+            </el-icon> Back
           </el-button>
 
-          <!-- 文字标题 -->
           <el-text style="font-size: 20px; font-weight: bold; flex-grow: 1">
             Software Questionnaire
           </el-text>
@@ -55,12 +45,8 @@
                   <el-text class="q-text">
                     1. Is the software authorized by the vendor?
                   </el-text>
-                  <el-select
-                    v-model="Q1Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q1Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ1Change">
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -79,21 +65,18 @@
                       1.1 Is the software's status correctly updated in the
                       inventory?
                     </el-text>
-                    <el-select
-                      v-model="Q1_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Q1_1Status" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
                     <div v-if="Q1_1Status === 'No'" style="color: red">
-                      WARNING: Software unauthorized and wrong software status
-                      in inventory. <br />RISKS: 1. Unauthorized software may
-                      contain unpatched vulnerabilities or malware 2.Unapproved
-                      software could violate license terms 3. Resource wasted
-                      (budget, IT Team, etc)
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Software unauthorized and wrong software status
+                          in inventory.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -106,30 +89,21 @@
                     2. Is the software explicitly whitelisted to ensure it's the
                     only authorized version allowed to run on endpoints?
                   </el-text>
-                  <el-select
-                    v-model="Q2Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Yes, whitelisted with version control"
-                      value="Whitelisted"
-                    />
-                    <el-option
-                      label="Licensed but unwhitelisted"
-                      value="Licensed"
-                    />
+
+                  <el-select v-model="Q2Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, whitelisted with version control"
+                      value="Yes, whitelisted with version control" />
+                    <el-option label="Licensed but unwhitelisted" value="Licensed but unwhitelisted" />
                     <el-option label="No" value="No" />
                   </el-select>
-                  <div
-                    v-if="Q2Status === 'No' || Q2Status === 'Licensed'"
-                    style="color: red"
-                  >
-                    WARNING: Software is not whitelisted.<br />
-                    RISKS: 1. Unauthorized versions of the software may contain
-                    malware. 2. unapproved versions may have unaddressed CVEs 3.
-                    Untested versions can conflict with other apps
+
+                  <div v-if="Q2Status === 'No' || Q2Status === 'Licensed but unwhitelisted'" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Software is not whitelisted.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -138,49 +112,36 @@
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    3. Is the software automatically scanned for vulnerabilities
-                    using an SCAP-compliant tool (e.g., OpenVAS, Nessus,
-                    Tenable) at least weekly?
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
+                    3. Is the software automatically scanned for vulnerabilities using an SCAP-compliant tool (e.g.,
+                    OpenVAS,
+                    Nessus,Tenable) at least weekly?
+                    <el-tooltip class="item" effect="dark"
                       content="An SCAP-compliant tool is a software solution that adheres to the Security Content Automation Protocol (SCAP), a set of open standards for automating vulnerability management, measurement, and policy compliance. These tools (e.g., OpenVAS, Nessus, Tenable) use SCAP-defined formats to consistently identify, assess, and report security vulnerabilities in systems."
-                      placement="top"
-                    >
-                      <span
-                        style="
+                      placement="top">
+                      <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        "
-                        >❓</span
-                      >
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
-                  <el-select
-                    v-model="Q3Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Yes, scanned weekly or more frequently"
-                      value="Yes"
-                    />
-                    <el-option
-                      label="Scanned, but less frequently "
-                      value="Scanned"
-                    />
-                    <el-option label="No regular scans" value="No" />
+                  <el-select v-model="Q3Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, scanned weekly or more frequently"
+                      value="Yes, scanned weekly or more frequently" />
+                    <el-option label="Scanned, but less frequently" value="Scanned, but less frequently" />
+                    <el-option label="No regular scans" value="No regular scans" />
                   </el-select>
-                  <div
-                    v-if="Q3Status === 'No' || Q3Status === 'Scanned'"
-                    style="color: red"
-                  >
-                    WARNING: Software is not scanned for vulnerabilities within
-                    a reasonable time period.<br />
-                    RISKS: 1. Missed zero-day or known CVEs 2. Fails audits
+                  <div v-if="Q3Status === 'No regular scans' || Q3Status === 'Scanned, but less frequently'"
+                    style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Software is not scanned for vulnerabilities within a reasonable time period.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -194,48 +155,33 @@
                     using authenticated methods (e.g., local agents or
                     credentialed remote scans) to detect configuration flaws and
                     missing patches?
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
+                    <el-tooltip class="item" effect="dark"
                       content="An authenticated method involves scanning a system with valid credentials (e.g., username/password or agent-based access) to perform deeper checks like configuration flaws, missing patches, and installed software. An unauthenticated method scans without credentials, detecting only surface-level vulnerabilities visible from the network, such as open ports or unpatched services."
-                      placement="top"
-                    >
-                      <span
-                        style="
+                      placement="top">
+                      <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        "
-                        >❓</span
-                      >
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
-                  <el-select
-                    v-model="Q4Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q4Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
-                    <el-option
-                      label="Scanned, but only unauthenticated"
-                      value="AVERAGE"
-                    />
-                    <el-option
-                      label="No authenticated scans performed"
-                      value="No"
-                    />
+                    <el-option label="Scanned, but only unauthenticated" value="Scanned, but only unauthenticated" />
+                    <el-option label="No authenticated scans performed" value="No authenticated scans performed" />
                   </el-select>
                   <div
-                    v-if="Q4Status === 'No' || Q4Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Authenticated scan is not performed<br />
-                    RISKS: 1. Unauthenticated scans miss unpatched software or
-                    misconfigurations 2. Violates mandates requiring
-                    authenticated scans (e.g., PCI DSS 11.2.1, NIST 800-53). 3.
-                    Privilege Escalation Risks
+                    v-if="Q4Status === 'No authenticated scans performed' || Q4Status === 'Scanned, but only unauthenticated'"
+                    style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span> Authenticated scan is not performed</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -249,25 +195,18 @@
                     security patches using a dedicated tool (e.g., WSUS,
                     Ansible, SCCM)?
                   </el-text>
-                  <el-select
-                    v-model="Q5Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label="Yes, fully automated" value="Yes" />
-                    <el-option label="Partially automated" value="AVERAGE" />
-                    <el-option label="No automation" value="No" />
+                  <el-select v-model="Q5Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, fully automated" value="Yes, fully automated" />
+                    <el-option label="Partially automated" value="Partially automated" />
+                    <el-option label="No automation" value="No automation" />
                   </el-select>
-                  <div
-                    v-if="Q5Status === 'No' || Q5Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Updates are not fully automated.<br />
-                    RISKS: 1. Manual patching often lags vendor releases by
-                    weeks/months, Extended exposure to exploited CVEs. 2. May
-                    fails regulation requirements like: PCI DSS (patch critical
-                    vulnerabilities within 30 days). HIPAA (security updates).
+                  <div v-if="Q5Status === 'No automation' || Q5Status === 'Partially automated'" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Updates are not fully automated.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -281,32 +220,22 @@
                     software compared regularly to confirm timely remediation of
                     identified flaws?
                   </el-text>
-                  <el-select
-                    v-model="Q6Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Yes, with documented tracking (e.g., Jira tickets, automated dashboards)"
-                      value="Yes"
-                    />
-                    <el-option
-                      label="Ad-hoc comparisons (no formal process)"
-                      value="AVERAGE"
-                    />
-                    <el-option
-                      label="No, remediation is not tracked"
-                      value="No"
-                    />
+                  <el-select v-model="Q6Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, with documented tracking (e.g., Jira tickets, automated dashboards)"
+                      value="Yes, with documented tracking (e.g., Jira tickets, automated dashboards)" />
+                    <el-option label="Ad-hoc comparisons (no formal process)"
+                      value="Ad-hoc comparisons (no formal process)" />
+                    <el-option label="No, remediation is not tracked" value="No, remediation is not tracked" />
                   </el-select>
                   <div
-                    v-if="Q6Status === 'No' || Q6Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Updates are not fully automated. <br />
-                    RISKS: 1. May assume vulnerabilities are fixed when they
-                    persist 2.Violates mandates requiring remediation proof
+                    v-if="Q6Status === 'No, remediation is not tracked' || Q6Status === 'Ad-hoc comparisons (no formal process)'"
+                    style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span> Updates are not fully automated. </span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -316,309 +245,189 @@
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    7. Are documented security configuration standards
-                    maintained and enforced for the software?
+                    7. Are documented security configuration standards maintained and enforced for the software?
                   </el-text>
-                  <el-select
-                    v-model="Q7Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Yes, fully documented and enforced"
-                      value="Yes"
-                    />
-                    <el-option
-                      label="Partially documented (standards exist but not consistently applied)"
-                      value="AVERAGE"
-                    />
-                    <el-option label="No standards exist" value="No" />
+                  <el-select v-model="Q7Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, fully documented and enforced" value="Yes, fully documented and enforced" />
+                    <el-option label="Partially documented (standards exist but not consistently applied)"
+                      value="Partially documented (standards exist but not consistently applied)" />
+                    <el-option label="No standards exist" value="No standards exist" />
                   </el-select>
-                  <div
-                    v-if="Q7Status === 'No' || Q7Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Documented security configuration standards not
-                    strictly maintained or enforced.<br />
-                    RISKS: 1. Systems/software are configured differently across
-                    the organization.Some instances may have critical security
-                    gaps. 2.Compliance Violations 3. Increased Attack Surface 4.
-                    Operational Inefficiency such as longer troubleshooting
-                    process
+                  <div v-if="Q7Status !== 'Yes, fully documented and enforced' && Q7Status != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Documented security configuration standards not strictly maintained or enforced.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 7 -->
 
               <!-- Question 8 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    8. Are secure images or templates for the software
-                    maintained based on the organization's approved
-                    configuration standards. Any new system deployment or
-                    existing system that becomes compromised should be imaged
-                    using one of those images or templates.
+                    8. Are secure images or templates for the software maintained based on the organization's approved
+                    configuration standards?
                   </el-text>
-                  <el-select
-                    v-model="Q8Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label=" Yes, always" value="Yes" />
-                    <el-option label="Sometimes" value="AVERAGE" />
+                  <el-select v-model="Q8Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, always" value="Yes, always" />
+                    <el-option label="Sometimes" value="Sometimes" />
                     <el-option label="No" value="No" />
                   </el-select>
-                  <div
-                    v-if="Q8Status === 'No' || Q8Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Documented security configuration standards not
-                    strictly maintained or enforced.<br />
-                    RISKS: 1. Inconsistent Security Posture. Manual deployments
-                    lead to configuration drift. 2. Compliance Violations 3.
-                    Slower Incident Response. Compromised systems rebuilt
-                    manually vs. automated reimaging. 4. Higher Operational
-                    Costs. Manual deployments require 3–5x more effort
+                  <div v-if="Q8Status !== 'Yes, always' && Q8Status != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Secure images/templates not consistently used.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 8 -->
 
               <!-- Question 9 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    9. Are master images/templates stored on securely configured
-                    servers with integrity monitoring to prevent unauthorized
-                    modifications?
+                    9. Are master images/templates stored on securely configured servers with integrity monitoring?
                   </el-text>
-                  <el-select
-                    v-model="Q9Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label=" Yes, fully secured & monitored"
-                      value="Yes"
-                    />
-                    <el-option
-                      label=" Partially secured (basic access controls but no real-time monitoring)"
-                      value="AVERAGE"
-                    />
-                    <el-option
-                      label="No, stored on standard file shares"
-                      value="No"
-                    />
+                  <el-select v-model="Q9Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, fully secured & monitored" value="Yes, fully secured & monitored" />
+                    <el-option label="Partially secured (basic access controls but no real-time monitoring)"
+                      value="Partially secured (basic access controls but no real-time monitoring)" />
+                    <el-option label="No, stored on standard file shares" value="No, stored on standard file shares" />
                   </el-select>
-                  <div
-                    v-if="Q9Status === 'No' || Q9Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Security images are not fully secured. <br />
-                    RISKS: 1. Unauthorized changes and compromised security
-                    Images
+                  <div v-if="Q9Status !== 'Yes, fully secured & monitored' && Q9Status != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Security images are not fully secured.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 9 -->
 
               <!-- Question 10 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    10. Are system configuration management tools deployed to
-                    automatically enforce and redeploy approved security
-                    settings for the software at scheduled intervals?
+                    10. Are system configuration management tools deployed to automatically enforce and redeploy
+                    approved
+                    security settings?
                   </el-text>
-                  <el-select
-                    v-model="Q10Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label=" Yes, fully automated" value="Yes" />
-                    <el-option
-                      label=" Partially automated (manual triggers or ad-hoc enforcement)"
-                      value="AVERAGE"
-                    />
-                    <el-option
-                      label="No, configurations are managed manually"
-                      value="No"
-                    />
+                  <el-select v-model="Q10Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, fully automated" value="Yes, fully automated" />
+                    <el-option label="Partially automated (manual triggers or ad-hoc enforcement)"
+                      value="Partially automated (manual triggers or ad-hoc enforcement)" />
+                    <el-option label="No, configurations are managed manually"
+                      value="No, configurations are managed manually" />
                   </el-select>
-                  <div
-                    v-if="Q10Status === 'No' || Q10Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Configuration Enforcement are not fully
-                    automatic<br />
-                    RISKS: 1. Configuration Drift. Systems gradually deviate
-                    from baselines 2. Delayed Response to Threats. Manual
-                    updates lag critical vulnerabilities 3. Compliance Failures
+                  <div v-if="Q10Status !== 'Yes, fully automated' && Q10Status != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Configuration enforcement not fully automatic.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 10 -->
 
               <!-- Question 11 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    11. Any Security Content Automation Protocol (SCAP)
-                    compliant configuration monitoring system used to verify all
-                    security configuration elements, catalog approved
-                    exceptions, and alert when unauthorized changes occur for
-                    the software?
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
-                      content="An SCAP-compliant tool is a software solution that adheres to the Security Content Automation Protocol (SCAP), a set of open standards for automating vulnerability management, measurement, and policy compliance. These tools (e.g., OpenVAS, Nessus, Tenable) use SCAP-defined formats to consistently identify, assess, and report security vulnerabilities in systems."
-                      placement="top"
-                    >
-                      <span
-                        style="
-                          cursor: pointer;
-                          color: blue;
-                          font-size: 16px;
-                          margin-left: 5px;
-                        "
-                        >❓</span
-                      >
-                    </el-tooltip>
+                    11. Is SCAP-compliant configuration monitoring system used?
                   </el-text>
-                  <el-select
-                    v-model="Q11Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label=" Yes, fully implemented (automated scans + real-time alerts)"
-                      value="Yes"
-                    />
-                    <el-option
-                      label="Partially implemented (manual scans or no exception tracking)"
-                      value="AVERAGE"
-                    />
-                    <el-option
-                      label=" No SCAP monitoring in place"
-                      value="No"
-                    />
+                  <el-select v-model="Q11Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, fully implemented (automated scans + real-time alerts)"
+                      value="Yes, fully implemented (automated scans + real-time alerts)" />
+                    <el-option label="Partially implemented (manual scans or no exception tracking)"
+                      value="Partially implemented (manual scans or no exception tracking)" />
+                    <el-option label="No SCAP monitoring in place" value="No SCAP monitoring in place" />
                   </el-select>
                   <div
-                    v-if="Q11Status === 'No' || Q11Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Not Using SCAP-Compliant Monitoring<br />
-                    RISKS:1. Undetected Misconfigurations 2. Unauthorized
-                    Changes 3. Compliance Failures 4. Lack of Audit Trails
+                    v-if="Q11Status !== 'Yes, fully implemented (automated scans + real-time alerts)' && Q11Status != ''"
+                    style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Not using SCAP-compliant monitoring.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 11 -->
 
               <!-- Question 12 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    12. Is the software an email or web Broswer?
+                    12. Is the software an email or web browser?
                   </el-text>
-                  <el-select
-                    v-model="Q12Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label=" Yes" value="Yes" />
-
+                  <el-select v-model="Q12Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ12Change">
+                    <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
-                  <!-- <div
-                    v-if="Q11Status === 'No'"
-                    style="color: red"
-                  >
-                    Not Using SCAP-Compliant Monitoring
-                  </div> -->
                 </el-col>
               </el-row>
-              <!-- Question 12 -->
 
               <!-- Question 12.1 -->
               <div v-if="Q12Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      12.1 Are unauthorized browser/email plugins/add-ons (e.g.,
-                      Chrome extensions, Outlook add-ins) uninstalled or
-                      disabled for the software?
+                      12.1 Are unauthorized browser/email plugins/add-ons uninstalled or disabled?
                     </el-text>
-                    <el-select
-                      v-model="Q12_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, actively managed (automated blocking + allowlists)"
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Partially managed (manual reviews, no enforcement)"
-                        value="AVERAGE"
-                      />
-                      <el-option label="No controls in place" value="No" />
+                    <el-select v-model="Q12_1Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, actively managed (automated blocking + allowlists)"
+                        value="Yes, actively managed (automated blocking + allowlists)" />
+                      <el-option label="Partially managed (manual reviews, no enforcement)"
+                        value="Partially managed (manual reviews, no enforcement)" />
+                      <el-option label="No controls in place" value="No controls in place" />
                     </el-select>
                     <div
-                      v-if="Q12_1Status === 'No' || Q12_1Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Unauthorized Plugins/Add-Ons may exist.<br />
-                      RISKS: 1. Malware & Data Theft. Malicious plugins
+                      v-if="Q12_1Status !== 'Yes, actively managed (automated blocking + allowlists)' && Q12_1Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Unauthorized plugins/add-ons may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 12.1 -->
 
               <!-- Question 12.2 -->
               <div v-if="Q12Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      12.2 Are unauthorized scripting languages (e.g.,
-                      JavaScript, VBScript, macros) blocked in the web browser
-                      or email client across the organization?
+                      12.2 Are unauthorized scripting languages blocked in the web browser or email client?
                     </el-text>
-                    <el-select
-                      v-model="Q12_2Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option label=" Yes, strictly enforced" value="Yes" />
-                      <el-option
-                        label="Partially enforced (some restrictions but gaps exist)"
-                        value="AVERAGE"
-                      />
-                      <el-option label="No controls in place" value="No" />
+                    <el-select v-model="Q12_2Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, strictly enforced" value="Yes, strictly enforced" />
+                      <el-option label="Partially enforced (some restrictions but gaps exist)"
+                        value="Partially enforced (some restrictions but gaps exist)" />
+                      <el-option label="No controls in place" value="No controls in place" />
                     </el-select>
-                    <div
-                      v-if="Q12_2Status === 'No' || Q12_2Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Uncontrolled Script Execution may exist.<br />
-                      RISKS:1. Malware & Exploits. Malicious scripts. 2.
-                      Phishing & Credential Theft. Fake login pages (e.g.,
-                      JavaScript-based "Office 365" phishing steal credentials).
+                    <div v-if="Q12_2Status !== 'Yes, strictly enforced' && Q12_2Status != ''" style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Uncontrolled script execution may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 12.2 -->
 
               <!-- Question 13 -->
               <el-row gutter="{20}">
@@ -626,370 +435,244 @@
                   <el-text class="q-text">
                     13. Is the software an in-house developed software?
                   </el-text>
-                  <el-select
-                    v-model="Q13Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option label=" Yes" value="Yes" />
-
+                  <el-select v-model="Q13Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ13Change">
+                    <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
                 </el-col>
               </el-row>
-              <!-- Question 13 -->
 
               <!-- Question 13.1 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.1 Are secure coding practices (e.g., OWASP Top 10, CERT
-                      guidelines) enforced for all development involving the
-                      software?
+                      13.1 Are secure coding practices enforced for all development?
                     </el-text>
-                    <el-select
-                      v-model="Q13_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, strictly enforced (via code reviews, SAST/DAST tools, and training)"
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Partially enforced (ad-hoc reviews or limited tooling)"
-                        value="AVERAGE"
-                      />
-                      <el-option
-                        label=" No formal practices in place"
-                        value="No"
-                      />
+                    <el-select v-model="Q13_1Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, strictly enforced (via code reviews, SAST/DAST tools, and training)"
+                        value="Yes, strictly enforced (via code reviews, SAST/DAST tools, and training)" />
+                      <el-option label="Partially enforced (ad-hoc reviews or limited tooling)"
+                        value="Partially enforced (ad-hoc reviews or limited tooling)" />
+                      <el-option label="No formal practices in place" value="No formal practices in place" />
                     </el-select>
                     <div
-                      v-if="Q13_1Status === 'No' || Q13_1Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Insecure Coding Practices <br />
-                      RISKS: 1. Vulnerable Applications. Common flaws like SQLi,
-                      XSS, or buffer overflows lead to breaches. 2. Compliance
-                      Failures 3. Increased Remediation Costs
+                      v-if="Q13_1Status !== 'Yes, strictly enforced (via code reviews, SAST/DAST tools, and training)' && Q13_1Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Insecure coding practices may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.1 -->
 
               <!-- Question 13.2 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.2 For in-house developed software, is explicit error
-                      checking performed and documented for all input, including
-                      for size, data type, and acceptable ranges or formats.
+                      13.2 Is explicit error checking performed and documented for all input?
                     </el-text>
-                    <el-select
-                      v-model="Q13_2Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, rigorously enforced "
-                        value="Yes"
-                      />
-                      <el-option label="Partial validation" value="AVERAGE" />
-                      <el-option
-                        label=" No formal input validation"
-                        value="No"
-                      />
+                    <el-select v-model="Q13_2Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, rigorously enforced" value="Yes, rigorously enforced" />
+                      <el-option label="Partial validation" value="Partial validation" />
+                      <el-option label="No formal input validation" value="No formal input validation" />
                     </el-select>
-                    <div
-                      v-if="Q13_2Status === 'No' || Q13_2Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Poor Input Validation<br />
-                      RISKS: 1. Injection Attacks 2. Buffer Overflows. Unbounded
-                      input crashes systems or executes arbitrary code. 3. Data
-                      Corruption. Invalid data types/ranges cause processing
-                      errors 4. Compliance Failures
+                    <div v-if="Q13_2Status !== 'Yes, rigorously enforced' && Q13_2Status != ''" style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Poor input validation may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.2 -->
 
               <!-- Question 13.3 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.3 Is only up-to-date and trusted third-party components
-                      used for the software developed by the organization?
+                      13.3 Is only up-to-date and trusted third-party components used?
                     </el-text>
-                    <el-select
-                      v-model="Q13_3Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, strictly enforced (automated scanning + approved vendor lists) "
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Partially enforced (some manual reviews, occasional exceptions)"
-                        value="AVERAGE"
-                      />
-                      <el-option label="No formal controls" value="No" />
+                    <el-select v-model="Q13_3Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, strictly enforced (automated scanning + approved vendor lists)"
+                        value="Yes, strictly enforced (automated scanning + approved vendor lists)" />
+                      <el-option label="Partially enforced (some manual reviews, occasional exceptions)"
+                        value="Partially enforced (some manual reviews, occasional exceptions)" />
+                      <el-option label="No formal controls" value="No formal controls" />
                     </el-select>
                     <div
-                      v-if="Q13_3Status === 'No' || Q13_3Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Untrusted/Outdated Components may be used.<br />
-                      RISKS: 1. Supply Chain Attacks. Malicious packages 2.
-                      License & Compliance Violations
+                      v-if="Q13_3Status !== 'Yes, strictly enforced (automated scanning + approved vendor lists)' && Q13_3Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Untrusted/outdated components may be used.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.3 -->
 
               <!-- Question 13.4 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.4 Does your organization exclusively use standardized,
-                      currently accepted, and extensively reviewed encryption
-                      algorithms for the software?
+                      13.4 Does your organization exclusively use standardized encryption algorithms?
                     </el-text>
-                    <el-select
-                      v-model="Q13_4Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option label="Yes, rigorously enforced" value="Yes" />
-                      <el-option label="Partial enforced" value="AVERAGE" />
-                      <el-option label="No formal control" value="No" />
+                    <el-select v-model="Q13_4Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, rigorously enforced" value="Yes, rigorously enforced" />
+                      <el-option label="Partial enforced" value="Partial enforced" />
+                      <el-option label="No formal control" value="No formal control" />
                     </el-select>
-                    <div
-                      v-if="Q13_4Status === 'No' || Q13_4Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Non-Standard/Deprecated Encryption used.<br />
-                      RISKS: 1. Cryptographic Breakage 2. Compliance Violations
-                      3. Data Exposure 4. Interoperability Failures
+                    <div v-if="Q13_4Status !== 'Yes, rigorously enforced' && Q13_4Status != ''" style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Non-standard/deprecated encryption may be used.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.4 -->
 
               <!-- Question 13.5 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.5 Do all development personnel of this software receive
-                      role-specific secure coding training tailored to their
-                      development environment (e.g., web, mobile, cloud) and
-                      responsibilities?
+                      13.5 Do all development personnel receive role-specific secure coding training?
                     </el-text>
-                    <el-select
-                      v-model="Q13_5Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, mandatory & role-specific"
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Occasional generic training (not role-specific)"
-                        value="AVERAGE"
-                      />
-                      <el-option
-                        label="No formal training program"
-                        value="No"
-                      />
+                    <el-select v-model="Q13_5Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, mandatory & role-specific" value="Yes, mandatory & role-specific" />
+                      <el-option label="Occasional generic training (not role-specific)"
+                        value="Occasional generic training (not role-specific)" />
+                      <el-option label="No formal training program" value="No formal training program" />
                     </el-select>
-                    <div
-                      v-if="Q13_5Status === 'No' || Q13_5Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Insufficient Secure Coding Training<br />
-                      RISKS:1. Proliferation of Common
-                      Vulnerabilities.Developers reintroduce SQLi, XSS, or
-                      insecure API flaws 2. Compliance Failures
+                    <div v-if="Q13_5Status !== 'Yes, mandatory & role-specific' && Q13_5Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Insufficient secure coding training may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.5 -->
 
               <!-- Question 13.6 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.6 Are static (SAST) and dynamic (DAST) analysis tools
-                      used to enforce secure coding practices for the software?
-                      <el-tooltip
-                        class="item"
-                        effect="dark"
-                        content="SAST (Static Application Security Testing) analyzes source code for vulnerabilities without executing the program, identifying issues like insecure coding practices early in development. DAST (Dynamic Application Security Testing) tests running applications (often in staging/production) to detect runtime vulnerabilities like injection flaws or misconfigurations by simulating attacks."
-                        placement="top"
-                      >
-                        <span
-                          style="
-                            cursor: pointer;
-                            color: blue;
-                            font-size: 16px;
-                            margin-left: 5px;
-                          "
-                          >❓</span
-                        >
-                      </el-tooltip>
+                      13.6 Are SAST and DAST tools used to enforce secure coding practices?
                     </el-text>
-                    <el-select
-                      v-model="Q13_6Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, integrated into CI/CD (automated blocking of insecure code)"
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Used ad-hoc (manual scans, no pipeline enforcement)"
-                        value="AVERAGE"
-                      />
-                      <el-option label="No SAST/DAST tools in use" value="No" />
+                    <el-select v-model="Q13_6Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, integrated into CI/CD (automated blocking of insecure code)"
+                        value="Yes, integrated into CI/CD (automated blocking of insecure code)" />
+                      <el-option label="Used ad-hoc (manual scans, no pipeline enforcement)"
+                        value="Used ad-hoc (manual scans, no pipeline enforcement)" />
+                      <el-option label="No SAST/DAST tools in use" value="No SAST/DAST tools in use" />
                     </el-select>
                     <div
-                      v-if="Q13_6Status === 'No' || Q13_6Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Not or partially Using SAST/DAST <br />RISKS: 1.
-                      Undetected Vulnerabilities in Production 2. Compliance
-                      Violations 3. Delayed Remediation Costs 4. Developer
-                      Inefficiency
+                      v-if="Q13_6Status !== 'Yes, integrated into CI/CD (automated blocking of insecure code)' && Q13_6Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Not or partially using SAST/DAST tools.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.6 -->
 
               <!-- Question 13.7 -->
               <div v-if="Q13Status === 'Yes'">
                 <el-row gutter="{20}">
                   <el-col :span="24" style="text-align: left">
                     <el-text class="q-text">
-                      13.7 Are production and non-production environments
-                      strictly segregated, and is developer access to production
-                      systems monitored/controlled?
+                      13.7 Are production and non-production environments strictly segregated?
                     </el-text>
-                    <el-select
-                      v-model="Q13_7Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
-                      <el-option
-                        label="Yes, fully enforced (separate networks, RBAC, and audit logs)"
-                        value="Yes"
-                      />
-                      <el-option
-                        label="Partial segregation (some shared resources or unmonitored access)"
-                        value="AVERAGE"
-                      />
-                      <el-option
-                        label="No separation (devs have direct/unlogged production access)"
-                        value="No"
-                      />
+                    <el-select v-model="Q13_7Status" placeholder="Select" style="width: 100%" clearable>
+                      <el-option label="Yes, fully enforced (separate networks, RBAC, and audit logs)"
+                        value="Yes, fully enforced (separate networks, RBAC, and audit logs)" />
+                      <el-option label="Partial segregation (some shared resources or unmonitored access)"
+                        value="Partial segregation (some shared resources or unmonitored access)" />
+                      <el-option label="No separation (devs have direct/unlogged production access)"
+                        value="No separation (devs have direct/unlogged production access)" />
                     </el-select>
                     <div
-                      v-if="Q13_7Status === 'No' || Q13_7Status === 'AVERAGE'"
-                      style="color: red"
-                    >
-                      WARNING: Poor Environment Segregation <br />RISKS: 1.
-                      Accidental Production Disruptions 2. Malicious Insider
-                      Threats 3. Compliance Violations 4. Data
-                      Corruption/Leaks.Test scripts using real customer data
-                      (e.g., GDPR breach).
+                      v-if="Q13_7Status !== 'Yes, fully enforced (separate networks, RBAC, and audit logs)' && Q13_7Status != ''"
+                      style="color: red">
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Poor environment segregation may exist.</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
               </div>
-              <!-- Question 13.7 -->
 
               <!-- Question 14 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    14. Are all third-party software components (libraries,
-                    frameworks, tools) verified for active developer support or
-                    appropriately hardened if unsupported?
+                    14. Are all third-party software components verified for active developer support?
                   </el-text>
-                  <el-select
-                    v-model="Q14Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
-                    <el-option
-                      label="Yes, rigorously tracked and updated (automated monitoring + patching)"
-                      value="Yes"
-                    />
-                    <el-option
-                      label="Partially verified (manual audits, some gaps)"
-                      value="AVERAGE"
-                    />
-                    <el-option label="No formal process in place" value="No" />
+                  <el-select v-model="Q14Status" placeholder="Select" style="width: 100%" clearable>
+                    <el-option label="Yes, rigorously tracked and updated (automated monitoring + patching)"
+                      value="Yes, rigorously tracked and updated (automated monitoring + patching)" />
+                    <el-option label="Partially verified (manual audits, some gaps)"
+                      value="Partially verified (manual audits, some gaps)" />
+                    <el-option label="No formal process in place" value="No formal process in place" />
                   </el-select>
                   <div
-                    v-if="Q14Status === 'No' || Q14Status === 'AVERAGE'"
-                    style="color: red"
-                  >
-                    WARNING: Unsupported/Unhardened Software <br />
-                    RISKS: 1. Unpatched Vulnerabilities 2. Increased Attack
-                    Surface. Unsupported software lacks security fixes 3.
-                    Operational Failures. Compatibility issues or crashes due to
-                    outdated dependencies.
+                    v-if="Q14Status !== 'Yes, rigorously tracked and updated (automated monitoring + patching)' && Q14Status != ''"
+                    style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Unsupported/unhardened software may exist.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 14 -->
 
               <!-- Question 15 -->
               <el-row gutter="{20}">
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
-                    15. Is WAF or other Application firewall in place for the
-                    software?
+                    15. Is WAF or other Application firewall in place for the software?
                   </el-text>
-                  <el-select
-                    v-model="Q15Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q15Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
-
                     <el-option label="No" value="No" />
                   </el-select>
-                  <div v-if="Q15Status === 'No'" style="color: red">
-                    WARNING: No deployment of Application Firewalls<br />
-                    RISKS: 1. Unauthorized Access 2. Increased Attack Surface 3.
-                    Malware Infections 4. Compliance Violations
+                  <div v-if="Q15Status === 'No' && Q15Status != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>No deployment of application firewalls.</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -1002,16 +685,16 @@
           <el-row justify="center" align="middle">
             <!-- Save button -->
             <el-col :span="2">
-              <el-button type="primary" round @click="handleSave"
-                >Save</el-button
-              >
+              <el-button type="primary" round @click="handleSave" :loading="isSaving">
+                Save
+              </el-button>
             </el-col>
 
             <!-- Done button -->
             <el-col :span="2">
-              <el-button type="success" round @click="handleDone"
-                >Done</el-button
-              >
+              <el-button type="success" round @click="handleDone" :loading="isSubmitting">
+                Done
+              </el-button>
             </el-col>
           </el-row>
         </el-scrollbar>
@@ -1026,6 +709,8 @@
 <script>
 import Footer from "../../components/Footer.vue";
 import Header from "../../components/Header.vue";
+import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 
 export default {
   components: {
@@ -1037,6 +722,11 @@ export default {
       showConfirmDialog: false,
       leaveConfirmed: false,
       targetRoute: null,
+      isSaving: false,
+      isSubmitting: false,
+      initialData: {}, // To store initial state for change detection
+      hasChanges: false, // Track if form has unsaved changes
+
       Q1Status: "",
       Q1_1Status: "",
       Q2Status: "",
@@ -1064,7 +754,179 @@ export default {
       Q15Status: "",
     };
   },
+  created() {
+    // Load saved data when component is created
+    this.loadQuestionnaireData();
+    // Set up beforeunload event
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    // Clean up event listener
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  watch: {
+    // Watch all question status fields for changes
+    Q1Status() { this.checkForChanges(); },
+    Q1_1Status() { this.checkForChanges(); },
+    Q2Status() { this.checkForChanges(); },
+    Q3Status() { this.checkForChanges(); },
+    Q4Status() { this.checkForChanges(); },
+    Q5Status() { this.checkForChanges(); },
+    Q6Status() { this.checkForChanges(); },
+    Q7Status() { this.checkForChanges(); },
+    Q8Status() { this.checkForChanges(); },
+    Q9Status() { this.checkForChanges(); },
+    Q10Status() { this.checkForChanges(); },
+    Q11Status() { this.checkForChanges(); },
+    Q12Status() { this.checkForChanges(); },
+    Q12_1Status() { this.checkForChanges(); },
+    Q12_2Status() { this.checkForChanges(); },
+    Q13Status() { this.checkForChanges(); },
+    Q13_1Status() { this.checkForChanges(); },
+    Q13_2Status() { this.checkForChanges(); },
+    Q13_3Status() { this.checkForChanges(); },
+    Q13_4Status() { this.checkForChanges(); },
+    Q13_5Status() { this.checkForChanges(); },
+    Q13_6Status() { this.checkForChanges(); },
+    Q13_7Status() { this.checkForChanges(); },
+    Q14Status() { this.checkForChanges(); },
+    Q15Status() { this.checkForChanges(); },
+  },
   methods: {
+    handleQ1Change(val) {
+      if (val === 'Yes') {
+        this.Q1_1Status = '';
+      }
+      this.checkForChanges();
+    },
+    handleQ12Change(val) {
+      if (val === 'No') {
+        this.Q12_1Status = '';
+        this.Q12_2Status = '';
+      }
+      this.checkForChanges();
+    },
+    handleQ13Change(val) {
+      if (val === 'No') {
+        this.Q13_1Status = '';
+        this.Q13_2Status = '';
+        this.Q13_3Status = '';
+        this.Q13_4Status = '';
+        this.Q13_5Status = '';
+        this.Q13_6Status = '';
+        this.Q13_7Status = '';
+      }
+      this.checkForChanges();
+    },
+    async loadQuestionnaireData() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/questionnaire/load`, {
+          params: {
+            id: this.$route.query.id,
+            type: "Software"
+          }
+        });
+
+        if (response.data.success && response.data.isload) {
+          // 先保存初始数据
+          this.initialData = response.data.status;
+          // this.initialData = JSON.parse(JSON.stringify(response.data.status));
+
+
+          // 然后再设置组件状态
+          Object.keys(response.data.status).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {  // 修改这里
+              this[key] = response.data.status[key];
+            }
+          });
+        } else {
+          this.initialData = this.getEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading questionnaire:', error);
+        this.initialData = this.getEmptyState();
+      }
+    },
+    checkForChanges() {
+      const currentState = this.getCurrentState();
+      function normalizedStringify(obj) {
+        return JSON.stringify(obj, Object.keys(obj).sort());
+      }
+
+      const isEqual = normalizedStringify(currentState) === normalizedStringify(this.initialData);
+      // const isEqual = JSON.stringify(currentState) === JSON.stringify(this.initialData);
+      this.hasChanges = !isEqual;
+
+      // 调试
+      console.log("Initial:", JSON.stringify(this.initialData));
+      console.log("Current:", JSON.stringify(currentState));
+      console.log("Equal:", isEqual);
+
+      // const currentState = this.getCurrentState();
+      // console.log("initial:",this.initialData)
+      // console.log(currentState)
+      // const isEqual = this.deepEqual(currentState, this.initialData);
+      // this.hasChanges = !isEqual;
+    },
+
+    getCurrentState() {
+      return {
+        Q1Status: this.Q1Status,
+        Q1_1Status: this.Q1_1Status,
+        Q2Status: this.Q2Status,
+        Q3Status: this.Q3Status,
+        Q4Status: this.Q4Status,
+        Q5Status: this.Q5Status,
+        Q6Status: this.Q6Status,
+        Q7Status: this.Q7Status,
+        Q8Status: this.Q8Status,
+        Q9Status: this.Q9Status,
+        Q10Status: this.Q10Status,
+        Q11Status: this.Q11Status,
+        Q12Status: this.Q12Status,
+        Q12_1Status: this.Q12_1Status,
+        Q12_2Status: this.Q12_2Status,
+        Q13Status: this.Q13Status,
+        Q13_1Status: this.Q13_1Status,
+        Q13_2Status: this.Q13_2Status,
+        Q13_3Status: this.Q13_3Status,
+        Q13_4Status: this.Q13_4Status,
+        Q13_5Status: this.Q13_5Status,
+        Q13_6Status: this.Q13_6Status,
+        Q13_7Status: this.Q13_7Status,
+        Q14Status: this.Q14Status,
+        Q15Status: this.Q15Status,
+      };
+    },
+
+    // 深度比较两个对象
+    deepEqual(obj1, obj2) {
+      if (obj1 === obj2) return true;
+
+      if (typeof obj1 !== 'object' || obj1 === null ||
+        typeof obj2 !== 'object' || obj2 === null) {
+        return false;
+      }
+
+      const keys1 = Object.keys(obj1);
+      const keys2 = Object.keys(obj2);
+
+      if (keys1.length !== keys2.length) return false;
+
+      for (const key of keys1) {
+        if (!keys2.includes(key)) return false;
+        if (!this.deepEqual(obj1[key], obj2[key])) return false;
+      }
+
+      return true;
+    },
+
+    handleBeforeUnload(event) {
+      if (this.hasChanges) {
+        event.preventDefault();
+        event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    },
     goBack() {
       this.$router.push("/home/risk-assessment");
     },
@@ -1072,7 +934,11 @@ export default {
       this.showConfirmDialog = true;
     },
     handleBackClick() {
-      this.showConfirmDialog = true; // 显示确认弹窗
+      if (this.hasChanges) {
+        this.showConfirmDialog = true;
+      } else {
+        this.goBack();
+      }
     },
     handleBeforeClose(done) {
       this.showConfirmDialog = false;
@@ -1081,11 +947,10 @@ export default {
     confirmLeave() {
       this.leaveConfirmed = true;
       this.showConfirmDialog = false;
-      // 选择返回时执行此方法
-      this.goBack(); // 调用 goBack 方法返回页面
+      this.goBack();
     },
-    handleDone() {
-      // 数据验证
+    validateForm() {
+      // Your existing validation logic
       if (
         !this.Q1Status ||
         !this.Q2Status ||
@@ -1103,105 +968,173 @@ export default {
         !this.Q14Status ||
         !this.Q15Status
       ) {
-        alert("All fields from Q1 to Q15 must be filled!");
-        return;
+        this.$message.error("All fields from Q1 to Q15 must be filled!");
+        return false;
       }
 
-      // Q1Status is "No", then Q1_1Status cannot be empty
       if (this.Q1Status === "No" && !this.Q1_1Status) {
-        alert("Q1.1s cannot be empty when Q1 is 'No'");
-        return;
+        this.$message.error("Q1.1 cannot be empty when Q1 is 'No'");
+        return false;
       }
 
-      // If Q12Status is "Yes", Q12_1Status and Q12_2Status cannot be empty
       if (
         this.Q12Status === "Yes" &&
         (!this.Q12_1Status || !this.Q12_2Status)
       ) {
-        alert("Q12.1 and Q12.2 cannot be empty when Q12 is 'Yes'");
-        return;
+        this.$message.error("Q12.1 and Q12.2 cannot be empty when Q12 is 'Yes'");
+        return false;
       }
 
-      // If Q13Status is "Yes", Q12_1 to Q12_7Status cannot be empty
       if (this.Q13Status === "Yes") {
         for (let i = 1; i <= 7; i++) {
           if (!this[`Q13_${i}Status`]) {
-            alert(`Q13_${i}Status cannot be empty when Q13 is 'Yes'`);
-            return;
+            this.$message.error(`Q13.${i} cannot be empty when Q13 is 'Yes'`);
+            return false;
           }
         }
       }
-      // Done action
-      const formData = {
-        Q1Status: this.Q1Status,
-        Q1_1Status: this.Q1_1Status,
-        Q2Status: this.Q2Status,
-        Q3Status: this.Q3Status,
-        Q4Status: this.Q4Status,
-        Q5Status: this.Q5Status,
-        Q6Status: this.Q6Status,
-        Q7Status: this.Q7Status,
-        Q8Status: this.Q8Status,
-        Q9Status: this.Q9Status,
-        Q10Status: this.Q10Status,
-        Q11Status: this.Q11Status,
-        Q12Status: this.Q12Status,
-        Q12_1Status: this.Q12_1Status,
-        Q12_2Status: this.Q12_2Status,
-        Q13Status: this.Q13Status,
-        Q13_1Status: this.Q13_1Status,
-        Q13_2Status: this.Q13_2Status,
-        Q13_3Status: this.Q13_3Status,
-        Q13_4Status: this.Q13_4Status,
-        Q13_5Status: this.Q13_5Status,
-        Q13_6Status: this.Q13_6Status,
-        Q13_7Status: this.Q13_7Status,
-        Q14Status: this.Q14Status,
-        Q15Status: this.Q15Status,
-        Done: "Finished", // 新增字段 Done，存储 "Finished"
-      };
-      let storedData = JSON.parse(localStorage.getItem("Qsoftware")) || [];
-      storedData.push(formData);
-      localStorage.setItem("Qsoftware", JSON.stringify(storedData));
 
-      alert("Questionnaire is finished. All data has been successfully saved!");
+      return true;
     },
-    handleSave() {
-      const formData = {
-        Q1Status: this.Q1Status,
-        Q1_1Status: this.Q1_1Status,
-        Q2Status: this.Q2Status,
-        Q3Status: this.Q3Status,
-        Q4Status: this.Q4Status,
-        Q5Status: this.Q5Status,
-        Q6Status: this.Q6Status,
-        Q7Status: this.Q7Status,
-        Q8Status: this.Q8Status,
-        Q9Status: this.Q9Status,
-        Q10Status: this.Q10Status,
-        Q11Status: this.Q11Status,
-        Q12Status: this.Q12Status,
-        Q12_1Status: this.Q12_1Status,
-        Q12_2Status: this.Q12_2Status,
-        Q13Status: this.Q13Status,
-        Q13_1Status: this.Q13_1Status,
-        Q13_2Status: this.Q13_2Status,
-        Q13_3Status: this.Q13_3Status,
-        Q13_4Status: this.Q13_4Status,
-        Q13_5Status: this.Q13_5Status,
-        Q13_6Status: this.Q13_6Status,
-        Q13_7Status: this.Q13_7Status,
-        Q14Status: this.Q14Status,
-        Q15Status: this.Q15Status,
-        Done: "In-progress", // 新增字段 Done
-      };
 
-      let storedData = JSON.parse(localStorage.getItem("Qsoftware")) || [];
-      storedData.push(formData);
-      localStorage.setItem("Qsoftware", JSON.stringify(storedData));
+    async handleSave() {
+      if (!this.validateForm()) return;
 
-      alert("Data saved successfully!");
+      this.isSaving = true;
+
+      try {
+        const answer = {
+          Q1Status: this.Q1Status,
+          Q1_1Status: this.Q1_1Status,
+          Q2Status: this.Q2Status,
+          Q3Status: this.Q3Status,
+          Q4Status: this.Q4Status,
+          Q5Status: this.Q5Status,
+          Q6Status: this.Q6Status,
+          Q7Status: this.Q7Status,
+          Q8Status: this.Q8Status,
+          Q9Status: this.Q9Status,
+          Q10Status: this.Q10Status,
+          Q11Status: this.Q11Status,
+          Q12Status: this.Q12Status,
+          Q12_1Status: this.Q12_1Status,
+          Q12_2Status: this.Q12_2Status,
+          Q13Status: this.Q13Status,
+          Q13_1Status: this.Q13_1Status,
+          Q13_2Status: this.Q13_2Status,
+          Q13_3Status: this.Q13_3Status,
+          Q13_4Status: this.Q13_4Status,
+          Q13_5Status: this.Q13_5Status,
+          Q13_6Status: this.Q13_6Status,
+          Q13_7Status: this.Q13_7Status,
+          Q14Status: this.Q14Status,
+          Q15Status: this.Q15Status,
+        };
+        const response = await axios.post(
+          `${API_BASE_URL}/questionnaire/submit`,
+          {
+            answer: answer,          // 嵌套的问卷答案对象
+            id: this.$route.query.id, // 从路由获取的 id
+            type: "Software",        // 固定的 type
+            status: 0     // 状态
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json', // 明确声明 JSON 格式
+            }
+          }
+        );
+
+        if (response.data.success) {
+          this.$message.success('Questionnaire saved successfully!');
+          // Update initial data to reflect saved state
+          this.initialData = JSON.parse(JSON.stringify(answer));
+          this.hasChanges = false;
+        } else {
+          throw new Error('Failed to save questionnaire');
+        }
+      } catch (error) {
+        console.error('Error saving questionnaire:', error);
+        this.$message.error('Failed to save questionnaire');
+      } finally {
+        this.isSaving = false;
+      }
     },
+
+    async handleDone() {
+      if (!this.validateForm()) return;
+
+      this.isSubmitting = true;
+
+      try {
+        const answer = {
+          Q1Status: this.Q1Status,
+          Q1_1Status: this.Q1_1Status,
+          Q2Status: this.Q2Status,
+          Q3Status: this.Q3Status,
+          Q4Status: this.Q4Status,
+          Q5Status: this.Q5Status,
+          Q6Status: this.Q6Status,
+          Q7Status: this.Q7Status,
+          Q8Status: this.Q8Status,
+          Q9Status: this.Q9Status,
+          Q10Status: this.Q10Status,
+          Q11Status: this.Q11Status,
+          Q12Status: this.Q12Status,
+          Q12_1Status: this.Q12_1Status,
+          Q12_2Status: this.Q12_2Status,
+          Q13Status: this.Q13Status,
+          Q13_1Status: this.Q13_1Status,
+          Q13_2Status: this.Q13_2Status,
+          Q13_3Status: this.Q13_3Status,
+          Q13_4Status: this.Q13_4Status,
+          Q13_5Status: this.Q13_5Status,
+          Q13_6Status: this.Q13_6Status,
+          Q13_7Status: this.Q13_7Status,
+          Q14Status: this.Q14Status,
+          Q15Status: this.Q15Status,
+          // status: 'completed' // Set status to completed for done
+        };
+
+        const response = await axios.post(
+          `${API_BASE_URL}/questionnaire/submit`,
+          {
+            answer: answer,          // 嵌套的问卷答案对象
+            id: this.$route.query.id, // 从路由获取的 id
+            type: "Software",        // 固定的 type
+            status: 1     // 状态
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json', // 明确声明 JSON 格式
+            }
+          }
+        );
+
+        if (response.data.success) {
+          // Handle risk relationships if returned from backend
+          if (response.data.risk > 0) {
+            this.$message.success(`Questionnaire submitted successfully with ${response.data.risk} new risks identified!`);
+          } else {
+            this.$message.success('Questionnaire submitted successfully with no new risks identified!');
+          }
+
+          // Update initial data to reflect submitted state
+          this.initialData = JSON.parse(JSON.stringify(answer));
+          this.hasChanges = false;
+
+          // Optionally navigate away after successful submission
+          this.goBack();
+        } else {
+          throw new Error('Failed to submit questionnaire');
+        }
+      } catch (error) {
+        console.error('Error submitting questionnaire:', error);
+        this.$message.error('Failed to submit questionnaire');
+      } finally {
+        this.isSubmitting = false;
+      }
+    }
   },
 };
 </script>
@@ -1218,6 +1151,9 @@ export default {
 .q-text {
   font-weight: bold;
   line-height: 35px;
+  font-size: 15px;
+  vertical-align: middle;
+  /* 添加这行 */
 }
 
 .el-divider {
@@ -1228,5 +1164,11 @@ export default {
 .required-asterisk {
   color: red;
   margin-left: 5px;
+}
+
+.form-rows {
+  width: 90%;
+  margin: 0 auto;
+  /* 左右自动外边距，使元素水平居中 */
 }
 </style>
