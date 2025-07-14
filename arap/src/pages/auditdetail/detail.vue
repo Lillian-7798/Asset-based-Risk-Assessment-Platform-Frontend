@@ -119,6 +119,7 @@
 <script>
 //import { Search } from "@element-plus/icons-vue";
 import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 export default {
   data() {
     return {
@@ -163,7 +164,6 @@ export default {
       auditid: this.$route.query.auditid || 1, // 先默认是1，假设传递的 auditid,要上级页面给我
       auditProjectName:
         this.$route.query.auditProjectName || "Default Project Name", // 获取传递的参数
-
     };
   },
   mounted() {
@@ -227,8 +227,23 @@ export default {
       }
     },
     // 删除行
-    removeRow(row) {
-      this.tableData = this.tableData.filter((item) => item.id !== row.id); //暂时的应该删除数据库中的
+    // removeRow(row) {
+    //   this.tableData = this.tableData.filter((item) => item.id !== row.id); //暂时的应该删除数据库中的
+    // },
+    async removeRow(row) {
+      try {
+        const response = await axios.delete(
+          API_BASE_URL + `/api/remove/${row.id}`
+        );
+        if (response.status === 200) {
+          // 删除成功后更新表格数据
+          this.fetchTableData();
+        } else {
+          console.error("Failed to remove row");
+        }
+      } catch (error) {
+        console.error("Error removing row:", error);
+      }
     },
     getStatusTagType(status) {
       switch (status) {
@@ -240,13 +255,13 @@ export default {
     },
     // 请求数据
     async fetchTableData() {
-      console.log(this.auditid)
+      console.log(this.auditid);
       axios
         .get(`http://localhost:8081/api/evidence_chain/${this.auditid}`)
         .then((response) => {
-          console.log(response.data)
+          console.log(response.data);
           // 根据返回的数据过滤，传递与传输的 auditid 相同的行数据
-          this.tableData = response.data
+          this.tableData = response.data;
         })
         .catch((error) => {
           console.error("Error fetching table data:", error);
