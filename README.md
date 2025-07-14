@@ -17,11 +17,8 @@ Evidence Chain页面：
 EvidenceChainDetail页面
 - 1. 返回时，需返回上一个页面。
 
-Sub Risk Management页面
-- 1. Mark as Complete 改成 Done
-
 Audit Detail页面
-- 1. Remove: （目前删除之后，数据库里的数据并没有被删除。刷新一下就又有显示了）。点击Remove后需要整个记录删除。
+- 1. Remove: （目前删除之后，数据库里的数据并没有被删除。刷新一下就又有显示了）。
 
 Help按钮，直接放最后一版require文档得了
 
