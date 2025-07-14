@@ -136,7 +136,7 @@
                     @click="saveRiskData(risk, true,index)"
                     :disabled="!canSave(risk) || risk.loading"
                 >
-                  Mark as Complete
+                  Done
                 </button>
               </div>
 
