@@ -38,7 +38,7 @@
         <el-button
           type="primary"
           v-if="userLevel === 0"
-          @click="toggleFilter"
+          @click="changeProjectStatus"
           style="background-color: #409eff; color: white"
         >
           Terminate the Audit Project
@@ -182,6 +182,23 @@ export default {
     this.fetchTableData();
   },
   methods: {
+    async changeProjectStatus() {
+      const auditid = this.$route.query.auditid || 1; // 默认值为 1
+      try {
+        const response = await axios.patch(
+          API_BASE_URL + `/api/changeprojectstatus/${auditid}`
+        );
+        if (response.status === 200) {
+          // 成功后执行的操作，比如弹出提示或刷新数据
+          this.$message.success("Audit project status updated successfully!");
+        } else {
+          console.error("Failed to update project status");
+        }
+      } catch (error) {
+        console.error("Error changing project status:", error);
+        this.$message.error("Failed to update project status.");
+      }
+    },
     formatDate(dateString) {
       // 如果传入的日期字符串为空或无效，直接返回 "Invalid Date"
       if (!dateString) {
