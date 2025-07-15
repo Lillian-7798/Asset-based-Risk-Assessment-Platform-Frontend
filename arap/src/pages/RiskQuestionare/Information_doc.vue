@@ -3,15 +3,8 @@
     <Header />
     <div class="content">
       <!-- Confirm Dialog -->
-      <el-dialog
-        v-model="showConfirmDialog"
-        title="Warning"
-        width="30%"
-        :before-close="handleBeforeClose"
-      >
-        <span
-          >The inventory will not be saved, are you sure you want to exit?</span
-        >
+      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
+        <span>The inventory will not be saved, are you sure you want to exit?</span>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="showConfirmDialog = false">No</el-button>
@@ -25,17 +18,14 @@
         <div style="height: 20px"></div>
         <div class="header-content" style="display: flex; align-items: center">
           <!-- 返回按钮 -->
-          <el-button
-            type="primary"
-            round
-            @click="goBack"
-            style="
+          <el-button type="primary" round @click="goBack" style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            "
-          >
-            <el-icon><ArrowLeft /></el-icon> Back
+            ">
+            <el-icon>
+              <ArrowLeft />
+            </el-icon> Back
           </el-button>
 
           <!-- 文字标题 -->
@@ -57,12 +47,7 @@
                   <el-text class="q-text">
                     1. Are documents watermarked with classification labels?
                   </el-text>
-                  <el-select
-                    v-model="Q1Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q1Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -79,12 +64,7 @@
                   <el-text class="q-text">
                     2. Is OCR disabled for sensitive scanned documents?
                   </el-text>
-                  <el-select
-                    v-model="Q2Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q2Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -101,12 +81,7 @@
                   <el-text class="q-text">
                     3. Do shared links expire after 7 days by default?
                   </el-text>
-                  <el-select
-                    v-model="Q3Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q3Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -124,12 +99,7 @@
                   <el-text class="q-text">
                     4. Is blockchain timestamping used for legal documents?
                   </el-text>
-                  <el-select
-                    v-model="Q4Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q4Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -147,12 +117,7 @@
                   <el-text class="q-text">
                     5. Are printed documents tracked via barcodes?
                   </el-text>
-                  <el-select
-                    v-model="Q5Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q5Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -171,12 +136,7 @@
                     6. Are retention policies automated (e.g., auto-delete after
                     5 years)?
                   </el-text>
-                  <el-select
-                    v-model="Q6Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q6Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -194,12 +154,7 @@
                   <el-text class="q-text">
                     7. Are document access requests logged (who accessed/when)?
                   </el-text>
-                  <el-select
-                    v-model="Q7Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q7Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -218,12 +173,7 @@
                     8. Are email attachments with sensitive docs
                     password-protected?
                   </el-text>
-                  <el-select
-                    v-model="Q8Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q8Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -241,12 +191,7 @@
                   <el-text class="q-text">
                     9. Is version history preserved for all edits?
                   </el-text>
-                  <el-select
-                    v-model="Q9Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q9Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -264,12 +209,7 @@
                   <el-text class="q-text">
                     10. Are document templates stored in a centralized library?
                   </el-text>
-                  <el-select
-                    v-model="Q10Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q10Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -287,12 +227,7 @@
                   <el-text class="q-text">
                     11. Is staff trained annually on document handling?
                   </el-text>
-                  <el-select
-                    v-model="Q11Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q11Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -347,7 +282,11 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/asset-inventory");
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/risk-assessment"); // 否则跳转到默认页
+      }
     },
     handleClose() {
       this.showConfirmDialog = true;

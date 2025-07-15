@@ -793,6 +793,35 @@ export default {
     Q15Status() { this.checkForChanges(); },
   },
   methods: {
+    getEmptyState() {
+      return {
+        Q1Status: "",
+        Q1_1Status: "",
+        Q2Status: "",
+        Q3Status: "",
+        Q4Status: "",
+        Q5Status: "",
+        Q6Status: "",
+        Q7Status: "",
+        Q8Status: "",
+        Q9Status: "",
+        Q10Status: "",
+        Q11Status: "",
+        Q12Status: "",
+        Q12_1Status: "",
+        Q12_2Status: "",
+        Q13Status: "",
+        Q13_1Status: "",
+        Q13_2Status: "",
+        Q13_3Status: "",
+        Q13_4Status: "",
+        Q13_5Status: "",
+        Q13_6Status: "",
+        Q13_7Status: "",
+        Q14Status: "",
+        Q15Status: "",
+      };
+    },
     handleQ1Change(val) {
       if (val === 'Yes') {
         this.Q1_1Status = '';
@@ -928,7 +957,11 @@ export default {
       }
     },
     goBack() {
-      this.$router.push("/home/risk-assessment");
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/risk-assessment"); // 否则跳转到默认页
+      }
     },
     handleClose() {
       this.showConfirmDialog = true;

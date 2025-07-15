@@ -60,7 +60,11 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/evidence-chain");
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/evidence-chain");
+      }
     },
     async fetchPdfUrl() {
       this.loading = true;

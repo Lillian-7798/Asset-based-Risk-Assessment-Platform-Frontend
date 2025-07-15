@@ -3,15 +3,8 @@
     <Header />
     <div class="content">
       <!-- Confirm Dialog -->
-      <el-dialog
-        v-model="showConfirmDialog"
-        title="Warning"
-        width="30%"
-        :before-close="handleBeforeClose"
-      >
-        <span
-          >The inventory will not be saved, are you sure you want to exit?</span
-        >
+      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
+        <span>The inventory will not be saved, are you sure you want to exit?</span>
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="showConfirmDialog = false">No</el-button>
@@ -25,17 +18,14 @@
         <div style="height: 20px"></div>
         <div class="header-content" style="display: flex; align-items: center">
           <!-- 返回按钮 -->
-          <el-button
-            type="primary"
-            round
-            @click="handleBackClick"
-            style="
+          <el-button type="primary" round @click="handleBackClick" style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            "
-          >
-            <el-icon><ArrowLeft /></el-icon> Back
+            ">
+            <el-icon>
+              <ArrowLeft />
+            </el-icon> Back
           </el-button>
 
           <!-- 文字标题 -->
@@ -58,12 +48,7 @@
                     1. Is data encryption (AES-256+) applied to sensitive
                     fields?
                   </el-text>
-                  <el-select
-                    v-model="Q1Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q1Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -81,12 +66,7 @@
                   <el-text class="q-text">
                     2. Are database access logs retained for ≥90 days?
                   </el-text>
-                  <el-select
-                    v-model="Q2Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q2Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -105,12 +85,7 @@
                     3. Is multi-factor authentication (MFA) required for admin
                     access?
                   </el-text>
-                  <el-select
-                    v-model="Q3Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q3Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -129,12 +104,7 @@
                   <el-text class="q-text">
                     4. Are SQL injection protections implemented?
                   </el-text>
-                  <el-select
-                    v-model="Q4Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q4Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -152,28 +122,20 @@
                 <el-col :span="24" style="text-align: left">
                   <el-text class="q-text">
                     5.Is database patching automated with SLA?
-                    <el-tooltip
-                      class="item"
-                      effect="dark"
+                    <el-tooltip class="item" effect="dark"
                       content="SLA (Service Level Agreement) defines the expected performance and response time for a service, such as fixing critical vulnerabilities within a set timeframe. Here, an SLA of 30 days for critical means critical database patches must be applied within 30 days to meet compliance or security standards."
-                      placement="top"
-                    >
-                      <span
-                        style="
+                      placement="top">
+                      <span style="
                           cursor: pointer;
                           vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        "
-                        ><el-icon><InfoFilled /></el-icon></span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
-                  <el-select
-                    v-model="Q5Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q5Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -192,12 +154,7 @@
                   <el-text class="q-text">
                     6. Are backups tested annually for restore capability?
                   </el-text>
-                  <el-select
-                    v-model="Q6Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q6Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -217,12 +174,7 @@
                     7. Is data anonymization used for PII in non-production
                     environments?
                   </el-text>
-                  <el-select
-                    v-model="Q7Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q7Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -241,12 +193,7 @@
                   <el-text class="q-text">
                     8. Are database replicas geographically isolated?
                   </el-text>
-                  <el-select
-                    v-model="Q8Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q8Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -265,12 +212,7 @@
                   <el-text class="q-text">
                     9. Is vendor risk assessed for cloud databases?
                   </el-text>
-                  <el-select
-                    v-model="Q9Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q9Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -289,12 +231,7 @@
                   <el-text class="q-text">
                     10. Are database schemas documented with data lineage?
                   </el-text>
-                  <el-select
-                    v-model="Q10Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q10Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -313,12 +250,7 @@
                   <el-text class="q-text">
                     11. Is sensitive data masked in test environments?
                   </el-text>
-                  <el-select
-                    v-model="Q11Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q11Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -337,12 +269,7 @@
                   <el-text class="q-text">
                     12. Are failed login attempts locked after 5 tries?
                   </el-text>
-                  <el-select
-                    v-model="Q12Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q12Status" placeholder="Select" style="width: 100%" clearable>
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
@@ -361,16 +288,12 @@
           <el-row justify="center" align="middle">
             <!-- Save button -->
             <el-col :span="2">
-              <el-button type="primary" round @click="handleSave"
-                >Save</el-button
-              >
+              <el-button type="primary" round @click="handleSave">Save</el-button>
             </el-col>
 
             <!-- Done button -->
             <el-col :span="2">
-              <el-button type="success" round @click="handleDone"
-                >Done</el-button
-              >
+              <el-button type="success" round @click="handleDone">Done</el-button>
             </el-col>
           </el-row>
         </el-scrollbar>
@@ -413,7 +336,11 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/risk-assessment");
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/risk-assessment");
+      }
     },
     handleClose() {
       this.showConfirmDialog = true;

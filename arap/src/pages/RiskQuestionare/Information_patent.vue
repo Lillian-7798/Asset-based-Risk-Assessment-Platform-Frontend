@@ -344,7 +344,11 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push("/home/asset-inventory");
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/risk-assessment"); // 否则跳转到默认页
+      }
     },
     handleClose() {
       this.showConfirmDialog = true;

@@ -2,20 +2,13 @@
   <div>
     <Header />
     <div class="content">
-      <!-- Confirm Dialog -->
-      <el-dialog
-        v-model="showConfirmDialog"
-        title="Warning"
-        width="30%"
-        :before-close="handleBeforeClose"
-      >
-        <span
-          >The inventory will not be saved, are you sure you want to exit?</span
-        >
+      <!-- Confirm Dialog for unsaved changes -->
+      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
+        <span>You have unsaved changes. Are you sure you want to leave?</span>
         <template #footer>
           <span class="dialog-footer">
-            <el-button @click="showConfirmDialog = false">No</el-button>
-            <el-button type="primary" @click="confirmLeave">Yes</el-button>
+            <el-button @click="showConfirmDialog = false">Cancel</el-button>
+            <el-button type="primary" @click="confirmLeave">Leave Anyway</el-button>
           </span>
         </template>
       </el-dialog>
@@ -24,21 +17,16 @@
       <div class="page-header">
         <div style="height: 20px"></div>
         <div class="header-content" style="display: flex; align-items: center">
-          <!-- 返回按钮 -->
-          <el-button
-            type="primary"
-            round
-            @click="goBack"
-            style="
+          <el-button type="primary" round @click="handleBackClick" style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            "
-          >
-            <el-icon><ArrowLeft /></el-icon> Back
+            ">
+            <el-icon>
+              <ArrowLeft />
+            </el-icon> Back
           </el-button>
 
-          <!-- 文字标题 -->
           <el-text style="font-size: 20px; font-weight: bold; flex-grow: 1">
             Non-Fixed Physical Asset Questionnaire
           </el-text>
@@ -57,18 +45,11 @@
                   <el-text class="q-text">
                     1. Is data encryption enabled on the device?
                   </el-text>
-                  <el-select
-                    v-model="Q1Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q1Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ1Change">
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
-                  <div v-if="Q1Status === 'No'" style="color: red">
-                    Unencrypted devices can lead to data breaches
-                  </div>
                 </el-col>
               </el-row>
 
@@ -79,18 +60,17 @@
                     <el-text class="q-text">
                       1.1 Does the device store sensitive data?
                     </el-text>
-                    <el-select
-                      v-model="Q1_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Q1_1Status" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
                     <div v-if="Q1_1Status === 'No'" style="color: red">
-                      Sensitive data is at extremely high risk of not being
-                      encrypted
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Sensitive data is at extremely high risk of not being encrypted</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -102,18 +82,18 @@
                   <el-text class="q-text">
                     2. Does remote wipe support?
                   </el-text>
-                  <el-select
-                    v-model="Q2Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q2Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ2Change">
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q2Status === 'No'" style="color: red">
-                    Failure to remotely wipe may result in data not being
-                    reclaimable
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Failure to remotely wipe may result in data not being reclaimable</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
@@ -125,18 +105,17 @@
                     <el-text class="q-text">
                       2.1 Is the device type easy to lose (e.g., phone, tablet)?
                     </el-text>
-                    <el-select
-                      v-model="Q2_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Q2_1Status" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
                     <div v-if="Q2_1Status === 'No'" style="color: red">
-                      Devices with high loss rates require stronger security
-                      measures
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Devices with high loss rates require stronger security measures</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -148,22 +127,21 @@
                   <el-text class="q-text">
                     3. Is the current holder information accurate?
                   </el-text>
-                  <el-select
-                    v-model="Q3Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q3Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ3Change">
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                   </el-select>
                   <div v-if="Q3Status === 'No'" style="color: red">
-                    Liability may be unclear due to incorrect information on the
-                    holder
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Liability may be unclear due to incorrect information on the holder</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 3 -->
 
               <!-- Question 3.1 -->
               <div v-if="Q3Status === 'No'">
@@ -172,17 +150,17 @@
                     <el-text class="q-text">
                       3.1 Is it more than 30 days after the deadline?
                     </el-text>
-                    <el-select
-                      v-model="Q3_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Q3_1Status" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
                     <div v-if="Q3_1Status === 'No'" style="color: red">
-                      A long period of non-return can mean loss
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>A long period of non-return can mean loss</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -194,25 +172,22 @@
                   <el-text class="q-text">
                     4. Is the device in good physical condition?
                   </el-text>
-                  <el-select
-                    v-model="Q4Status"
-                    placeholder="Select"
-                    style="width: 100%"
-                    clearable
-                  >
+                  <el-select v-model="Q4Status" placeholder="Select" style="width: 100%" clearable
+                    @change="handleQ4Change">
                     <el-option label="Yes" value="Yes" />
                     <el-option label="No" value="No" />
                     <el-option label="Minor damage" value="Minor damage" />
                   </el-select>
-                  <div
-                    v-if="Q4Status === 'No' || Q4Status == 'Minor damage'"
-                    style="color: red"
-                  >
-                    Device damage may affect functionality or safety
+                  <div v-if="Q4Status === 'No' || Q4Status == 'Minor damage'" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>Device damage may affect functionality or safety</span>
+                    </div>
                   </div>
                 </el-col>
               </el-row>
-              <!-- Question 4 -->
 
               <!-- Question 4.1 -->
               <div v-if="Q4Status === 'No'">
@@ -221,18 +196,17 @@
                     <el-text class="q-text">
                       4.1 Does the damage affect functionality or safety?
                     </el-text>
-                    <el-select
-                      v-model="Q4_1Status"
-                      placeholder="Select"
-                      style="width: 100%"
-                      clearable
-                    >
+                    <el-select v-model="Q4_1Status" placeholder="Select" style="width: 100%" clearable>
                       <el-option label="Yes" value="Yes" />
                       <el-option label="No" value="No" />
                     </el-select>
                     <div v-if="Q4_1Status === 'No'" style="color: red">
-                      Critical Functional Compromise Could Lead to Business
-                      Disruption
+                      <div style="display: flex; align-items: center; gap: 4px;">
+                        <el-icon :size="21">
+                          <WarnTriangleFilled />
+                        </el-icon>
+                        <span>Critical Functional Compromise Could Lead to Business Disruption</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -242,7 +216,21 @@
             <el-divider class="divider" />
           </div>
 
-          <el-button type="primary" round @click="handleSave">Save</el-button>
+          <el-row justify="center" align="middle">
+            <!-- Save button -->
+            <el-col :span="2">
+              <el-button type="primary" round @click="handleSave" :loading="isSaving">
+                Save
+              </el-button>
+            </el-col>
+
+            <!-- Done button -->
+            <el-col :span="2">
+              <el-button type="success" round @click="handleDone" :loading="isSubmitting">
+                Done
+              </el-button>
+            </el-col>
+          </el-row>
         </el-scrollbar>
       </div>
     </div>
@@ -255,6 +243,8 @@
 <script>
 import Footer from "../../components/Footer.vue";
 import Header from "../../components/Header.vue";
+import axios from "axios";
+import { API_BASE_URL } from "@/components/axios";
 
 export default {
   components: {
@@ -266,6 +256,11 @@ export default {
       showConfirmDialog: false,
       leaveConfirmed: false,
       targetRoute: null,
+      isSaving: false,
+      isSubmitting: false,
+      initialData: {},
+      hasChanges: false,
+
       Q1Status: "",
       Q1_1Status: "",
       Q2Status: "",
@@ -276,28 +271,95 @@ export default {
       Q4_1Status: "",
     };
   },
+  created() {
+    this.loadQuestionnaireData();
+    window.addEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  beforeUnmount() {
+    window.removeEventListener('beforeunload', this.handleBeforeUnload);
+  },
+  watch: {
+    Q1Status() { this.checkForChanges(); },
+    Q1_1Status() { this.checkForChanges(); },
+    Q2Status() { this.checkForChanges(); },
+    Q2_1Status() { this.checkForChanges(); },
+    Q3Status() { this.checkForChanges(); },
+    Q3_1Status() { this.checkForChanges(); },
+    Q4Status() { this.checkForChanges(); },
+    Q4_1Status() { this.checkForChanges(); },
+  },
   methods: {
-    goBack() {
-      this.$router.push("/home/asset-inventory");
-    },
-    handleClose() {
-      this.showConfirmDialog = true;
-    },
-    handleBeforeClose(done) {
-      this.showConfirmDialog = false;
-      done();
-    },
-    confirmLeave() {
-      this.leaveConfirmed = true;
-      this.showConfirmDialog = false;
-      if (this.targetRoute) {
-        this.$router.push(this.targetRoute);
-      } else {
-        this.$router.go(-1);
+    getEmptyState() {
+      return {
+        Q1Status: "",
+        Q1_1Status: "",
+        Q2Status: "",
+        Q2_1Status: "",
+        Q3Status: "",
+        Q3_1Status: "",
+        Q4Status: "",
+        Q4_1Status: "",
       }
     },
-    handleSave() {
-      const formData = {
+    handleQ1Change(val) {
+      if (val === 'Yes') {
+        this.Q1_1Status = '';
+      }
+      this.checkForChanges();
+    },
+    handleQ2Change(val) {
+      if (val === 'Yes') {
+        this.Q2_1Status = '';
+      }
+      this.checkForChanges();
+    },
+    handleQ3Change(val) {
+      if (val === 'Yes') {
+        this.Q3_1Status = '';
+      }
+      this.checkForChanges();
+    },
+    handleQ4Change(val) {
+      if (val === 'Yes') {
+        this.Q4_1Status = '';
+      }
+      this.checkForChanges();
+    },
+    async loadQuestionnaireData() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/questionnaire/load`, {
+          params: {
+            id: this.$route.query.id,
+            type: "Physical_non"
+          }
+        });
+
+        if (response.data.success && response.data.isload) {
+          this.initialData = response.data.status;
+          Object.keys(response.data.status).forEach(key => {
+            if (Object.prototype.hasOwnProperty.call(this, key)) {
+              this[key] = response.data.status[key];
+            }
+          });
+        } else {
+          this.initialData = this.getEmptyState();
+        }
+      } catch (error) {
+        console.error('Error loading questionnaire:', error);
+        this.initialData = this.getEmptyState();
+      }
+    },
+    checkForChanges() {
+      const currentState = this.getCurrentState();
+      function normalizedStringify(obj) {
+        return JSON.stringify(obj, Object.keys(obj).sort());
+      }
+
+      const isEqual = normalizedStringify(currentState) === normalizedStringify(this.initialData);
+      this.hasChanges = !isEqual;
+    },
+    getCurrentState() {
+      return {
         Q1Status: this.Q1Status,
         Q1_1Status: this.Q1_1Status,
         Q2Status: this.Q2Status,
@@ -307,13 +369,169 @@ export default {
         Q4Status: this.Q4Status,
         Q4_1Status: this.Q4_1Status,
       };
-
-      let storedData = JSON.parse(localStorage.getItem("Qphysicalnon")) || [];
-      storedData.push(formData);
-      localStorage.setItem("Qphysicalnon", JSON.stringify(storedData));
-
-      alert("Data saved successfully!");
     },
+    handleBeforeUnload(event) {
+      if (this.hasChanges) {
+        event.preventDefault();
+        event.returnValue = 'You have unsaved changes. Are you sure you want to leave?';
+      }
+    },
+    goBack() {
+      if (window.history.length > 1) {
+        this.$router.back(); // 有历史记录则返回上一页
+      } else {
+        this.$router.push("/home/risk-assessment"); // 否则跳转到默认页
+      }
+    },
+    handleClose() {
+      this.showConfirmDialog = true;
+    },
+    handleBackClick() {
+      if (this.hasChanges) {
+        this.showConfirmDialog = true;
+      } else {
+        this.goBack();
+      }
+    },
+    handleBeforeClose(done) {
+      this.showConfirmDialog = false;
+      done();
+    },
+    confirmLeave() {
+      this.leaveConfirmed = true;
+      this.showConfirmDialog = false;
+      this.goBack();
+    },
+    validateForm() {
+      if (
+        !this.Q1Status ||
+        !this.Q2Status ||
+        !this.Q3Status ||
+        !this.Q4Status
+      ) {
+        this.$message.error("All fields from Q1 to Q4 must be filled!");
+        return false;
+      }
+
+      if (this.Q1Status === "No" && !this.Q1_1Status) {
+        this.$message.error("Q1.1 cannot be empty when Q1 is 'No'");
+        return false;
+      }
+
+      if (this.Q2Status === "No" && !this.Q2_1Status) {
+        this.$message.error("Q2.1 cannot be empty when Q2 is 'No'");
+        return false;
+      }
+
+      if (this.Q3Status === "No" && !this.Q3_1Status) {
+        this.$message.error("Q3.1 cannot be empty when Q3 is 'No'");
+        return false;
+      }
+
+      if (this.Q4Status === "No" && !this.Q4_1Status) {
+        this.$message.error("Q4.1 cannot be empty when Q4 is 'No'");
+        return false;
+      }
+
+      return true;
+    },
+    async handleSave() {
+      if (!this.validateForm()) return;
+
+      this.isSaving = true;
+
+      try {
+        const answer = {
+          Q1Status: this.Q1Status,
+          Q1_1Status: this.Q1_1Status,
+          Q2Status: this.Q2Status,
+          Q2_1Status: this.Q2_1Status,
+          Q3Status: this.Q3Status,
+          Q3_1Status: this.Q3_1Status,
+          Q4Status: this.Q4Status,
+          Q4_1Status: this.Q4_1Status,
+        };
+        const response = await axios.post(
+          `${API_BASE_URL}/questionnaire/submit`,
+          {
+            answer: answer,
+            id: this.$route.query.id,
+            type: "Physical_non",
+            status: 0
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+
+        if (response.data.success) {
+          this.$message.success('Questionnaire saved successfully!');
+          this.initialData = JSON.parse(JSON.stringify(answer));
+          this.hasChanges = false;
+        } else {
+          throw new Error('Failed to save questionnaire');
+        }
+      } catch (error) {
+        console.error('Error saving questionnaire:', error);
+        this.$message.error('Failed to save questionnaire');
+      } finally {
+        this.isSaving = false;
+      }
+    },
+    async handleDone() {
+      if (!this.validateForm()) return;
+
+      this.isSubmitting = true;
+
+      try {
+        const answer = {
+          Q1Status: this.Q1Status,
+          Q1_1Status: this.Q1_1Status,
+          Q2Status: this.Q2Status,
+          Q2_1Status: this.Q2_1Status,
+          Q3Status: this.Q3Status,
+          Q3_1Status: this.Q3_1Status,
+          Q4Status: this.Q4Status,
+          Q4_1Status: this.Q4_1Status,
+        };
+
+        const response = await axios.post(
+          `${API_BASE_URL}/questionnaire/submit`,
+          {
+            answer: answer,
+            id: this.$route.query.id,
+            type: "Physical_non",
+            status: 1
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          }
+        );
+
+        if (response.data.success) {
+          if (response.data.risk > 0) {
+            this.$message.success(`Questionnaire submitted successfully with ${response.data.risk} new risks identified!`);
+          } else {
+            this.$message.success('Questionnaire submitted successfully with no new risks identified!');
+          }
+
+          this.initialData = JSON.parse(JSON.stringify(answer));
+          this.hasChanges = false;
+          this.goBack();
+        } else {
+          throw new Error('Failed to submit questionnaire');
+        }
+      } catch (error) {
+        console.error('Error submitting questionnaire:', error);
+        this.$message.error('Failed to submit questionnaire');
+      } finally {
+        this.isSubmitting = false;
+      }
+    }
   },
 };
 </script>
@@ -330,6 +548,8 @@ export default {
 .q-text {
   font-weight: bold;
   line-height: 35px;
+  font-size: 15px;
+  vertical-align: middle;
 }
 
 .el-divider {
@@ -340,5 +560,10 @@ export default {
 .required-asterisk {
   color: red;
   margin-left: 5px;
+}
+
+.form-rows {
+  width: 90%;
+  margin: 0 auto;
 }
 </style>
