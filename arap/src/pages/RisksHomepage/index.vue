@@ -3,8 +3,15 @@
     <Header />
     <div class="content">
       <!-- Confirm Dialog -->
-      <el-dialog v-model="showConfirmDialog" title="Warning" width="30%" :before-close="handleBeforeClose">
-        <span>The treatment will not be saved, are you sure you want to exit?</span>
+      <el-dialog
+        v-model="showConfirmDialog"
+        title="Warning"
+        width="30%"
+        :before-close="handleBeforeClose"
+      >
+        <span
+          >The treatment will not be saved, are you sure you want to exit?</span
+        >
         <template #footer>
           <span class="dialog-footer">
             <el-button @click="showConfirmDialog = false">No</el-button>
@@ -18,14 +25,20 @@
         <div style="height: 20px"></div>
         <div class="header-content" style="display: flex; align-items: center">
           <!-- 返回按钮 -->
-          <el-button type="primary" round @click="handleBackClick" style="
+          <el-button
+            type="primary"
+            round
+            @click="handleBackClick"
+            style="
               background-color: #409eff;
               color: white;
               border-color: #409eff;
-            ">
+            "
+          >
             <el-icon>
               <ArrowLeft />
-            </el-icon> Back
+            </el-icon>
+            Back
           </el-button>
 
           <!-- 文字标题 -->
@@ -45,8 +58,14 @@
               <el-row gutter="{20}">
                 <el-col :span="10" style="text-align: left">
                   <el-text class="q-text">
-                    Risk Level<span class="required-asterisk">*</span>:</el-text>
-                  <el-select v-model="RiskLevel" placeholder="Select" style="width: 100%" clearable>
+                    Risk Level<span class="required-asterisk">*</span>:</el-text
+                  >
+                  <el-select
+                    v-model="RiskLevel"
+                    placeholder="Select"
+                    style="width: 100%"
+                    clearable
+                  >
                     <el-option label="Very High" value="veryhigh" />
                     <el-option label="High" value="high" />
                     <el-option label="Medium" value="medium" />
@@ -56,9 +75,16 @@
                 </el-col>
                 <el-col :span="10" style="text-align: left">
                   <el-text class="q-text">Upload evidence:</el-text>
-                  <el-upload ref="upload" class="upload-demo" drag
-                    :action="`http://localhost:8081/api/file/upload/${rid}`" :on-change="handleFileChange"
-                    :file-list="fileList" :auto-upload="false" :limit="5">
+                  <el-upload
+                    ref="upload"
+                    class="upload-demo"
+                    drag
+                    :action="`http://localhost:8081/api/file/upload/${rid}`"
+                    :on-change="handleFileChange"
+                    :file-list="fileList"
+                    :auto-upload="false"
+                    :limit="5"
+                  >
                     <!-- 需要改成传输treatmentid 虽然之后展示有点麻烦 -->
                     <!-- 因为一一对应，后端改treatmentid值在生成的时候等于rid的值即可 这样展示已上传文件和其他都方便 -->
                     <i class="el-icon-upload"></i>
@@ -69,15 +95,25 @@
                   <!-- <el-upload action="/api/upload" multiple :data="uploadData">
                     <el-button type="primary">上传文件</el-button>
                   </el-upload> -->
-                  <el-text class="q-text">Evidence Uploaded<span class="required-asterisk">*</span>:</el-text>
+                  <el-text class="q-text"
+                    >Evidence Uploaded<span class="required-asterisk">*</span
+                    >:</el-text
+                  >
 
                   <div v-if="uploadedFiles.length" style="margin-top: 10px">
-                    <div v-for="(file, index) in uploadedFiles" :key="index" class="file-item">
-                      <span @click="openFile(file)" style="
+                    <div
+                      v-for="(file, index) in uploadedFiles"
+                      :key="index"
+                      class="file-item"
+                    >
+                      <span
+                        @click="openFile(file)"
+                        style="
                           cursor: pointer;
                           color: #409eff;
                           text-decoration: underline;
-                        ">
+                        "
+                      >
                         {{ file.original_name }}
                       </span>
                     </div>
@@ -90,20 +126,36 @@
                 <el-col :span="10" style="text-align: left">
                   <el-text class="q-text">
                     Treatment Option<span class="required-asterisk">*</span>:
-                    <el-tooltip class="item" trigger="hover" placement="top" width="200" :content="tooltipContent">
-                      <span style="
+                    <el-tooltip
+                      class="item"
+                      trigger="hover"
+                      placement="top"
+                      width="200"
+                      :content="tooltipContent"
+                    >
+                      <span
+                        style="
                           cursor: pointer;
                           vertical-align: middle; /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        "><el-icon>
-                          <InfoFilled />
-                        </el-icon></span>
+                        "
+                        ><el-icon>
+                          <InfoFilled /> </el-icon
+                      ></span>
                     </el-tooltip>
                   </el-text>
-                  <el-select v-model="TreatmentOption" placeholder="Select" style="width: 100%" clearable>
+                  <el-select
+                    v-model="TreatmentOption"
+                    placeholder="Select"
+                    style="width: 100%"
+                    clearable
+                  >
                     <el-option label="Risk Avoidance" value="RiskAvoidance" />
-                    <el-option label="Risk Modification" value="RiskModification" />
+                    <el-option
+                      label="Risk Modification"
+                      value="RiskModification"
+                    />
                     <el-option label="Risk Retention" value="RiskRetention" />
                     <el-option label="Risk Sharing" value="RiskSharing" />
                   </el-select>
@@ -114,11 +166,18 @@
               <el-row gutter="{20}">
                 <el-col :span="10" style="text-align: left">
                   <el-text class="q-text">Comments:</el-text>
-                  <el-input style="width: 100%" v-model="comments" :autosize="{ minRows: 3, maxRows: 8 }"
-                    type="textarea" placeholder="Please input" />
+                  <el-input
+                    style="width: 100%"
+                    v-model="comments"
+                    :autosize="{ minRows: 3, maxRows: 8 }"
+                    type="textarea"
+                    placeholder="Please input"
+                  />
                 </el-col>
                 <el-col :span="10" style="text-align: left">
-                  <el-text class="q-text">Comments form assigner:<br /></el-text>
+                  <el-text class="q-text"
+                    >Comments form assigner:<br
+                  /></el-text>
                   <el-text class="q-text">{{ commentsFromAssigner }}</el-text>
                 </el-col>
               </el-row>
@@ -128,22 +187,37 @@
             <el-divider class="divider" />
           </div>
 
-          <el-row justify="center" style="
+          <el-row
+            justify="center"
+            style="
               width: 100%;
               margin: 0;
               padding: 0;
               display: flex;
               gap: 10px;
               justify-content: center;
-            ">
+            "
+          >
             <!-- Save button -->
             <el-col :span="6" style="text-align: center; padding: 0; margin: 0">
-              <el-button type="primary" round @click="handleSave" style="width: 50%">Save</el-button>
+              <el-button
+                type="primary"
+                round
+                @click="handleSave"
+                style="width: 50%"
+                >Save</el-button
+              >
             </el-col>
 
             <!-- Done button -->
             <el-col :span="6" style="text-align: center; padding: 0; margin: 0">
-              <el-button type="success" round @click="handleDone" style="width: 50%">Done</el-button>
+              <el-button
+                type="success"
+                round
+                @click="handleDone"
+                style="width: 50%"
+                >Done</el-button
+              >
             </el-col>
           </el-row>
         </el-scrollbar>
@@ -330,6 +404,13 @@ export default {
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
         alert("Data saved and sent to backend successfully!");
+
+        // Second POST request: Update treatment status in risk_relationship table
+        const response2 = await axios.post(
+          `http://localhost:8081/api/risk_relationship/change/${this.rid}`
+        );
+        console.log("Treatment status updated:", response2.data); // Log backend response for the second request
+        alert("Treatment status updated successfully!");
       } catch (error) {
         console.error("Error sending data to backend:", error);
         alert("Failed to send data to backend.");
@@ -409,16 +490,16 @@ export default {
   box-sizing: border-box;
 }
 
-.el-row>.el-col:last-child {
+.el-row > .el-col:last-child {
   margin-left: 0;
 }
 
-.el-row>.el-col:first-child {
+.el-row > .el-col:first-child {
   margin-right: 0;
 }
 
 /* 当只有一个输入框时，让它占满一行并左对齐 */
-.el-row>.el-col:only-child {
+.el-row > .el-col:only-child {
   flex: 1 1 100%;
   margin-left: 0;
 }
