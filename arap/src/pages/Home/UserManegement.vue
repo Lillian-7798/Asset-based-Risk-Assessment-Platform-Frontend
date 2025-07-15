@@ -281,7 +281,7 @@ export default {
         )
         .slice(0, 5) // 获取最多5个匹配项
         .map((project) => ({
-          label: project.name, // 显示的文本
+          label: project.id, // 显示的文本
           value: project.name, // 用于选择的值
         }));
 
@@ -295,7 +295,8 @@ export default {
     // 选择审计项目后的处理
     handleAuditProjectSelect(item) {
       console.log("Selected audit project:", item);
-      this.selectedAuditProject = item.id;
+      this.selectedAuditProject = item.label; //存的是id
+      console.log("Selected audit project:", this.selectedAuditProject);
     },
     // 显示编辑权限对话框
     showEditDialog(user) {
@@ -320,7 +321,19 @@ export default {
 
         if (response.data.success) {
           this.$message.success("Permission updated successfully");
-          this.fetchAllUsers(); // 刷新列表
+
+          // 第二个请求：更新审计项目的 auditor 列
+          const updateAuditResponse = await axios.post(
+            `${API_BASE_URL}/api/updateauditproject/${this.selectedAuditProject}/${this.currentEditingUser.id}`
+          );
+
+          if (updateAuditResponse.data.success) {
+            this.$message.success("Audit project auditor updated successfully");
+          } else {
+            this.$message.error(updateAuditResponse.data.message);
+          }
+
+          this.fetchAllUsers(); // 刷新用户列表
           this.editDialogVisible = false;
         } else {
           this.$message.error(response.data.message);
