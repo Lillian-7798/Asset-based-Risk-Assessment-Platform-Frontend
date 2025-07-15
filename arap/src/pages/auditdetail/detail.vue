@@ -249,7 +249,7 @@ export default {
     // },
     async removeRow(row) {
       try {
-        const response = await axios.delete(
+        const response = await axios.patch(
           API_BASE_URL + `/api/remove/${row.id}`
         );
         if (response.status === 200) {
