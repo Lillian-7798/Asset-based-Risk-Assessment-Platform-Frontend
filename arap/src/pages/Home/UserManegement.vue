@@ -1,5 +1,5 @@
 <!-- todo:1.提权为审计员之后指定审计项目
-        2. 判定当前user是否可以删除  -->
+        -->
 <template>
   <!-- 删除确认对话框 -->
   <el-dialog v-model="deleteDialogVisible" title="Confirm Delete" width="30%">
@@ -18,7 +18,7 @@
   </el-dialog>
 
   <!-- 编辑权限对话框 -->
-  <el-dialog v-model="editDialogVisible" title="Edit Permission" width="30%">
+  <!-- <el-dialog v-model="editDialogVisible" title="Edit Permission" width="30%">
     <el-select v-model="selectedPermission" placeholder="Select permission">
       <el-option
         v-for="item in Permissions"
@@ -27,6 +27,43 @@
         :value="item.value"
       />
     </el-select>
+    <template #footer>
+      <el-button @click="editDialogVisible = false">Cancel</el-button>
+      <el-button type="primary" @click="updatePermission">Confirm</el-button>
+    </template>
+  </el-dialog> -->
+
+  <!-- 编辑权限对话框 -->
+  <el-dialog v-model="editDialogVisible" title="Edit Permission" width="50%">
+    <el-select v-model="selectedPermission" placeholder="Select permission">
+      <el-option
+        v-for="item in Permissions"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value"
+      />
+    </el-select>
+
+    <!-- 如果权限是Auditor，显示审计项目搜索框 -->
+    <div v-if="selectedPermission === '1'">
+      <!-- '1' corresponds to "Auditor" -->
+      <el-autocomplete
+        v-model="searchAuditTerm"
+        placeholder="Search Audit Projects"
+        clearable
+        :fetch-suggestions="searchAuditProjects"
+        :trigger-on-focus="false"
+        :loading="loading"
+        :debounce="300"
+        @select="handleAuditProjectSelect"
+        :max-suggestions="5"
+      >
+        <template #prefix>
+          <el-icon name="search" />
+        </template>
+      </el-autocomplete>
+    </div>
+
     <template #footer>
       <el-button @click="editDialogVisible = false">Cancel</el-button>
       <el-button type="primary" @click="updatePermission">Confirm</el-button>
@@ -164,6 +201,11 @@ import { API_BASE_URL } from "@/components/axios";
 export default {
   data() {
     return {
+      loading: false, // 加载状态
+      allAuditProjects: [], // 存储所有的审计项目
+      selectedAuditProject: null, //新增：用户选择的审计项目
+      filteredAuditProjects: [], //新增过滤后的审计项目列表
+      searchAuditTerm: "", //新增，搜索词
       deleteDialogVisible: false, // 新增：删除对话框显示状态
       currentDeleteUser: null, // 新增：当前要删除的用户
       editDialogVisible: false,
@@ -199,13 +241,71 @@ export default {
   mounted() {
     this.fetchUsersCount();
     this.fetchAllUsers();
+    this.fetchAuditProjects();
   },
   methods: {
+    // 获取审计项目列表
+    async fetchAuditProjects() {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/api/audit_project/available`,
+          {
+            params: { auditor: "" }, // 获取 auditor 列为空的审计项目
+          }
+        );
+        if (response.data.success) {
+          this.allAuditProjects = response.data.projects; // 保存所有的审计项目
+        } else {
+          this.$message.error(response.data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        this.$message.error("Failed to fetch audit projects");
+      }
+    },
+
+    async searchAuditProjects(query) {
+      console.log("Search Term:", query); // 输出搜索词
+
+      if (!query) {
+        this.filteredAuditProjects = []; // 清空过滤的项目
+        return [];
+      }
+
+      this.loading = true; // 开始加载
+
+      // 过滤符合条件的审计项目，并限制最多5个匹配项
+      this.filteredAuditProjects = this.allAuditProjects
+        .filter((project) =>
+          project.name.toLowerCase().includes(query.toLowerCase())
+        )
+        .slice(0, 5) // 获取最多5个匹配项
+        .map((project) => ({
+          label: project.name, // 显示的文本
+          value: project.name, // 用于选择的值
+        }));
+
+      console.log("Filtered Projects:", this.filteredAuditProjects); // 打印过滤后的审计项目
+
+      this.loading = false; // 开始加载
+
+      return this.filteredAuditProjects;
+    },
+
+    // 选择审计项目后的处理
+    handleAuditProjectSelect(item) {
+      console.log("Selected audit project:", item);
+      this.selectedAuditProject = item.id;
+    },
+    // 显示编辑权限对话框
     showEditDialog(user) {
       this.currentEditingUser = user;
       this.selectedPermission = this.getPermissionValue(user.permission);
+      //this.selectedAuditProject = user.auditProject || null;
+      this.fetchAuditProjects(); // 获取审计项目列表
       this.editDialogVisible = true;
     },
+
     // 更新权限
     async updatePermission() {
       try {
