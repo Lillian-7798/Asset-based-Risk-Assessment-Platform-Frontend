@@ -395,7 +395,18 @@ export default {
               <div class="comments">${details.comments || 'No comments'}</div>
               ${details.evidence?.length ?
                   `<p><strong>Evidence (${details.evidence.length}):</strong></p>
-                 <ul>${details.evidence.map(f => `<li>${f}</li>`).join('')}</ul>` :
+             <ul>${
+                      details.evidence.map(f =>
+                          `<li>
+                    <a href="${API_BASE_URL}/${f.filePath}"
+                       target="_blank"
+                       class="evidence-link"
+                       download="${f.originalName}">
+                      ${f.originalName || f.storedName}
+                    </a>
+                  </li>`
+                      ).join('')
+                  }</ul>` :
                   '<p><strong>No evidence files</strong></p>'
               }
             </div>`,
