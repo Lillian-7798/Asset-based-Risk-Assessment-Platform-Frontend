@@ -214,11 +214,13 @@ export default {
 
             return {
                 path: typeMap[row.type],
-                query: { id: row.id }
+                query: { id: row.id,
+                    name: row.name
+                 }
             };
         },
         getPhysicalSubpath(row){
-            if(row.subType==='non'){
+            if(row.subType==1){
                 return '/RiskQuestionare/physicalnon';
             }else{
                 return '/RiskQuestionare/physical'
@@ -226,11 +228,11 @@ export default {
         },
         getInformationSubpath(row) {
             // 根据 row 的其他属性决定具体的信息子路径
-            if (row.subType === 'database') {
+            if (row.subType ==0) {
                 return '/RiskQuestionare/information_database';
-            } else if (row.subType === 'doc') {
+            } else if (row.subType ==1) {
                 return '/RiskQuestionare/information_doc';
-            } else if (row.subType === 'patent') {
+            } else if (row.subType ==2) {
                 return '/RiskQuestionare/information_patent';
             }
             // 默认情况
@@ -374,7 +376,8 @@ export default {
                         type: asset.assetType,
                         owner: asset.assetOwner,
                         AssetStatus: asset.status,
-                        QuestionareStatus: asset.qstatus
+                        QuestionareStatus: asset.qstatus,
+                        subType:asset.subType
                     }));
                 }
             } catch (error) {

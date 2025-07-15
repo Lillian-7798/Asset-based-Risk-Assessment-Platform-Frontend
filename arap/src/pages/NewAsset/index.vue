@@ -50,10 +50,12 @@
                     <el-tooltip class="item" effect="dark" content="Name of the asset." placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="name" placeholder="Please input" clearable />
@@ -109,10 +111,12 @@
                       placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="version" placeholder="Please input" clearable />
@@ -151,10 +155,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-input style="width: 100%" v-model="Manufacture" placeholder="Please input" clearable />
@@ -178,10 +184,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="LicenseType" placeholder="Select" style="width: 100%" clearable>
@@ -247,10 +255,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="fixedAssetCategory" placeholder="Select Category" style="width: 100%" clearable>
@@ -269,10 +279,12 @@
                         content="Physical/Virtual location (e.g., Data Center A, Rack 3)" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-input style="width: 100%" v-model="Location" placeholder="Enter location" clearable />
@@ -296,10 +308,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="nonFixedAssetCategory" placeholder="Select Category" style="width: 100%"
@@ -319,10 +333,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-input style="width: 100%" v-model="CurrentHolder" placeholder="Please input" clearable />
@@ -335,10 +351,12 @@
                       <el-tooltip class="item" effect="dark" content="Date assigned to holder" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-date-picker v-model="CheckoutDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -349,10 +367,12 @@
                       <el-tooltip class="item" effect="dark" content="For temporary assets." placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-date-picker v-model="ExpectedReturnDate" type="date" placeholder="Pick a day"
@@ -367,10 +387,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="Condition" placeholder="Select Condition" style="width: 100%" clearable>
@@ -383,10 +405,12 @@
                       <el-tooltip class="item" effect="dark" content="Whether storage is encrypted" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="DataEncryption" placeholder="Select" style="width: 100%" clearable>
@@ -402,10 +426,12 @@
                       <el-tooltip class="item" effect="dark" content="Critical for lost devices" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="RemoteWipeCapability" placeholder="Select" style="width: 100%" clearable>
@@ -424,10 +450,12 @@
                     <el-tooltip class="item" effect="dark" content="Date of acquisition" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-date-picker v-model="PurchaseDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -438,10 +466,12 @@
                     <el-tooltip class="item" effect="dark" content="Lifespan for accounting" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="DepreciationPeriod" @blur="validateDepreciationPeriod" />
@@ -455,10 +485,12 @@
                       placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select v-model="MaintenanceCycle" placeholder="Select Cycle" style="width: 100%" clearable>
@@ -482,10 +514,12 @@
                     <el-tooltip class="item" effect="dark" content="Legal retention period" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select v-model="informationRetentionPolicy" placeholder="Select Policy" style="width: 100%"
@@ -499,10 +533,12 @@
                     <el-tooltip class="item" effect="dark" content="Physical/cloud storage path" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="informationStorageLocation" placeholder="Please input"
@@ -529,10 +565,12 @@
                       <el-tooltip class="item" effect="dark" content="Database engine" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="DataSchema" placeholder="Select Schema" style="width: 100%" clearable>
@@ -546,10 +584,12 @@
                       <el-tooltip class="item" effect="dark" content="Database version" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-input style="width: 100%" v-model="databaseVersion" placeholder="Please input" clearable />
@@ -563,10 +603,12 @@
                         placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="containsPII" placeholder="Select" style="width: 100%" clearable>
@@ -579,10 +621,12 @@
                       <el-tooltip class="item" effect="dark" content="Backup policy" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="backupFrequency" placeholder="Select Frequency" style="width: 100%" clearable>
@@ -600,10 +644,12 @@
                       <el-tooltip class="item" effect="dark" content="Document type" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="fileFormat" placeholder="Select Format" style="width: 100%" clearable>
@@ -618,10 +664,12 @@
                       <el-tooltip class="item" effect="dark" content="Access control basis" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-select v-model="confidentialityLevel" placeholder="Select Level" style="width: 100%" clearable>
@@ -640,10 +688,12 @@
                       <el-tooltip class="item" effect="dark" content="Patent/trademark ID" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-input style="width: 100%" v-model="registrationNumber" placeholder="Please input" clearable />
@@ -653,10 +703,12 @@
                       <el-tooltip class="item" effect="dark" content="Legal expiration date" placement="top">
                         <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                            <InfoFilled />
+                          </el-icon></span>
                       </el-tooltip>
                     </el-text>
                     <el-date-picker v-model="expiryDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -677,10 +729,12 @@
                     <el-tooltip class="item" effect="dark" content="Department of the employee" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="department" placeholder="Please input" clearable />
@@ -690,10 +744,12 @@
                     <el-tooltip class="item" effect="dark" content="Current job title or role" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="position" placeholder="Please input" clearable />
@@ -706,10 +762,12 @@
                     <el-tooltip class="item" effect="dark" content="Date of joining" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-date-picker v-model="hireDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -721,10 +779,12 @@
                       placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select v-model="backgroundCheckStatus" placeholder="Select Status" style="width: 100%" clearable>
@@ -744,10 +804,12 @@
                       content="Whether the security awareness training is completed" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select v-model="securityTrainingStatus" placeholder="Select Status" style="width: 100%" clearable>
@@ -764,10 +826,12 @@
                       content="Date of signing confidentiality agreement/employment contract" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-date-picker v-model="NDASigningDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -782,10 +846,12 @@
                       placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-select v-model="RemoteWorkAgreementStatus" placeholder="Select Status" style="width: 100%"
@@ -800,10 +866,12 @@
                       content="Records of any security incidents involving the employee" placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="securityIncidentRecords" placeholder="Please input"
@@ -817,12 +885,14 @@
                     <el-tooltip class="item" effect="dark"
                       content="Date of the last audit check of the employee's asset responsibilities and usage"
                       placement="top">
-                      <spans style="
+                      <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</spans>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-date-picker v-model="LastAuditDate" type="date" placeholder="Pick a day" style="width: 100%"
@@ -858,10 +928,12 @@
                       placement="top">
                       <span style="
                           cursor: pointer;
-                          color: blue;
+                          vertical-align: middle;  /* 添加这行 */
                           font-size: 16px;
                           margin-left: 5px;
-                        ">❓</span>
+                        "><el-icon>
+                          <InfoFilled />
+                        </el-icon></span>
                     </el-tooltip>
                   </el-text>
                   <el-input style="width: 100%" v-model="associatedAssets" :autosize="{ minRows: 2, maxRows: 2 }"

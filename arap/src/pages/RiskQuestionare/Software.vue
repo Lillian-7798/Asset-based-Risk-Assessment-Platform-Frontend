@@ -28,7 +28,7 @@
           </el-button>
 
           <el-text style="font-size: 20px; font-weight: bold; flex-grow: 1">
-            Software Questionnaire
+            Questionnaire for {{ this.$route.query.name }}
           </el-text>
         </div>
         <div style="height: 20px"></div>
