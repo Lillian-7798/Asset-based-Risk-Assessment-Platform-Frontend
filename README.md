@@ -1,10 +1,5 @@
 # Some bug to fix
 
-New Asset 页面：
-
-- 1. 如果切换了问卷逻辑，原先填写的内容应该清空（比如 asset type 从 software 改成 pysical 或者改为空值,那么 software 特有的那些问卷字段应该全部清空。External Supplied Service 从 yes 切换成 no,也应该清空下面的问卷字段）
-- 2.  information -- Asset Category 选择 DataBase 的时候，报错显示‘Information Asset category is required.’
-
 Questionaire 页面
 
 - 1. RiskAssessment home 页面点击跳转的时候进行路由选择和参数传输（正在修）
@@ -12,10 +7,6 @@ Questionaire 页面
 - 3. 一些问题旁边需要有帮助信息（具体参考 excel），有个小问号的图标（图标代码参考https://element-plus.sxtxhy.com/zh-CN/component/icon.html），鼠标悬停的时候显示这个问题的具体解释
 - 4. 点击 back 按钮应该是回到上一个打开的页面，back 按钮位置往右调整，不要贴着屏幕边
 - 6. 标题修改：修改标题为 Questionaire for [assetname]。标题字号调大，问卷内容和标题之间加一点间距
-
-Evidence Chain 页面：
-
-- 1. （可选）给对应的 Asset 分配 auditor 后，增加一个 AuditProject 在淡黄色详情表中。目前只能看到该 asset 已分配到某个 auditorProject 中，但不知道具体分配在哪一个 auditProject 中。如果 auditorProject 数量一多，就不知道要去那里 remove。
 
 Help 按钮，直接放最后一版 require 文档得了
 
