@@ -140,8 +140,7 @@
                           font-size: 16px;
                           margin-left: 5px;
                         "
-                        ><el-icon>
-                          <InfoFilled /> </el-icon
+                        ><el-icon> <InfoFilled /> </el-icon
                       ></span>
                     </el-tooltip>
                   </el-text>
@@ -242,7 +241,7 @@ export default {
   data() {
     return {
       uploadedFiles: [], // 存储已上传的文件列表
-      rid: this.$route.query.rid || 1, // 默认值为 1
+      rid: this.$route.query.rid, // 无默认值了，要是rid没有传就会报错
       riskname: this.$route.query.riskname || "default riskname", // 默认值为 "default riskname"
       commentsFromAssigner: "", // 默认值
       tooltipContent: `
