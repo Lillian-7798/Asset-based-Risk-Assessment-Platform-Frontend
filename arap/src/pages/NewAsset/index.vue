@@ -75,7 +75,7 @@
               <el-row gutter="{20}">
                 <el-col :span="10">
                   <el-text class="q-text">Asset Type<span class="required-asterisk">*</span>:</el-text>
-                  <el-select v-model="AssetType" placeholder="Default" style="width: 100%" clearable>
+                  <el-select v-model="AssetType" placeholder="Default" style="width: 100%" clearable @change="handleAssetTypeChange">
                     <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
                   </el-select>
                 </el-col>
@@ -146,8 +146,8 @@
                 </el-col>
 
                 <el-col :span="10" offset="2">
-                  <el-text class="q-text">External Supplied Service<span class="required-asterisk">*</span>:</el-text>
-                  <el-select v-model="externalSupplied" placeholder="Default" style="width: 100%" clearable>
+                  <el-text class="q-text">External Supplied Service<span class="required-asterisk" >*</span>:</el-text>
+                  <el-select v-model="externalSupplied" placeholder="Default" style="width: 100%" clearable @change="handleExternalSuppliedServiceChange">
                     <el-option v-for="item in externalSuppliedOptions" :key="item.value" :label="item.label"
                       :value="item.value" />
                   </el-select>
@@ -1153,6 +1153,7 @@ export default {
     Header,
     Footer,
   },
+
   mounted() {
     this.assetID = this.$route.query.id;
     this.AssetType = this.$route.query.assetType;
@@ -1313,6 +1314,109 @@ export default {
       }, 1000)
     },
 
+    //-----------------------------------------------------
+    handleAssetTypeChange(newType) {
+      // Store the previous type before changing
+      const previousType = this.AssetType;
+
+      // Actually change the type
+      this.AssetType = newType;
+
+      // Reset fields from previous type
+      if (previousType) {
+        this.resetPreviousAssetTypeFields(previousType);
+      }
+    },
+    resetPreviousAssetTypeFields(previousType) {
+      switch (previousType) {
+        case 'Software':
+          this.resetSoftwareFields();
+          break;
+        case 'Physical':
+          this.resetPhysicalFields();
+          break;
+        case 'Information':
+          this.resetInformationFields();
+          break;
+        case 'People':
+          this.resetPeopleFields();
+          break;
+      }
+    },
+
+    resetSoftwareFields() {
+      this.version = "";
+      this.installDate = "";
+      this.authorizedOperatingSystems = "";
+      this.externalSupplied = "";
+      this.Manufacture = "";
+      this.ServiceType = "";
+      this.LicenseType = "";
+      this.LicenseStartDate = "";
+      this.LicenseExpireDate = "";
+      this.dateRange = [];
+      this.LicenseNumber = "";
+      this.RelatedContractNumber = "";
+    },
+
+    resetPhysicalFields() {
+      this.physicalAssetType = "";
+      this.fixedAssetCategory = "";
+      this.Location = "";
+      this.nonFixedAssetCategory = "";
+      this.CurrentHolder = "";
+      this.CheckoutDate = "";
+      this.ExpectedReturnDate = "";
+      this.Condition = "";
+      this.DataEncryption = "";
+      this.RemoteWipeCapability = "";
+      this.PurchaseDate = "";
+      this.DepreciationPeriod = "";
+      this.MaintenanceCycle = "";
+    },
+
+    resetInformationFields() {
+      this.informationRetentionPolicy = "";
+      this.informationStorageLocation = "";
+      this.InformationAssetCategory = "";
+      this.databaseVersion = "";
+      this.DataSchema = "";
+      this.containsPII = "";
+      this.backupFrequency = "";
+      this.fileFormat = "";
+      this.confidentialityLevel = "";
+      this.registrationNumber = "";
+      this.expiryDate = "";
+    },
+
+    resetPeopleFields() {
+      this.department = "";
+      this.position = "";
+      this.hireDate = "";
+      this.backgroundCheckStatus = "";
+      this.securityTrainingStatus = "";
+      this.NDASigningDate = "";
+      this.RemoteWorkAgreementStatus = "";
+      this.securityIncidentRecords = "";
+      this.LastAuditDate = "";
+    },
+
+    handleExternalSuppliedServiceChange(newValue) {
+      // If changing to "No" (value 1), reset the dependent fields
+      if (newValue === 1) {
+        this.Manufacture = "";
+        this.ServiceType = "";
+        this.LicenseType = "";
+        this.LicenseStartDate = "";
+        this.LicenseExpireDate = "";
+        this.dateRange = [];
+        this.LicenseNumber = "";
+        this.RelatedContractNumber = "";
+      }
+      // If changing to "Yes" (value 0), keep the fields as they are
+    },
+//------------------------------------------------------
+
     handleSelect(item) {
       this.assetOwner = item.value
       this.assetOwnerID = item.id
@@ -1333,87 +1437,101 @@ export default {
     },
     async Pre_filled() {
       console.log("get pre-filled information");
+
+      const params = {};
+
+      if (this.$route.query.id) {
+        params.id = this.$route.query.id;
+      }
+      if (this.$route.query.assetType) {
+        params.type = this.$route.query.assetType;
+      }
+
+
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/inventory/getAssetInfo`,
-          {
-            params: {
-              id: this.$route.query.id,
-              type: this.$route.query.assetType,
-            },
-          }
-        );
-        if (response.data.success) {
-          console.log(response.data.data);
-          //逐个映射basic字段
-          this.name = response.data.data.assetName;
-          this.swid = response.data.data.swid;
-          this.assetOwner = response.data.data.assetOwner.assetUserName;
-          this.assetOwnerID = response.data.data.assetOwner.assetUserId;
-          this.contact = response.data.data.contact;
-          this.description = response.data.data.description;
-          this.status = response.data.data.status;
-          this.importance = response.data.data.importance;
-          this.associatedAssets = response.data.data.associatedAssets;
-          //映射Software
-          if (this.AssetType == 'Software') {
-            this.version = response.data.data.version;
-            this.installDate = response.data.data.installDate;
-            this.authorizedOperatingSystems = response.data.data.operatingSystems;
-            this.externalSupplied = response.data.data.externalSuppliedService;
-            this.Manufacture = response.data.data.manufacture;
-            this.ServiceType = response.data.data.serviceType;
-            this.LicenseType = response.data.data.licenseType;
-            this.LicenseStartDate = response.data.data.licenseStartDate;
-            this.LicenseExpireDate = response.data.data.licenseEndDate;
-            this.dateRange = [this.LicenseStartDate, this.LicenseExpireDate]
-            this.LicenseNumber = response.data.data.licenseNumber;
-            this.RelatedContractNumber = response.data.data.relatedContractNumber;
-          }
-          //映射physical
-          if (this.AssetType == 'Physical') {
-            this.physicalAssetType = response.data.data.fixedPhysicalAsset;
-            this.fixedAssetCategory = response.data.data.assetCategory;
-            this.Location = response.data.data.location;
-            this.nonFixedAssetCategory = response.data.data.assetCategory2;
-            this.CurrentHolder = response.data.data.currentHolder;
-            this.CheckoutDate = response.data.data.checkoutDate;
-            this.ExpectedReturnDate = response.data.data.expectedReturnDate;
-            this.Condition = response.data.data.conditions;
-            this.DataEncryption = response.data.data.dateEncryption;
-            this.RemoteWipeCapability = response.data.data.remoteWipeCapability;
-            this.PurchaseDate = response.data.data.epurchaseDate;
-            this.DepreciationPeriod = response.data.data.depreciationPeriod;
-            this.MaintenanceCycle = response.data.data.maintenanceCycle;
-          }
-          // 映射infomation
-          if (this.AssetType == 'Information') {
-            this.informationRetentionPolicy = response.data.data.retentionPolicy;
-            this.informationStorageLocation = response.data.data.storageLocation;
-            this.InformationAssetCategory = response.data.data.assetCategory;
-            this.databaseVersion = response.data.data.assetVersion;
-            this.DataSchema = response.data.data.dataSchema;
-            this.containsPII = response.data.data.containsPII;
-            this.backupFrequency = response.data.data.backupFrequency;
-            this.fileFormat = response.data.data.fileFormat;
-            this.confidentialityLevel = response.data.data.confidentialityLevel;
-            this.registrationNumber = response.data.data.registrationNumber;
-            this.expiryDate = response.data.data.expiryDate;
-          }
-          // 映射people
-          if (this.AssetType == 'People') {
-            this.department = response.data.data.department;
-            this.position = response.data.data.position;
-            this.hireDate = response.data.data.hireDate;
-            this.backgroundCheckStatus = response.data.data.backgroundCheckStatus;
-            this.securityTrainingStatus = response.data.data.securityTrainingStatus;
-            this.NDASigningDate = response.data.data.ndaSigningDate;
-            this.RemoteWorkAgreementStatus = response.data.data.remoteWorkAgreementStatus;
-            this.securityIncidentRecords = response.data.data.securityIncidentRecords;
-            this.LastAuditDate = response.data.data.lastAuditDate;
+
+        if (Object.keys(params).length > 0) {
+
+            const response = await axios.get(
+            `${API_BASE_URL}/inventory/getAssetInfo`,
+            {
+              params: params,
+            }
+          );
+          if (response.data.success) {
+            console.log(response.data.data);
+            //逐个映射basic字段
+            this.name = response.data.data.assetName;
+            this.swid = response.data.data.swid;
+            this.assetOwner = response.data.data.assetOwner.assetUserName;
+            this.assetOwnerID = response.data.data.assetOwner.assetUserId;
+            this.contact = response.data.data.contact;
+            this.description = response.data.data.description;
+            this.status = response.data.data.status;
+            this.importance = response.data.data.importance;
+            this.associatedAssets = response.data.data.associatedAssets;
+            //映射Software
+            if (this.AssetType == 'Software') {
+              this.version = response.data.data.version;
+              this.installDate = response.data.data.installDate;
+              this.authorizedOperatingSystems = response.data.data.operatingSystems;
+              this.externalSupplied = response.data.data.externalSuppliedService;
+              this.Manufacture = response.data.data.manufacture;
+              this.ServiceType = response.data.data.serviceType;
+              this.LicenseType = response.data.data.licenseType;
+              this.LicenseStartDate = response.data.data.licenseStartDate;
+              this.LicenseExpireDate = response.data.data.licenseEndDate;
+              this.dateRange = [this.LicenseStartDate, this.LicenseExpireDate]
+              this.LicenseNumber = response.data.data.licenseNumber;
+              this.RelatedContractNumber = response.data.data.relatedContractNumber;
+            }
+            //映射physical
+            if (this.AssetType == 'Physical') {
+              this.physicalAssetType = response.data.data.fixedPhysicalAsset;
+              this.fixedAssetCategory = response.data.data.assetCategory;
+              this.Location = response.data.data.location;
+              this.nonFixedAssetCategory = response.data.data.assetCategory2;
+              this.CurrentHolder = response.data.data.currentHolder;
+              this.CheckoutDate = response.data.data.checkoutDate;
+              this.ExpectedReturnDate = response.data.data.expectedReturnDate;
+              this.Condition = response.data.data.conditions;
+              this.DataEncryption = response.data.data.dateEncryption;
+              this.RemoteWipeCapability = response.data.data.remoteWipeCapability;
+              this.PurchaseDate = response.data.data.epurchaseDate;
+              this.DepreciationPeriod = response.data.data.depreciationPeriod;
+              this.MaintenanceCycle = response.data.data.maintenanceCycle;
+            }
+            // 映射infomation
+            if (this.AssetType == 'Information') {
+              this.informationRetentionPolicy = response.data.data.retentionPolicy;
+              this.informationStorageLocation = response.data.data.storageLocation;
+              this.InformationAssetCategory = response.data.data.assetCategory;
+              this.databaseVersion = response.data.data.assetVersion;
+              this.DataSchema = response.data.data.dataSchema;
+              this.containsPII = response.data.data.containsPII;
+              this.backupFrequency = response.data.data.backupFrequency;
+              this.fileFormat = response.data.data.fileFormat;
+              this.confidentialityLevel = response.data.data.confidentialityLevel;
+              this.registrationNumber = response.data.data.registrationNumber;
+              this.expiryDate = response.data.data.expiryDate;
+            }
+            // 映射people
+            if (this.AssetType == 'People') {
+              this.department = response.data.data.department;
+              this.position = response.data.data.position;
+              this.hireDate = response.data.data.hireDate;
+              this.backgroundCheckStatus = response.data.data.backgroundCheckStatus;
+              this.securityTrainingStatus = response.data.data.securityTrainingStatus;
+              this.NDASigningDate = response.data.data.ndaSigningDate;
+              this.RemoteWorkAgreementStatus = response.data.data.remoteWorkAgreementStatus;
+              this.securityIncidentRecords = response.data.data.securityIncidentRecords;
+              this.LastAuditDate = response.data.data.lastAuditDate;
+            }
+          } else {
+            console.error(response.data.message);
           }
         } else {
-          console.error(response.data.message);
+          console.log('No valid parameters to send with the request.');
         }
       } catch (error) {
         console.error(error);
@@ -1435,7 +1553,7 @@ export default {
     handleBackClick() {
       const fromPage = this.$route.query.fromPage || 1; // Get the page from query params
       const pageName = this.$route.query.pageName || '';
-      if(pageName == 'AssetInventory'){
+      if(pageName == 'AssetInventory' || ''){
         this.$router.push({
           path: '/home/asset-inventory',
           query: { page: fromPage } // Pass it back to the list view
@@ -1447,7 +1565,7 @@ export default {
           query: { page: fromPage } // Pass it back to the list views
         });
       }
-
+      if(fromPage==="" || pageName==="") this.$router.go(-1);
     },
 
     handleBeforeClose(done) {
