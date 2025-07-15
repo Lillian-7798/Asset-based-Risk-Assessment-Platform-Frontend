@@ -393,19 +393,22 @@ export default {
               <p><strong>Treatment Option:</strong> ${this.getTreatmentOptionText(details.treatmentOption)}</p>
               <p><strong>Comments:</strong></p>
               <div class="comments">${details.comments || 'No comments'}</div>
-              ${details.evidence?.length ?
+                ${details.evidence?.length ?
                   `<p><strong>Evidence (${details.evidence.length}):</strong></p>
-             <ul>${
-                      details.evidence.map(f =>
-                          `<li>
-                    <a href="${API_BASE_URL}/${f.filePath}"
-                       target="_blank"
-                       class="evidence-link"
-                       download="${f.originalName}">
-                      ${f.originalName || f.storedName}
-                    </a>
-                  </li>`
-                      ).join('')
+                <ul>${
+                      details.evidence.map(file => {
+                       
+                        const filePath = file.filePath.split("static\\")[1];
+                        const fileUrl = `http://localhost:8081/files/${filePath.replace(/\\/g, "/")}`;
+
+                        return `<li>
+                      <a href="#"
+                        class="evidence-link"
+                        onclick="event.preventDefault(); window.open('${fileUrl}', '_blank');">
+                        ${file.originalName || file.storedName}
+                      </a>
+                    </li>`
+                      }).join('')
                   }</ul>` :
                   '<p><strong>No evidence files</strong></p>'
               }
