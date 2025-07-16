@@ -1,30 +1,15 @@
 <!-- TODO:连接跳转到资产风险管理页面，并且只有当前用户是该资产拥有者的时候可以跳转 -->
 <template>
   <!-- 过滤条件弹出框 -->
-  <el-dialog
-    v-model="dialogVisible"
-    title="Filtering"
-    width="50%"
-    :before-close="handleClose"
-    :center="false"
-  >
+  <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
     <el-row>
       <el-col :span="3" class="center-align">
         <el-text>Asset Type</el-text>
       </el-col>
       <el-col :span="8">
-        <el-select
-          v-model="filterParams.assetType"
-          placeholder="Default"
-          style="width: 95%; justify-content: left"
-          clearable
-        >
-          <el-option
-            v-for="item in AssetTypes"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+        <el-select v-model="filterParams.assetType" placeholder="Default" style="width: 95%; justify-content: left"
+          clearable>
+          <el-option v-for="item in AssetTypes" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-col>
       <el-col :span="1"></el-col>
@@ -32,18 +17,9 @@
         <el-text>Treatment Status</el-text>
       </el-col>
       <el-col :span="8">
-        <el-select
-          v-model="filterParams.treatmentstatus"
-          placeholder="Default"
-          style="width: 95%; justify-content: left"
-          clearable
-        >
-          <el-option
-            v-for="item in treatmentStatus"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+        <el-select v-model="filterParams.treatmentstatus" placeholder="Default"
+          style="width: 95%; justify-content: left" clearable>
+          <el-option v-for="item in treatmentStatus" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-col>
     </el-row>
@@ -53,18 +29,9 @@
         <el-text>Asset Status</el-text>
       </el-col>
       <el-col :span="8">
-        <el-select
-          v-model="filterParams.status"
-          placeholder="Default"
-          style="width: 95%; justify-content: left"
-          clearable
-        >
-          <el-option
-            v-for="item in AssetStatus"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value"
-          />
+        <el-select v-model="filterParams.status" placeholder="Default" style="width: 95%; justify-content: left"
+          clearable>
+          <el-option v-for="item in AssetStatus" :key="item.value" :label="item.label" :value="item.value" />
         </el-select>
       </el-col>
     </el-row>
@@ -79,56 +46,30 @@
   <!-- 正常页面 -->
   <div class="container">
     <el-row>
-      <el-col
-        :span="12"
-        style="display: flex; align-items: center; justify-content: left"
-      >
+      <el-col :span="12" style="display: flex; align-items: center; justify-content: left">
         <el-text style="font-size: 20px; font-weight: bold">My Risks</el-text>
       </el-col>
-      <el-col
-        :span="6"
-        style="display: flex; align-items: center; justify-content: right"
-      >
-        <el-icon
-          style="margin-right: 10px"
-          @click="toggleFilter"
-          :color="isFilterActive ? '#409EFF' : ''"
-        >
+      <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
+        <el-icon style="margin-right: 10px" @click="toggleFilter" :color="isFilterActive ? '#409EFF' : ''">
           <Filter />
         </el-icon>
       </el-col>
-      <el-col
-        :span="6"
-        style="display: flex; align-items: center; justify-content: right"
-      >
-        <el-input
-          v-model="searchInput"
-          style="width: 100%; margin-right: 10px"
-          placeholder="Please Input"
-          :prefix-icon="Search"
-          @change="search"
-          clearable
-        />
+      <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
+        <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
+          :prefix-icon="Search" @change="search" clearable />
       </el-col>
     </el-row>
     <div class="table-container">
       <div class="table">
-        <el-table
-          :data="tableData"
-          style="width: 100%; font-size: 17px; font-weight: border"
-          :header-cell-style="{ 'text-align': 'center' }"
-          :cell-style="{ 'text-align': 'center' }"
-        >
+        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border"
+          :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
           <el-table-column prop="date" label="Date" width="250" />
           <el-table-column prop="name" label="Name" width="300">
             <template #default="{ row }">
-              <router-link
-                :to="{
-                  path: '/NewAsset',
-                  query: { id: row.id, assetType: row.type },
-                }"
-                style="color: #409eff; text-decoration: none"
-              >
+              <router-link :to="{
+                path: '/NewAsset',
+                query: { id: row.id, assetType: row.type },
+              }" style="color: #409eff; text-decoration: none">
                 {{ row.name }}
               </router-link>
             </template>
@@ -138,12 +79,7 @@
           <!-- AssetStatus 列 - 使用自定义模板 -->
           <el-table-column prop="AssetStatus" label="Asset Status">
             <template #default="{ row }">
-              <el-tag
-                :type="getStatusTagType(row.AssetStatus)"
-                effect="dark"
-                size="large"
-                class="bigger-tag"
-              >
+              <el-tag :type="getStatusTagType(row.AssetStatus)" effect="dark" size="large" class="bigger-tag">
                 {{ row.AssetStatus }}
               </el-tag>
             </template>
@@ -153,40 +89,32 @@
           <el-table-column type="expand">
             <template #default="props">
               <div class="expanded-panel">
-                <el-table
-                  :data="props.row.risks"
-                  :border="childBorder"
-                  class="inner-table"
-                  header-cell-class-name="custom-header"
-                  :header-cell-style="{ 'text-align': 'center' }"
-                  :cell-style="{ 'text-align': 'center' }"
-                >
+                <el-table :data="props.row.risks" :border="childBorder" class="inner-table"
+                  header-cell-class-name="custom-header" :header-cell-style="{ 'text-align': 'center' }"
+                  :cell-style="{ 'text-align': 'center' }">
                   <el-table-column label="Risk" prop="risk" width="700" />
                   <el-table-column label="Due Date" prop="due" width="500" />
                   <el-table-column width="100">
                     <template #default="{ row }">
-                      <router-link
-                        :to="{
+                      <template v-if="row.treatmentStatus=='In-progress'">
+                        <router-link :to="{
                           path: '/RisksHomepage',
                           query: { rid: row.id, riskname: row.risk },
-                        }"
-                        style="color: #409eff; text-decoration: none"
-                      >
-                        treat
-                      </router-link>
+                        }" style="color: #409eff; text-decoration: none">
+                          treat
+                        </router-link>
+                      </template>
+                      <template v-else>
+                        <span style="color: #c0c4cc; cursor: not-allowed">
+                          treat
+                        </span>
+                      </template>
                     </template>
                   </el-table-column>
-                  <el-table-column
-                    prop="treatmentStatus"
-                    label="Treatment Status"
-                  >
+                  <el-table-column prop="treatmentStatus" label="Treatment Status">
                     <template #default="{ row }">
-                      <el-tag
-                        :type="getTreatmentStatusTagType(row.treatmentStatus)"
-                        effect="dark"
-                        size="large"
-                        class="bigger-tag"
-                      >
+                      <el-tag :type="getTreatmentStatusTagType(row.treatmentStatus)" effect="dark" size="large"
+                        class="bigger-tag">
                         {{ row.treatmentStatus }}
                       </el-tag>
                     </template>
@@ -198,14 +126,8 @@
         </el-table>
       </div>
       <div class="pagination">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="totalItems"
-          :page-size="pageSize"
-          :current-page="currentPage"
-          @current-change="handlePageChange"
-        />
+        <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize"
+          :current-page="currentPage" @current-change="handlePageChange" />
       </div>
     </div>
   </div>

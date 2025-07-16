@@ -398,13 +398,13 @@ export default {
                 <ul>${
                       details.evidence.map(file => {
                        
-                        const filePath = file.filePath.split("static\\")[1];
-                        const fileUrl = `http://localhost:8081/files/${filePath.replace(/\\/g, "/")}`;
+                        // const filePath = file.filePath.split("static\\")[1];
+                        // const fileUrl = `http://localhost:8081/files/${filePath.replace(/\\/g, "/")}`;
 
                         return `<li>
                       <a href="#"
                         class="evidence-link"
-                        onclick="event.preventDefault(); window.open('${fileUrl}', '_blank');">
+                        onclick="event.preventDefault(); window.open('${file.filePath}', '_blank');">
                         ${file.originalName || file.storedName}
                       </a>
                     </li>`

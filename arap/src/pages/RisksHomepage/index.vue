@@ -297,14 +297,14 @@ export default {
     // 打开文件
     openFile(file) {
       // 从 file_path 中提取文件的路径，去掉 'static\' 部分
-      const filePath = file.file_path.split("static\\")[1]; // 提取路径部分
-      const fileUrl = `http://localhost:8081/files/${filePath.replace(
-        /\\/g,
-        "/"
-      )}`; // 替换路径中的 \ 为 /
+      //const filePath = file.file_path.split("static\\")[1]; // 提取路径部分
+      //const fileUrl = `http://localhost:8081/files/${filePath.replace(
+      //  /\\/g,
+      //  "/"
+      //)}`; // 替换路径中的 \ 为 /
 
       // 在新标签页中打开文件链接
-      window.open(fileUrl, "_blank");
+      window.open(file.file_path, "_blank");
     },
 
     fetchComments() {
