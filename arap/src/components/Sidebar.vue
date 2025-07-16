@@ -8,18 +8,18 @@
         class="el-menu-vertical-demo"
         text-color="#fff"
       >
-        <el-menu-item  class = "text" index="/home/asset-inventory">
+        <el-menu-item v-if ="userLevel!=1" class = "text" index="/home/asset-inventory">
           <span>Asset Inventory</span>
         </el-menu-item>
-        <el-menu-item class = "text" index="/home/risk-assessment">
+        <el-menu-item v-if ="userLevel!=1" class = "text" index="/home/risk-assessment">
           <span>Risk Assessment</span>
         </el-menu-item>
-        <el-sub-menu index="1">
+        <el-sub-menu v-if ="userLevel!=1" index="1">
           <template #title>
-            <span class="text">Risk Management</span>
+            <span v-if ="userLevel!=1" class="text">Risk Management</span>
           </template>
-          <el-menu-item class="sub-text" index="/home/risk-management">Risk Management</el-menu-item>
-          <el-menu-item class="sub-text" index="/home/my-risk">My Risk</el-menu-item>
+          <el-menu-item v-if ="userLevel!=1" class="sub-text" index="/home/risk-management">Risk Management</el-menu-item>
+          <el-menu-item v-if ="userLevel!=1" class="sub-text" index="/home/my-risk">My Risk</el-menu-item>
         </el-sub-menu>
         <el-menu-item v-if ="userLevel===0" class = "text" index="/home/evidence-chain">
           <span>Evidence Chain</span>
