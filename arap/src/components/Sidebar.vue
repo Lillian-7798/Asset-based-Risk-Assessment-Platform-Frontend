@@ -16,10 +16,10 @@
         </el-menu-item>
         <el-sub-menu v-if ="userLevel!=1" index="1">
           <template #title>
-            <span v-if ="userLevel!=1" class="text">Risk Management</span>
+            <span  class="text">Risk Management</span>
           </template>
-          <el-menu-item v-if ="userLevel!=1" class="sub-text" index="/home/risk-management">Risk Management</el-menu-item>
-          <el-menu-item v-if ="userLevel!=1" class="sub-text" index="/home/my-risk">My Risk</el-menu-item>
+          <el-menu-item class="sub-text" index="/home/risk-management">Risk Management</el-menu-item>
+          <el-menu-item class="sub-text" index="/home/my-risk">My Risk</el-menu-item>
         </el-sub-menu>
         <el-menu-item v-if ="userLevel===0" class = "text" index="/home/evidence-chain">
           <span>Evidence Chain</span>
