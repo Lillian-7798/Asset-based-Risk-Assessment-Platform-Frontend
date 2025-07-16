@@ -248,10 +248,7 @@ export default {
     async fetchAuditProjects() {
       try {
         const response = await axios.get(
-          `${API_BASE_URL}/api/audit_project/available`,
-          {
-            params: { auditor: "" }, // 获取 auditor 列为空的审计项目
-          }
+          `${API_BASE_URL}/api/audit_project/available`
         );
         if (response.data.success) {
           this.allAuditProjects = response.data.projects; // 保存所有的审计项目
@@ -269,6 +266,7 @@ export default {
 
       if (!query) {
         this.filteredAuditProjects = []; // 清空过滤的项目
+        this.selectedAuditProject = null;
         return [];
       }
 
@@ -332,6 +330,7 @@ export default {
           } else {
             this.$message.error(updateAuditResponse.data.message);
           }
+          this.selectedAuditProject = null;
 
           this.fetchAllUsers(); // 刷新用户列表
           this.editDialogVisible = false;
@@ -340,7 +339,7 @@ export default {
         }
       } catch (error) {
         console.error(error);
-        this.$message.error("Failed to update permission");
+        //this.$message.error("Failed to update permission");
       }
     },
 
