@@ -110,9 +110,15 @@ export default {
             this.$message.error('无法保存用户信息，请稍后重试');
           }
 
+          if(userData.userLevel == 1){
+            this.$router.push('/home/audit-project');
+          }else{
+            // 登录成功后跳转到Home页面
+            this.$router.push('/home/asset-inventory');
+          }
 
-          // 登录成功后跳转到Home页面
-          this.$router.push('/home/asset-inventory');
+
+
         } else {
           throw new Error(response.data.message || 'fail login');
         }
