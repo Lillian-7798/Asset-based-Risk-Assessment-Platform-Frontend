@@ -127,7 +127,7 @@
                     @click="saveRiskData(risk, false,index)"
                     :disabled="!canSave(risk) || risk.loading"
                 >
-                  Save Draft
+                  Save
                 </button>
 
                 <button
@@ -136,7 +136,7 @@
                     @click="saveRiskData(risk, true,index)"
                     :disabled="!canSave(risk) || risk.loading"
                 >
-                  Done
+                  Assign
                 </button>
               </div>
 
