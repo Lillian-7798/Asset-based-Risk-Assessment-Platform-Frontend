@@ -240,6 +240,7 @@ export default {
   },
   data() {
     return {
+      isSaved: false, // Add a flag to track if data is saved
       uploadedFiles: [], // 存储已上传的文件列表
       rid: this.$route.query.rid, // 无默认值了，要是rid没有传就会报错
       riskname: this.$route.query.riskname || "default riskname", // 默认值为 "default riskname"
@@ -347,7 +348,12 @@ export default {
       this.showConfirmDialog = true;
     },
     handleBackClick() {
-      this.showConfirmDialog = true; // 显示确认弹窗
+      if (!this.isSaved) {
+        this.showConfirmDialog = true;
+      } else {
+        this.goBack();
+      }
+      //this.showConfirmDialog = true; // 显示确认弹窗
     },
     handleBeforeClose(done) {
       this.showConfirmDialog = false;
@@ -416,6 +422,7 @@ export default {
       }
 
       this.$refs.upload.submit(); // 触发上传操作
+      this.isSaved = true; // Mark as saved
 
       //alert("Treatment is finished. All data has been successfully saved!");
     },
@@ -461,6 +468,7 @@ export default {
       }
 
       this.$refs.upload.submit(); // 触发上传操作
+      this.isSaved = true; // Mark as saved
 
       alert("Data saved successfully!");
     },
