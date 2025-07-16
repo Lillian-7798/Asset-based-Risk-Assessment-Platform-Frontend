@@ -377,22 +377,22 @@ export default {
         comments: this.comments,
         Done: "Finished", // 新增字段 Done，存储 "Finished"
       };
-      this.$refs.upload.submit(); // 触发上传操作
-      let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
-      storedData.push(formData);
-      localStorage.setItem("RisksHomepage", JSON.stringify(storedData));
-      // Retrieve saved files from localStorage, merge with current fileList
-      let savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
-      const allFiles = [...savedFiles, ...this.fileList];
 
-      // Save the updated files list to localStorage
-      localStorage.setItem("uploadedFiles", JSON.stringify(allFiles));
+      // let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
+      // storedData.push(formData);
+      // localStorage.setItem("RisksHomepage", JSON.stringify(storedData));
+      // // Retrieve saved files from localStorage, merge with current fileList
+      // let savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
+      // const allFiles = [...savedFiles, ...this.fileList];
 
-      // Update savedFiles in the component to reflect the saved files
-      this.savedFiles = [...allFiles];
+      // // Save the updated files list to localStorage
+      // localStorage.setItem("uploadedFiles", JSON.stringify(allFiles));
 
-      // Clear fileList after saving
-      this.fileList = [];
+      // // Update savedFiles in the component to reflect the saved files
+      // this.savedFiles = [...allFiles];
+
+      // // Clear fileList after saving
+      // this.fileList = [];
 
       // POST 请求到后端
       try {
@@ -402,18 +402,20 @@ export default {
           formData
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
-        alert("Data saved and sent to backend successfully!");
+        //alert("Data saved and sent to backend successfully!");
 
         // Second POST request: Update treatment status in risk_relationship table
         const response2 = await axios.post(
           `http://localhost:8081/api/risk_relationship/change/${this.rid}`
         );
         console.log("Treatment status updated:", response2.data); // Log backend response for the second request
-        alert("Treatment status updated successfully!");
+        alert("Data saved and sent to backend successfully!");
       } catch (error) {
         console.error("Error sending data to backend:", error);
         alert("Failed to send data to backend.");
       }
+
+      this.$refs.upload.submit(); // 触发上传操作
 
       //alert("Treatment is finished. All data has been successfully saved!");
     },
@@ -425,23 +427,23 @@ export default {
         Done: "In-progress", // 新增字段 Done
       };
       //测试文件上传
-      this.$refs.upload.submit(); // 触发上传操作
+      //this.$refs.upload.submit(); // 触发上传操作
 
-      let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
-      storedData.push(formData);
-      localStorage.setItem("RisksHomepage", JSON.stringify(storedData));
+      // let storedData = JSON.parse(localStorage.getItem("RisksHomepage")) || [];
+      // storedData.push(formData);
+      // localStorage.setItem("RisksHomepage", JSON.stringify(storedData));
       // Retrieve saved files from localStorage, merge with current fileList
-      let savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
-      const allFiles = [...savedFiles, ...this.fileList];
+      // let savedFiles = JSON.parse(localStorage.getItem("uploadedFiles")) || [];
+      // const allFiles = [...savedFiles, ...this.fileList];
 
-      // Save the updated files list to localStorage
-      localStorage.setItem("uploadedFiles", JSON.stringify(allFiles));
+      // // Save the updated files list to localStorage
+      // localStorage.setItem("uploadedFiles", JSON.stringify(allFiles));
 
-      // Update savedFiles in the component to reflect the saved files
-      this.savedFiles = [...allFiles];
+      // // Update savedFiles in the component to reflect the saved files
+      // this.savedFiles = [...allFiles];
 
-      // Clear fileList after saving
-      this.fileList = [];
+      // // Clear fileList after saving
+      // this.fileList = [];
 
       // POST 请求到后端
       try {
@@ -451,13 +453,16 @@ export default {
           formData
         );
         console.log("Data sent to backend:", response.data); // 控制台显示后端响应
-        alert("Data saved and sent to backend successfully!");
+        //alert("Data saved and sent to backend successfully!");
+        //this.$refs.upload.submit(); // 触发上传操作
       } catch (error) {
         console.error("Error sending data to backend:", error);
         alert("Failed to send data to backend.");
       }
 
-      //alert("Data saved successfully!");
+      this.$refs.upload.submit(); // 触发上传操作
+
+      alert("Data saved successfully!");
     },
   },
 };
