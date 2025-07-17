@@ -131,7 +131,6 @@
                 </button>
 
                 <button
-                    v-if="risk.applicable === 1"
                     class="complete-button"
                     @click="saveRiskData(risk, true,index)"
                     :disabled="!canSave(risk) || risk.loading"

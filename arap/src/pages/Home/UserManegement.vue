@@ -7,9 +7,7 @@
       <el-icon style="width: 20px; color: darkorange; margin-right: 8px">
         <Warning />
       </el-icon>
-      <el-text
-        >Are you sure to delete user "{{ currentDeleteUser?.name }}"?</el-text
-      >
+      <el-text>Are you sure to delete user "{{ currentDeleteUser?.name }}"?</el-text>
     </div>
     <template #footer>
       <el-button @click="deleteDialogVisible = false">Cancel</el-button>
@@ -36,28 +34,16 @@
   <!-- 编辑权限对话框 -->
   <el-dialog v-model="editDialogVisible" title="Edit Permission" width="50%">
     <el-select v-model="selectedPermission" placeholder="Select permission">
-      <el-option
-        v-for="item in Permissions"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value"
-      />
+      <el-option v-for="item in Permissions" :key="item.value" :label="item.label" :value="item.value" />
     </el-select>
 
     <!-- 如果权限是Auditor，显示审计项目搜索框 -->
     <div v-if="selectedPermission === '1'">
       <!-- '1' corresponds to "Auditor" -->
-      <el-autocomplete
-        v-model="searchAuditTerm"
-        placeholder="Search Audit Projects"
-        clearable
-        :fetch-suggestions="searchAuditProjects"
-        :trigger-on-focus="false"
-        :loading="loading"
-        :debounce="300"
-        @select="handleAuditProjectSelect"
-        :max-suggestions="5"
-      >
+       <br />
+      <el-autocomplete v-model="searchAuditTerm" placeholder="Search Audit Projects" clearable
+        :fetch-suggestions="searchAuditProjects" :trigger-on-focus="false" :loading="loading" :debounce="300"
+        @select="handleAuditProjectSelect" :max-suggestions="5">
         <template #prefix>
           <el-icon name="search" />
         </template>
@@ -71,13 +57,7 @@
   </el-dialog>
 
   <!-- 过滤条件弹出框 -->
-  <el-dialog
-    v-model="dialogVisible"
-    title="Filtering"
-    width="50%"
-    :before-close="handleClose"
-    :center="false"
-  >
+  <el-dialog v-model="dialogVisible" title="Filtering" width="50%" :before-close="handleClose" :center="false">
     <div style="height: 50%">
       <el-row>
         <el-col :span="6"></el-col>
@@ -85,18 +65,8 @@
           <el-text>Permission</el-text>
         </el-col>
         <el-col :span="8">
-          <el-select
-            v-model="permission"
-            placeholder="Default"
-            style="width: 95%; justify-content: left"
-            clearable
-          >
-            <el-option
-              v-for="item in Permissions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
+          <el-select v-model="permission" placeholder="Default" style="width: 95%; justify-content: left" clearable>
+            <el-option v-for="item in Permissions" :key="item.value" :label="item.label" :value="item.value" />
           </el-select>
         </el-col>
         <el-col :span="6"></el-col>
@@ -113,82 +83,39 @@
   <!-- 正常页面 -->
   <div class="container">
     <el-row>
-      <el-col
-        :span="12"
-        style="display: flex; align-items: center; justify-content: left"
-      >
-        <el-text style="font-size: 20px; font-weight: bold"
-          >Admin/User Management</el-text
-        >
+      <el-col :span="12" style="display: flex; align-items: center; justify-content: left">
+        <el-text style="font-size: 20px; font-weight: bold">Admin/User Management</el-text>
       </el-col>
-      <el-col
-        :span="6"
-        style="display: flex; align-items: center; justify-content: right"
-      >
-        <el-icon
-          style="margin-right: 10px"
-          @click="toggleFilter"
-          :color="isFilterActive ? '#409EFF' : ''"
-        >
+      <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
+        <el-icon style="margin-right: 10px" @click="toggleFilter" :color="isFilterActive ? '#409EFF' : ''">
           <Filter />
         </el-icon>
       </el-col>
-      <el-col
-        :span="6"
-        style="display: flex; align-items: center; justify-content: right"
-      >
-        <el-input
-          v-model="searchInput"
-          style="width: 100%; margin-right: 10px"
-          placeholder="Please Input"
-          :prefix-icon="Search"
-          @change="search"
-          clearable
-        />
+      <el-col :span="6" style="display: flex; align-items: center; justify-content: right">
+        <el-input v-model="searchInput" style="width: 100%; margin-right: 10px" placeholder="Please Input"
+          :prefix-icon="Search" @change="search" clearable />
       </el-col>
     </el-row>
     <div class="table-container">
       <div class="table">
-        <el-table
-          :data="tableData"
-          style="width: 100%; font-size: 17px; font-weight: border"
-          :header-cell-style="{ 'text-align': 'center' }"
-          :cell-style="{ 'text-align': 'center' }"
-        >
+        <el-table :data="tableData" style="width: 100%; font-size: 17px; font-weight: border"
+          :header-cell-style="{ 'text-align': 'center' }" :cell-style="{ 'text-align': 'center' }">
           <el-table-column prop="name" label="User Name" />
           <el-table-column prop="created_date" label="Created Date" />
           <el-table-column prop="permission" label="Permission" />
           <el-table-column label="Actions" fixed="right">
             <template #default="{ row }">
-              <el-button
-                link
-                type="primary"
-                size="large"
-                :disabled="row.permission === 'Admin'"
-                @click="showEditDialog(row)"
-                >Edit</el-button
-              >
-              <el-button
-                link
-                type="primary"
-                size="large"
-                :disabled="row.permission === 'Admin'"
-                @click="confirmDelete(row)"
-                >Delete</el-button
-              >
+              <el-button link type="primary" size="large" :disabled="row.permission === 'Admin'"
+                @click="showEditDialog(row)">Edit</el-button>
+              <el-button link type="primary" size="large" :disabled="row.permission === 'Admin'"
+                @click="confirmDelete(row)">Delete</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
       <div class="pagination">
-        <el-pagination
-          background
-          layout="prev, pager, next"
-          :total="totalItems"
-          :page-size="pageSize"
-          :current-page="currentPage"
-          @current-change="handlePageChange"
-        />
+        <el-pagination background layout="prev, pager, next" :total="totalItems" :page-size="pageSize"
+          :current-page="currentPage" @current-change="handlePageChange" />
       </div>
     </div>
   </div>
@@ -253,7 +180,7 @@ export default {
         if (response.data.success) {
           this.allAuditProjects = response.data.projects; // 保存所有的审计项目
         } else {
-          this.$message.error(response.data.message);
+          // this.$message.error(response.data.message);
         }
       } catch (error) {
         console.error(error);
@@ -321,6 +248,7 @@ export default {
           this.$message.success("Permission updated successfully");
 
           // 第二个请求：更新审计项目的 auditor 列
+          if(this.selectedPermission === '1' && this.selectedAuditProject){
           const updateAuditResponse = await axios.post(
             `${API_BASE_URL}/api/updateauditproject/${this.selectedAuditProject}/${this.currentEditingUser.id}`
           );
@@ -331,9 +259,12 @@ export default {
             this.$message.error(updateAuditResponse.data.message);
           }
           this.selectedAuditProject = null;
+        }
 
-          this.fetchAllUsers(); // 刷新用户列表
-          this.editDialogVisible = false;
+        this.editDialogVisible = false;
+          // 重新获取数据
+          this.fetchUsersCount();
+          this.fetchAllUsers();
         } else {
           this.$message.error(response.data.message);
         }
@@ -369,7 +300,9 @@ export default {
 
           if (response.data.success) {
             this.$message.success("User deleted successfully"); // 英文提示
-            this.fetchAllUsers(); // 刷新列表
+            // 重新获取数据
+            this.fetchUsersCount();
+            this.fetchAllUsers();
           } else {
             this.$message.error(response.data.message);
           }

@@ -60,7 +60,7 @@
               {{ formatDate(row.generate_date) }}
             </template>
           </el-table-column>
-          <el-table-column prop="name" label="Name" width="350">
+          <el-table-column prop="name" label="Name" width="500">
             <template #default="{ row }">
               <!-- 为每一行的名称添加点击事件 -->
               <router-link
@@ -70,7 +70,7 @@
                 }"
                 style="color: #409eff; text-decoration: none"
               >
-                {{ row.name }}
+                {{ row.asset_name+' '+row.name }}
               </router-link>
             </template>
           </el-table-column>

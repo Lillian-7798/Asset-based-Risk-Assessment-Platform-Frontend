@@ -170,6 +170,7 @@ export default {
 
 
         })))
+        console.log(res.data.users)
       } catch (err) {
         console.error('搜索失败:', err)
         cb([])
