@@ -2,7 +2,7 @@
   <el-row class="myheader">
     <el-col :span="8" class="logo-col">
       <el-button class="logo" @click="isLoggedIn ? toHome() : toLogin()">
-        <img src="../assets/logo.png" class="logo-image"/>
+        <img src="../assets/logo.png" class="logo-image" />
       </el-button>
       <el-text class="ABRSP">Asset-based Risk Assessment Platform </el-text>
     </el-col>
@@ -75,9 +75,7 @@ export default {
       });
     },
     toHelp() {
-      this.$router.push({
-        path: '/Help'
-      });
+      window.open('https://wp2024.cs.hku.hk/msp24114/wp-content/uploads/sites/355/2025/07/Requirements-Document-v3.0-1.pdf', '_blank');
     },
     logout() {
       // Clear user data from sessionStorage and reset state
@@ -127,8 +125,10 @@ button {
   overflow: hidden;
   margin-left: 0.5vh;
   padding: 0;
-  background: none; /* 移除按钮的背景颜色 */
-  border: none; /* 移除按钮的边框 */
+  background: none;
+  /* 移除按钮的背景颜色 */
+  border: none;
+  /* 移除按钮的边框 */
   cursor: pointer;
 
 }
