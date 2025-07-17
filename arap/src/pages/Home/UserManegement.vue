@@ -40,14 +40,25 @@
     <!-- 如果权限是Auditor，显示审计项目搜索框 -->
     <div v-if="selectedPermission === '1'">
       <!-- '1' corresponds to "Auditor" -->
-       <br />
-      <el-autocomplete v-model="searchAuditTerm" placeholder="Search Audit Projects" clearable
+      <br />
+      <div v-if="searchAuditTerm.owner != ''" style="color: red">
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                      <el-icon :size="21">
+                        <WarnTriangleFilled />
+                      </el-icon>
+                      <span>WARNING: The audit project already have auditor. The auditor is :{{ searchAuditTerm.owner }}</span>
+                    </div>
+                  </div>
+      <el-autocomplete style="width: 100%" v-model="searchAuditTerm.name" :fetch-suggestions="querySearch"
+        placeholder="Please enter audit project name" @select="handleSelect"
+        :trigger-on-focus="false"></el-autocomplete>
+      <!-- <el-autocomplete v-model="searchAuditTerm" placeholder="Search Audit Projects" clearable
         :fetch-suggestions="searchAuditProjects" :trigger-on-focus="false" :loading="loading" :debounce="300"
         @select="handleAuditProjectSelect" :max-suggestions="5">
         <template #prefix>
           <el-icon name="search" />
         </template>
-      </el-autocomplete>
+      </el-autocomplete> -->
     </div>
 
     <template #footer>
@@ -132,7 +143,11 @@ export default {
       allAuditProjects: [], // 存储所有的审计项目
       selectedAuditProject: null, //新增：用户选择的审计项目
       filteredAuditProjects: [], //新增过滤后的审计项目列表
-      searchAuditTerm: "", //新增，搜索词
+      searchAuditTerm: {
+        name:"",
+        auditprojectId:0,
+        owner:""
+    }, //新增，搜索词
       deleteDialogVisible: false, // 新增：删除对话框显示状态
       currentDeleteUser: null, // 新增：当前要删除的用户
       editDialogVisible: false,
@@ -168,67 +183,53 @@ export default {
   mounted() {
     this.fetchUsersCount();
     this.fetchAllUsers();
-    this.fetchAuditProjects();
   },
   methods: {
-    // 获取审计项目列表
-    async fetchAuditProjects() {
-      try {
-        const response = await axios.get(
-          `${API_BASE_URL}/api/audit_project/available`
-        );
-        if (response.data.success) {
-          this.allAuditProjects = response.data.projects; // 保存所有的审计项目
-        } else {
-          // this.$message.error(response.data.message);
+    querySearch(queryString, cb) {
+      this.searchAuditTerm.auditprojectId = 0
+      if (queryString.length < 2) {
+        cb([])
+        return
+      }
+
+      // 防抖处理
+      if (this.searchTimeout) {
+        clearTimeout(this.searchTimeout)
+      }
+
+      this.searchTimeout = setTimeout(async () => {
+        try {
+          const response = await axios.get(API_BASE_URL + '/audit/recommand', {
+            params: { query: queryString }
+          })
+          if (response.data.success) {
+            console.log(response.data)
+            const results = response.data.auditProjects.map(auditProject => ({
+              value: auditProject.name,
+              owner:auditProject.owner,
+              id: auditProject.id
+            }))
+
+            cb(results)
+          }
+        } catch (error) {
+          console.error('搜索用户失败:', error)
+          cb([])
         }
-      } catch (error) {
-        console.error(error);
-        this.$message.error("Failed to fetch audit projects");
-      }
+      }, 1000)
     },
 
-    async searchAuditProjects(query) {
-      console.log("Search Term:", query); // 输出搜索词
-
-      if (!query) {
-        this.filteredAuditProjects = []; // 清空过滤的项目
-        this.selectedAuditProject = null;
-        return [];
-      }
-
-      this.loading = true; // 开始加载
-
-      // 过滤符合条件的审计项目，并限制最多5个匹配项
-      this.filteredAuditProjects = this.allAuditProjects
-        .filter((project) =>
-          project.name.toLowerCase().includes(query.toLowerCase())
-        )
-        .slice(0, 5) // 获取最多5个匹配项
-        .map((project) => ({
-          label: project.id, // 显示的文本
-          value: project.name, // 用于选择的值
-        }));
-
-      console.log("Filtered Projects:", this.filteredAuditProjects); // 打印过滤后的审计项目
-
-      this.loading = false; // 开始加载
-
-      return this.filteredAuditProjects;
-    },
-
-    // 选择审计项目后的处理
-    handleAuditProjectSelect(item) {
-      console.log("Selected audit project:", item);
-      this.selectedAuditProject = item.label; //存的是id
-      console.log("Selected audit project:", this.selectedAuditProject);
+    handleSelect(item) {
+      this.searchAuditTerm.name = item.value;
+      this.searchAuditTerm.auditprojectId = item.id;
+      this.searchAuditTerm.owner = item.owner;
     },
     // 显示编辑权限对话框
     showEditDialog(user) {
       this.currentEditingUser = user;
       this.selectedPermission = this.getPermissionValue(user.permission);
       //this.selectedAuditProject = user.auditProject || null;
-      this.fetchAuditProjects(); // 获取审计项目列表
+      // this.fetchAuditProjects(); // 获取审计项目列表
       this.editDialogVisible = true;
     },
 
@@ -248,20 +249,23 @@ export default {
           this.$message.success("Permission updated successfully");
 
           // 第二个请求：更新审计项目的 auditor 列
-          if(this.selectedPermission === '1' && this.selectedAuditProject){
-          const updateAuditResponse = await axios.post(
-            `${API_BASE_URL}/api/updateauditproject/${this.selectedAuditProject}/${this.currentEditingUser.id}`
-          );
+          if (this.selectedPermission === '1' && this.searchAuditTerm.auditprojectId!='') {
+            const updateAuditResponse = await axios.post(
+              `${API_BASE_URL}/api/updateauditproject/${this.searchAuditTerm.auditprojectId}/${this.currentEditingUser.id}`
+            );
 
-          if (updateAuditResponse.data.success) {
-            this.$message.success("Audit project auditor updated successfully");
-          } else {
-            this.$message.error(updateAuditResponse.data.message);
+            if (updateAuditResponse.data.success) {
+              this.$message.success("Audit project auditor updated successfully");
+              this.searchAuditTerm.auditprojectId=0;
+              this.searchAuditTerm.name = "",
+              this.searchAuditTerm.owner = ""
+            } else {
+              this.$message.error(updateAuditResponse.data.message);
+            }
+            this.selectedAuditProject = null;
           }
-          this.selectedAuditProject = null;
-        }
 
-        this.editDialogVisible = false;
+          this.editDialogVisible = false;
           // 重新获取数据
           this.fetchUsersCount();
           this.fetchAllUsers();
