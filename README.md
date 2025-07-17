@@ -42,7 +42,10 @@ npm run serve
 
 Here's what happens:
 ![alt text]({61743D92-E48E-4925-A2AC-1A28CAA1F82D}.png)
+
 Just open the copy address in the browser, remember not to delete the current terminal
+
+Don't forget to run the backend project at the same time.
 
 ## Dependence:
 
